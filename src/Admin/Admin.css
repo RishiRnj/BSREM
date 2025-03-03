@@ -1,0 +1,104 @@
+/* Add this to your CSS file */
+
+/* Responsive table wrapper */
+.table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 20px 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 5px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+th {
+    background-color: #f4f4f4;
+}
+
+/* Style for smaller devices */
+@media screen and (max-width: 768px) {
+
+    th,
+    td {
+        display: block;
+        text-align: right;
+        padding-left: 90%;
+    }
+
+    th {
+        position: absolute;
+        left: 0;
+        top: 0;
+        padding-left: 10px;       
+        
+    }
+
+    td {
+        position: relative;
+        padding-left: 90%;
+
+        white-space: nowrap;
+        text-align: left;
+    }
+
+    td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        font-weight: bold;
+    }
+
+    /* Remove the default table layout on smaller screens */
+    table {
+        padding-left: 20px;
+        border: 0;
+        display: block;
+        width: 150%;
+        margin-bottom: 30px;
+    }
+
+    
+
+     /* Style each row as a block */
+  tr {
+    display: block;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #000000; /* Add a divider for rows */
+    padding: 0 0;
+  }
+
+  /* Style for individual cells with their labels on small screens */
+  td {
+   
+    border-bottom: 1px solid #ddd;
+  }
+
+  
+}
+
+#bene .carousel-item img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%; /* Ensure the image takes full width of the carousel */
+    height: 400px; /* Fixed height for uniformity */
+    object-fit: cover; /* Ensure the image covers the area without distorting */
+  }
+
+
+  @media (max-width: 768px) {
+    #bene .carousel-item img {
+      height: 250px; /* Smaller height on mobile */
+    }
+  }
+  
+  
+

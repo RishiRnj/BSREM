@@ -1,0 +1,125 @@
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+  }
+  
+  @media (max-width: 768px) {
+    .button-group {
+      flex-direction: column; /* Stack buttons vertically on small screens */
+      align-items: center;
+    }
+  }
+  
+  .survey-container h2, h4 {
+    text-align: center; /* Center align titles */
+  }
+  
+  .survey-container ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 10px auto;
+    max-width: 600px; /* Limit width for better readability */
+  }
+  
+  .survey-container li {
+    margin: 10px 0;
+    text-align: left;
+  }
+  
+  .survey-container .answered-questions {
+    margin: 0 auto;
+    max-width: 800px; /* Center the content within the page */
+    padding: 10px;
+  }
+
+/* Survey stat container */
+/* Ensure the container starts in the center and adapts to content */
+.statistics-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Center vertically */
+  align-items: center; /* Center horizontally */  
+  overflow: auto;
+  box-sizing: border-box;
+}
+
+
+.crd-1 {
+  max-width: 650px; /* Limit card width */
+  width: 100%; /* Ensure it adapts to smaller screens */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+}
+
+body, html {
+  margin: 0; /* Remove default margins */
+  
+  height: 100%; /* Ensure body and html fill the viewport */
+  
+}
+
+.statistics-container h4{
+  font-family:cursive;
+  background-color: rgb(62, 15, 233);
+  color: aliceblue;
+  font-weight: bold;
+  font-size: larger;
+}
+
+.blt {
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  font-size: 20px;
+}
+
+
+
+.crd-2 {
+  width: 550px;
+}
+
+.ans{
+  background-color: black;
+  color: aliceblue;
+}
+
+.tx{
+  font-size: larger;
+}
+
+@media (max-width: 668px) {
+  html{
+    size: 80%;
+  }
+  .crd-2 {
+      width: 400px;
+  }
+}
+
+@media (max-width: 568px) {
+  html{
+    size: 65%;
+  }
+  .crd-2 {
+      width: 350px;      
+  }
+}
+
+
+
+/*  */
+.btn-outline-primary {
+  font-size: 14px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.btn-outline-primary:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+
+  

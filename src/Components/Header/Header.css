@@ -1,0 +1,36 @@
+   /* Smooth fade-in effect */
+   .dropdown-menu {
+       transition: opacity 0.3s ease-in-out;
+   }
+
+   /* Fix hover effect */
+   #basic-nav-dropdown {
+       transition: opacity 0.3s ease-in-out;
+   }
+
+   #itm:hover {
+       font-weight: bold;
+       background-color: #f8f9fa;
+       /* Light grey background */
+       color: #0056b3;
+       /* Bootstrap primary color */
+       transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+   }
+
+   #itms:hover {
+       
+       background-color: #817f02;
+       /* Light grey background */
+       color: #ffffff;
+       /* Bootstrap primary color */
+       transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+   }
+   #itmso:hover {
+       
+       background-color: #817f02;
+       /* Light grey background */
+       color: #ffffff;
+       border-radius: 10px;
+       /* Bootstrap primary color */
+       transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+   }

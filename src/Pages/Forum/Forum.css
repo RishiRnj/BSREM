@@ -1,0 +1,232 @@
+ /* Forum Button */
+ #forum_btn {
+   position: fixed;
+   bottom: 30px;
+   left: 0px;
+   animation: slide-in-out 3s infinite ease-in-out;
+ }
+
+ #forum_btn:hover {
+   animation-play-state: paused;
+ }
+
+ @keyframes slide-in-out {
+
+   0%,
+   100% {
+     left: 0px;
+   }
+
+   50% {
+     left: -120px;
+   }
+ }
+
+ /* Parent container styling */
+ .statistics {
+   position: relative;
+   overflow: hidden;
+   white-space: nowrap;
+   width: 100%;
+   background-color: #f8f9fa;
+   border-radius: 8px;
+   box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+
+ }
+
+ /* Scrolling content animation */
+ .scrolling-content {
+   display: inline-block;
+   animation: scroll-left 20s linear infinite;
+   /* Adjust duration for speed */
+ }
+
+ .scrolling-stack {
+   display: flex;
+   align-items: center;
+   gap: 10px;
+ }
+
+ /* Keyframe for infinite scrolling */
+ @keyframes scroll-left {
+   0% {
+     transform: translateX(100%);
+     /* Start offscreen to the right */
+   }
+
+   100% {
+     transform: translateX(-100%);
+     /* End offscreen to the left */
+   }
+ }
+
+ .statistics:hover .scrolling-content {
+   animation-play-state: paused;
+   cursor: pointer;
+ }
+ 
+ /* Main fPage Layout */
+ #fPage {
+   display: flex;
+  justify-content: space-between; /* Add space between left, main, and right */
+  align-items: flex-start; /* Align top */
+   min-height: calc(100vh - 200px);   /* Ensure it fills the viewport height */
+   margin: 0;  
+   top: 0;
+   padding: 20px;
+   padding-top: 25px;
+  /* gap: 20px; */
+  box-sizing: border-box;
+  z-index: 900;
+  /*overflow: hidden; /* Prevent scrolling on the body */
+
+ }
+
+ /* Left and Right Sidebars */
+ #fPage-left {
+  display: flex;
+  justify-content: flex-start; /* Add space between left, main, and right */
+  margin-top: 20px;
+  position: fixed;
+  align-items: flex-start; /* Align top */
+  max-width: 400px; /* Set max width for sidebars */
+  background-color: rgba(0, 0, 255, 0.1); /* Light background */
+  min-height: calc(100vh - 200px);   /* Ensure it fills the viewport height */
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  filter: blur(70%);
+ }
+ .lt{
+  width: 350px;
+  display: flex;
+  justify-content: flex-start; /* Add space between left, main, and right */
+  align-items: flex-start; /* Align top */
+  max-width: 400px; /* Set max width for sidebars */
+  background-color: rgba(0, 0, 255, 0.356); /* Light background */
+  padding: 15px;
+  margin-top: 5px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+ }
+ 
+ #fPage-right {
+  display: flex;
+  right: 0;
+  margin-right: 15px; 
+  padding-right: 15px;
+  justify-content: flex-start; /* Add space between left, main, and right */
+  margin-top: 20px;
+  position: fixed;
+  align-items: flex-start; /* Align top */
+  max-width: 400px; /* Set max width for sidebars */
+  background-color: rgba(0, 0, 255, 0.1); /* Light background */
+  min-height: calc(100vh - 200px);   /* Ensure it fills the viewport height */
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
+ }
+
+ .rt{
+  width: 350px;
+  display: flex;
+  cursor: pointer;
+  justify-content: flex-end; /* Add space between left, main, and right */ 
+  max-width: 400px; /* Set max width for sidebars */
+  background-color: rgba(0, 0, 255, 0.356); /* Light background */
+  padding: 15px;  
+  margin-top: 5px; 
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
+ }
+ 
+
+ 
+
+ /* Center the card in the viewport */
+ .post-container {
+   display: flex;
+   flex: 2; /* Take remaining space */
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+   padding-top: 0; 
+ }
+
+ .post-card {
+  padding-top: 0px;
+   width: 100%;
+   max-width: 500px;   
+   margin: auto;
+   padding: 15px;
+ }
+
+ .post-card:hover {
+   transform: scale(1.05);
+   /* Slight scaling on hover */
+ }
+
+ .userCon {
+   width: 100%;
+   padding: 10px;
+   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+   border-radius: 8px;
+ }
+
+ .card-img-top {
+   /* width: 100%; */
+   max-height: 300px;
+   object-fit: cover;   /* Maintain the aspect ratio */
+ }
+
+ /* Responsive Design */
+ @media (max-width: 576px) {
+  #fPage{
+    padding-top: 30px;
+
+  }
+   .post-card {
+     max-width: 95%;     
+     padding: 5px;     /* Smaller card for mobile */
+   }
+   .card-img-top {
+    width: 300px;
+    max-height: 200px;
+    object-fit: cover;   /* Maintain the aspect ratio */
+  }
+
+   
+
+ }
+
+ /* Hide sidebars on smaller screens */
+@media (max-width: 768px) {
+  
+  #fPage-right{
+    display: none;
+  }
+  #fPage-left{
+    display: none;
+  }
+  
+}
+
+ body {
+   margin: 0;
+   padding: 0;
+   overflow-x: hidden;   /* Prevent horizontal scrollbar */
+ }
+
+ .basic-verify :hover {
+  
+  color: rgba(35, 35, 49, 0.596);
+  transform: scale(1.1);
+}
+
+
+
+

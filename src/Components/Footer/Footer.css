@@ -1,0 +1,27 @@
+@media (max-width: 464px) {
+  #bl2{
+    font-size: 12px;
+  }
+
+  #bl1{
+    font-size: 13px;
+  }
+}
+
+.loading-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  background-color: #926e00;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+}
+
+
+
+.hidden {
+  display: none; /* Ensure spinner is hidden after loading */
+}

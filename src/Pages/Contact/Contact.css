@@ -1,0 +1,69 @@
+.contact-us-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center; /* Vertically centers the form */
+    justify-content: center; /* Horizontally centers the form */
+    height: calc(100vh - 65px); /* Full height minus header */
+    position: relative; /* Allows for child positioning */
+    overflow: hidden; /* Prevents overflow due to growing content */
+  }
+  
+  .contact-image {
+    flex: 1;
+    width: 50%; /* Takes 50% of the container width */
+    height: 100%; /* Matches the height of the container */
+    background: url('/public/c.webp') no-repeat center center;
+    background-size: cover; /* Ensures the image covers the div properly */
+  }
+  
+  .contact-form-card {
+    flex: 1;
+    max-width: 400px;
+    margin: 20px;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow-y: auto; /* Enables scrolling if content grows beyond height */
+  }
+  
+  @media (max-width: 768px) {
+    .contact-us-container {
+      /* flex-direction: column; */
+      justify-content: center; /* Adjusts alignment for mobile */
+    }
+  
+    .contact-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      opacity: 0.6; /* Adjust the background opacity */
+    }
+  
+    .contact-form-card {
+      margin: auto;
+      z-index: 2;
+      max-width: 90%;
+      width: auto; /* Adjust width dynamically for smaller screens */
+      overflow-y: auto; /* Enables scrolling if content grows beyond height */
+    }
+  }
+  
+  
+  
+  /* user page */
+  .user-container  .userPic:hover{
+    transform: scale(1.1); /* Slightly enlarge the image on hover */
+    cursor: progress;
+  }
+  
+  
+  
+  
+  
+  
+  
