@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useContext } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Modal, Button, Form, Spinner, ProgressBar, ListGroup } from "react-bootstrap";
+import { Modal, Button, Form, Spinner, ProgressBar, ListGroup, Nav } from "react-bootstrap";
 import AuthContext from "../../Context/AuthContext";
 import { useWebSocket } from "../../Context/WebSocketProvider";
 import PostCreator from '../Forum/PostCreator';
@@ -167,13 +167,13 @@ const User = () => {
 
 
     //navigate for Update profile
-  const navigateToProfileUpdate = () => {
-    // Use React Router for navigation
-    if (!userId) throw new Error("Missing user authentication details.");
-    localStorage.setItem("redirectAfterUpdate", location.pathname);
-    navigate(`/user/${userId}/update-profile`);
+    const navigateToProfileUpdate = () => {
+        // Use React Router for navigation
+        if (!userId) throw new Error("Missing user authentication details.");
+        localStorage.setItem("redirectAfterUpdate", location.pathname);
+        navigate(`/user/${userId}/update-profile`);
 
-  };
+    };
 
 
 
@@ -385,6 +385,19 @@ const User = () => {
 
 
             <>
+                <Nav justify variant="tabs" defaultActiveKey="">
+                    <Nav.Item>
+                        <Nav.Link href="">Active</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link href="">Becon</Nav.Link>
+                        {/* <Nav.Link eventKey="link-1">Loooonger NavLink</Nav.Link> */}
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link href="">Brade</Nav.Link>
+                        {/* <Nav.Link eventKey="link-2">Link</Nav.Link> */}
+                    </Nav.Item>
+                </Nav>
                 <div className="user-container">
                     {/* main Content */}
                     <div id='fPage-user'>      {/*615 */}

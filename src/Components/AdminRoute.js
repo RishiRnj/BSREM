@@ -8,7 +8,8 @@ const AdminRoute = ({ user, children }) => {
 
   if (!token) {
     console.error("No token found. Redirecting to login.");
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+    localStorage.setItem("redirectAfterLogin", location.pathname);
+    return <Navigate to="/login" replace  />;
   }  
 
   try {
@@ -18,7 +19,8 @@ const AdminRoute = ({ user, children }) => {
     if (decodedUser.exp < currentTime) {
       console.error("Token expired. Redirecting to login.");
       localStorage.removeItem("token");
-      return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+      localStorage.setItem("redirectAfterLogin", location.pathname);
+      return <Navigate to="/login" replace  />;
     }
 
     if (decodedUser.role !== 'admin') {
@@ -32,7 +34,8 @@ const AdminRoute = ({ user, children }) => {
   } catch (error) {
     console.error("Invalid token. Redirecting to login:", error);
     localStorage.removeItem("token");
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+    localStorage.setItem("redirectAfterLogin", location.pathname);
+    return <Navigate to="/login" replace  />;
   }
 
 

@@ -12,18 +12,19 @@
     transform: translate(-50%, -50%);
     color: white;
     font-size: 2em;
-    z-index: 1000;  /* Ensures it's above the background */
-  }
+    z-index: 1000;
+    /* Ensures it's above the background */
+}
 
 .background {
     position: fixed;
     width: 100vw;
-    height:  calc(100vh - 54px);
+    height: calc(100vh - 54px);
     /* height: 100vh;     */
     top: 0;
     left: 0;
     /* background: rgba(0, 0, 0, 0.1);  Light dark background for the effect */
-    background: #3E1E68;
+    background: #352374;
     overflow: hidden;
     z-index: 1;
 }
@@ -50,6 +51,7 @@
     transform-origin: 1vw 16vh;
     box-shadow: -40vmin 0 5.795330477870586vmin currentColor;
 }
+
 .background span:nth-child(1) {
     color: #E45A84;
     top: 23%;
@@ -59,6 +61,7 @@
     transform-origin: 14vw 1vh;
     box-shadow: -40vmin 0 5.168368984212676vmin currentColor;
 }
+
 .background span:nth-child(2) {
     color: #583C87;
     top: 8%;
@@ -68,6 +71,7 @@
     transform-origin: -13vw 13vh;
     box-shadow: 40vmin 0 5.497518297922355vmin currentColor;
 }
+
 .background span:nth-child(3) {
     color: #E45A84;
     top: 42%;
@@ -77,6 +81,7 @@
     transform-origin: 6vw 14vh;
     box-shadow: 40vmin 0 5.887185422907944vmin currentColor;
 }
+
 .background span:nth-child(4) {
     color: #FFACAC;
     top: 28%;
@@ -86,6 +91,7 @@
     transform-origin: 23vw -23vh;
     box-shadow: -40vmin 0 5.894187821749789vmin currentColor;
 }
+
 .background span:nth-child(5) {
     color: #E45A84;
     top: 14%;
@@ -95,6 +101,7 @@
     transform-origin: 21vw 18vh;
     box-shadow: 40vmin 0 5.380100049425377vmin currentColor;
 }
+
 .background span:nth-child(6) {
     color: #583C87;
     top: 44%;
@@ -104,6 +111,7 @@
     transform-origin: -20vw 10vh;
     box-shadow: 40vmin 0 5.39946922759132vmin currentColor;
 }
+
 .background span:nth-child(7) {
     color: #FFACAC;
     top: 94%;
@@ -113,6 +121,7 @@
     transform-origin: -20vw -8vh;
     box-shadow: -40vmin 0 5.917043529399279vmin currentColor;
 }
+
 .background span:nth-child(8) {
     color: #FFACAC;
     top: 17%;
@@ -122,6 +131,7 @@
     transform-origin: -17vw 9vh;
     box-shadow: 40vmin 0 5.616923698718053vmin currentColor;
 }
+
 .background span:nth-child(9) {
     color: #E45A84;
     top: 38%;
@@ -131,6 +141,7 @@
     transform-origin: 17vw 20vh;
     box-shadow: 40vmin 0 5.605452976363318vmin currentColor;
 }
+
 .background span:nth-child(10) {
     color: #FFACAC;
     top: 1%;
@@ -140,6 +151,7 @@
     transform-origin: -13vw 16vh;
     box-shadow: 40vmin 0 5.448914828129453vmin currentColor;
 }
+
 .background span:nth-child(11) {
     color: #E45A84;
     top: 85%;
@@ -149,6 +161,7 @@
     transform-origin: -17vw 2vh;
     box-shadow: 40vmin 0 5.200386116168478vmin currentColor;
 }
+
 .background span:nth-child(12) {
     color: #FFACAC;
     top: 24%;
@@ -158,6 +171,7 @@
     transform-origin: -18vw 3vh;
     box-shadow: -40vmin 0 5.26312195378484vmin currentColor;
 }
+
 .background span:nth-child(13) {
     color: #FFACAC;
     top: 7%;
@@ -167,6 +181,7 @@
     transform-origin: -3vw -6vh;
     box-shadow: -40vmin 0 5.6246665202905195vmin currentColor;
 }
+
 .background span:nth-child(14) {
     color: #FFACAC;
     top: 27%;
@@ -176,6 +191,7 @@
     transform-origin: -14vw 21vh;
     box-shadow: -40vmin 0 5.682768160709588vmin currentColor;
 }
+
 .background span:nth-child(15) {
     color: #583C87;
     top: 12%;
@@ -185,6 +201,7 @@
     transform-origin: 15vw -2vh;
     box-shadow: -40vmin 0 5.85302595902844vmin currentColor;
 }
+
 .background span:nth-child(16) {
     color: #FFACAC;
     top: 85%;
@@ -194,6 +211,7 @@
     transform-origin: -8vw -11vh;
     box-shadow: 40vmin 0 5.254485765613203vmin currentColor;
 }
+
 .background span:nth-child(17) {
     color: #583C87;
     top: 10%;
@@ -203,6 +221,7 @@
     transform-origin: -1vw 10vh;
     box-shadow: -40vmin 0 5.529770888126867vmin currentColor;
 }
+
 .background span:nth-child(18) {
     color: #E45A84;
     top: 10%;
@@ -212,6 +231,7 @@
     transform-origin: 12vw 15vh;
     box-shadow: -40vmin 0 5.143776099937401vmin currentColor;
 }
+
 .background span:nth-child(19) {
     color: #583C87;
     top: 13%;
@@ -220,4 +240,64 @@
     animation-delay: -38s;
     transform-origin: 2vw -18vh;
     box-shadow: -40vmin 0 5.636005903240744vmin currentColor;
+}
+
+.ddd {
+    flex-direction: column;
+    padding-top: 10px;
+    margin-top: 5px;
+}
+
+.kkk {
+    margin-top: 45px;
+}
+
+.ppp {
+    margin-top: 30px;
+}
+
+.nostyle {
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-size: 3rem;
+}
+
+.nos {
+    padding: 0;
+}
+
+@media (max-width: 768px) {
+
+
+    .ppp .card-body{
+        padding: 5px;
+    }
+    .kkk .card-body{
+        padding: 5px;
+    }
+
+    .ppp {
+        margin-top: 15px;
+    }
+
+    .kkk {
+        margin-top: 0px;
+    }
+
+}
+
+@media (max-width: 500px) {
+    .ddd .txp {
+        font-size: 90%;
+    }
+    .hea h1{
+        font-size: 1.5rem;
+    }
+
+    .nostyle {
+        font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        font-size: 1.8rem;
+    }
+
+    
+    
 }

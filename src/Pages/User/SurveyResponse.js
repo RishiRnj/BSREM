@@ -105,6 +105,7 @@ import { useNavigate } from "react-router-dom";
 import { handleSuccess } from '../../Components/Util';
 import { ToastContainer } from 'react-toastify';
 import { FaHouseChimney, FaBuildingUser  } from "react-icons/fa6";
+import Butn from './Butn';
 
 const SurveyResponse = () => {
     const { user } = useContext(AuthContext);
@@ -118,46 +119,6 @@ const SurveyResponse = () => {
     const navigate = useNavigate(); // Use navigate to go back to previous page
 
     // Fetch survey responses when the component mounts
-    // useEffect(() => {
-
-    //     const fetchResponses = async () => {
-    //         try {
-    //             console.log("before fetch", userId);
-    //             const response = await fetch( 
-    //                 `${process.env.REACT_APP_API_URL}/survey/user/answers/${userId}`,
-    //                 {
-    //                     credentials: 'include',
-    //                     headers: {
-    //                         Authorization: `Bearer ${localStorage.getItem('token')}`,
-    //                     },
-    //                 }
-    //             );
-
-    //             if (!response.ok) {
-    //                 throw new Error('Failed to fetch answered questions.');
-    //             }
-
-    //             const data = await response.json();
-
-    //             const hasResponses = data.some((item) => item.question && item.answer);
-    //             if (!hasResponses) {
-    //                 setError('You have not participated in the survey yet.');
-    //             } else {
-    //                 setResponses(data); // Set responses if valid
-    //             }
-    //         } catch (error) {
-    //             console.error('Error fetching answered questions:', error);
-    //             setError('An error occurred while fetching your survey responses.');
-    //         } finally {
-    //             setLoading(false); // Hide loading spinner
-    //         }
-    //     };
-
-    //     fetchResponses();
-    //     console.log("Survey res",userId);
-        
-    // }, [userId]);
-
     useEffect(() => {
         if (isAuthenticated) {
         console.log("Before fetch, userId:", userId);
@@ -208,27 +169,9 @@ const SurveyResponse = () => {
 
     return (
         <div className="displaySurvey mt-4 pb-5">
-            <div className="d-flex justify-content-between mb-3">
-            <div className='ms-auto me-auto'>
-                {/* Back Button */}
-                <Button 
-                    variant="primary"
-                    onClick={() => navigate('/forum')} // Go back to the previous page
-                >
-                  <FaHouseChimney />  Home
-                </Button>
-            </div>
-            <div className='me-auto ms-auto'>
-                {/* Back Button */}
-                <Button
-                    variant="secondary"
-                    onClick={() => navigate(`/user/${userId}/profile`)} // Go back to the previous page
-                >
-                   <FaBuildingUser /> User Page
-                </Button>
-            </div>
-
-            </div>
+            {!error && (
+                <Butn/>
+            )}
             
 
             {loading ? (
@@ -239,7 +182,9 @@ const SurveyResponse = () => {
                 </div>
             ) : error ? (
                 <div className="text-center">
+                    <Butn/>
                     <h5>{error}</h5>
+                    
                 </div>
             ) : (
                 <div style={{
@@ -268,7 +213,9 @@ const SurveyResponse = () => {
 
             )}
 
-            <div className="d-flex justify-content-center mb-3">
+            
+            {!error && (
+                <div className="d-flex justify-content-center mb-3">
                 {/* Back Button */}
                 <Button
                     variant="outline-success"
@@ -277,6 +224,7 @@ const SurveyResponse = () => {
                     Update
                 </Button>
             </div>
+            )}
             <ToastContainer />
         </div>
     );

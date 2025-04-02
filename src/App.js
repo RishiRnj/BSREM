@@ -44,6 +44,10 @@ import AdminDashboardToHandleBeneficiary from "./Admin/BeneficiaryHandle";
 import BeneficiaryDetailPage from './Admin/BenificiaryDetails';
 import Dashboard from "./Pages/Dashboard/Dashboard";
 import Donatedashboard from "./Pages/Donate/Donatedashboard";
+import Donor from "./Admin/Donor";
+import YouthConference from "./Pages/YouthConference/YouthConference";
+import Conference from "./Admin/Conference";
+import Test from "../src/Pages/UpdateProfile/Test";
 
 
 
@@ -78,8 +82,12 @@ const App = () => {
 
           {/* Default route redirects to /dashboard */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          
 
+          {/* test */}
+          <Route path="/test" element={<Test/>}/>
 
+          {/* Dashboard */}
           <Route path="/dashboard" element={<Dashboard/>}/>
           {/* Public route for login/signup */}
           <Route path="/login" element={<LandingPage />} />         
@@ -102,14 +110,17 @@ const App = () => {
           <Route path="/contactUs" element={<ContactUs />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/faq" element={<FAQ />} />
+          <Route path="/youth" element={<YouthConference />} />
 
 
           {/* admin page */}
           <Route path="/admin" element={<AdminRoute> <Admin /> </AdminRoute>} />
           {/* Create notice by admin */}
           <Route path="/admin/notices" element={<AdminRoute> <AdminNotices /> </AdminRoute>} />
+          <Route path="/admin/conference" element={<AdminRoute> <Conference /> </AdminRoute>} />
           <Route path="/admin/handleBeneficiary" element={<AdminRoute> <AdminDashboardToHandleBeneficiary/> </AdminRoute>} />
-          <Route path="/beneficiary/:id" element={<AdminRoute> <BeneficiaryDetailPage/></AdminRoute>} />
+          <Route path="/admin/donor" element={<AdminRoute> <Donor/> </AdminRoute>} />
+          <Route path="/beneficiary/:id" element={<AdminRoute> <BeneficiaryDetailPage/></AdminRoute>} />          
           <Route path="/unauthorized" element={<Unauthorized />} />
 
 
@@ -117,16 +128,18 @@ const App = () => {
 
           {/* Protected Routes */}
           {/* main page */}
+         
           <Route path="/forum" element={<ProtectedRoute> <Forum /> </ProtectedRoute>} />
           {/* User Profile Page */}
-          <Route path="/user/:id/profile" element={<ProtectedRoute> <User /> </ProtectedRoute>} />
+          <Route path="/user/:id?/profile" element={<ProtectedRoute> <User /> </ProtectedRoute>} />
 
           {/* User Surver Response Page */}
           <Route path="/user/:id/surveyResponse" element={<ProtectedRoute> <SurveyResponse /> </ProtectedRoute>} />
 
 
           {/* Update User Profile Page */}
-          <Route path="/user/:id/update-profile" element={<ProtectedRoute><UpdateProfile /></ProtectedRoute>} />
+          <Route path="/user/:id?/update-profile" element={<ProtectedRoute><UpdateProfile /></ProtectedRoute>} />
+          
           {/* Survey page */}
           <Route path="/user/survey" element={<ProtectedRoute> <Survey /> </ProtectedRoute>} />
 

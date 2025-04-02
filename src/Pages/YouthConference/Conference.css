@@ -1,0 +1,16 @@
+.ffff{
+    margin-right: 10px;
+}
+
+@media (max-width: 480px) {
+    .btns-container {
+        
+      flex-direction: column;
+    }
+
+    .ffff{
+        margin-bottom: 10px;
+        margin-right: 0px;
+    }
+   
+  }

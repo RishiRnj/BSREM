@@ -1,24 +1,89 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Card, Col, Form, FormControl, FormGroup, OverlayTrigger, Tooltip, Row, Spinner, Button, InputGroup } from "react-bootstrap";
-import { ToastContainer } from "react-toastify";
-import { handleSuccess, handleError, handleWarning } from '../../Components/Util';
-import "./UpdateProfile.css"; // Include your custom styles here
-import { FaCamera } from "react-icons/fa"; // Example: React Icons library
+import { Button, Card, Form, InputGroup, Modal, OverlayTrigger, Tooltip, Row, Col,  Badge, Spinner } from 'react-bootstrap';
+import { ToastContainer } from 'react-toastify';
+import './Test.css';
+import Hero from '../../Components/Background/Hero';
+import ImageUploader from '../../Components/ImageUploader';
+import { handleSuccess, handleWarning, handleError } from '../../Components/Util';
+import { BsPencilSquare } from "react-icons/bs";
+import MobileVerification from '../../LandingPage/LogIn/MobileVerification';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-import { parsePhoneNumberFromString } from 'libphonenumber-js';
-import { BsPencilSquare } from "react-icons/bs";
-import Cropper from "react-cropper";
+import { GoVerified, GoDotFill, GoDot } from "react-icons/go";
+import { GrNext } from "react-icons/gr";
+import { BsFillSendFill, BsFillSendArrowUpFill, BsBracesAsterisk } from "react-icons/bs";
+import AuthContext from "../../Context/AuthContext";
+import { BiSolidEdit } from "react-icons/bi";
 
 
-const UpdateProfile = () => {
+const Test = () => {
+
+  const { user } = useContext(AuthContext);
+  const userId = user?.id;
 
   const location = useLocation();
   const navigate = useNavigate();
-  // Get the referring page from state
 
-  const from = location.state?.from; // Fallback to a default page
+
+  const [step, setStep] = useState(1);
+
+  const [loading, setLoading] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null); // State for preview image
+  const placeholderImage = "/user.png";
+  const [profileImage, setProfileImage] = useState(null);
+  const [alertShown, setAlertShown] = useState(false); // Track if the alert has been shown
+  const [showUpdateField, setShowUpdateField] = useState(false); // Control visibility of the update field
+  const [showModal, setShowModal] = useState(false);  // State to control modal visibility
+  const [onVerified, setOnVerified] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [showConfirmN, setShowConfirmN] = useState(false);
+  const [savedDataLS, setSavedDataLS] = useState(false);
+  const [submissionStatus, setSubmissionStatus] = useState(null);
+  const [complete, setComplete] = useState(null);
+  const [error, setError] = useState(false);
+  const [errorN, setErrorN] = useState(false);
+
+
+
+
+  const [formData, setFormData] = useState({
+    email: "",
+    fullName: "",
+    updateFullName: "",
+    mobile: "",
+    dob: "",
+    age: "",
+    gender: "",
+    hobby: "",
+    bloodGroup: "",
+    occupationCategory: "",
+    occupation: "",
+    moreAboutOccupation: "",
+    origin: '',
+    address: '',
+    city: '',
+    district: '',
+    state: '',
+    PIN: '',
+    country: '',
+    agreedTerms: false,
+  });
+
+  useEffect(() => {
+    // Retrieve form data from local storage
+    const savedData = localStorage.getItem("savedFormData");
+    const savedStep = localStorage.getItem("currentStep");
+
+    if (savedData) {
+      setFormData(JSON.parse(savedData));
+      setSavedDataLS(true);
+    }
+
+    if (savedStep) {
+      setStep(parseInt(savedStep)); // Convert to number
+    }
+  }, []);
 
   useEffect(() => {
     try {
@@ -29,13 +94,13 @@ const UpdateProfile = () => {
 
         if (!parsedUser.userImage) {
           console.log("no User Image");
-          
-        }else{
-        const image = parsedUser.userImage;
-          selectedImage(image)
+
+        } else {
+          const image = parsedUser.userImage;
+          setSelectedImage(image)
         }
-        
-        
+
+
 
         // Merge username and displayName into a single name field
         const fullName = parsedUser.username || parsedUser.displayName || ""; // Prioritize username, fallback to displayName
@@ -53,89 +118,76 @@ const UpdateProfile = () => {
     }
   }, []);
 
-  const [selectedImage, setSelectedImage] = useState(null); // State for preview image
-  const placeholderImage = "/user.png";
-  const [croppedImage, setCroppedImage] = useState(null);
-  const cropperRef = useRef(null); // Use `useRef` for the Cropper instance
+  useEffect(() => {
+    const checkProfileAndRedirect = async () => {
+      const isProfileUpdated = await checkUserProfile();
+      console.log("Profile update check result:", isProfileUpdated);
 
-  const [loading, setLoading] = useState(false);
-  const [selectedOption, setSelectedOption] = useState('');
-  const [newImage, setNewImage] = useState(null);
-  const [submissionStatus, setSubmissionStatus] = useState(null);
-  const [formError, setFormError] = useState({});
-  const [isModalOpen, setIsModalOpen] = useState(false); // Track if modal is open
+      if (isProfileUpdated) {
+        // Get the redirect path from localStorage
+        const redirectPath = localStorage.getItem("redirectAfterUpdate");
+        const redirectSection = localStorage.getItem("redirectAfterUpdateSEC");
 
-  const [formData, setFormData] = useState({
-    email: "",
-    fullName: "",
-    updateFullName: "",
-    mobile: "",
-    dob: "",
-    age: "",
-    gender: "",
-    hobby: "",
-    bloodGroup: "",
-    occupation: "",
-    moreAboutOccupation: "",
-    address: '',
-    city: '',
-    district: '',
-    state: '',
-    PIN: '',
-    country: '',
-    agreedTerms: false,
-  });
+        if (redirectPath) {
+          console.log("Navigating to:", redirectPath, "Section:", redirectSection);
 
-  const [alertShown, setAlertShown] = useState(false); // Track if the alert has been shown
-  const [showUpdateField, setShowUpdateField] = useState(false); // Control visibility of the update field
+          setTimeout(() => {
+            navigate(redirectPath);
 
-  const handleNameClick = () => {
-    if (!alertShown) {
-      alert("A new Name field Appear, where you can update the Name.");
-      setAlertShown(true);
-      setShowUpdateField(true); // Make the update field visible
+            // Clear localStorage *only after* navigation
+            localStorage.removeItem("redirectAfterUpdate");
+            localStorage.removeItem("redirectAfterUpdateSEC");
+
+            // Now scroll to section after navigation completes
+            setTimeout(() => {
+              if (redirectSection) {
+                const element = document.getElementById(redirectSection);
+                if (element) {
+                  window.scrollTo({
+                    top: element.offsetTop,
+                    behavior: "smooth",
+                  });
+                }
+              }
+            }, 500); // Small delay to ensure DOM is loaded
+          }, 100); // Ensure localStorage is read before clearing
+        }
+      }
+    };
+
+    checkProfileAndRedirect();
+  }, [navigate]);
+
+
+  //Function to check if user profile is updated 
+  const checkUserProfile = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("No token found.");
+
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/user/profile`, {
+        method: "GET",
+        credentials: "include", // Necessary for cookies/session handling
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch user profile.");
+      }
+
+      const userData = await response.json();
+      console.log(userData);
+
+      return userData.isProfileCompleted; // Ensure this key exists in API response
+
+    } catch (error) {
+      console.error("Error in checkUserProfile:", error);
+      navigate("/dashboard"); // Redirect to a fallback route if needed
+      return false; // Default to false if there's an error
     }
-    handleSuccess("New Name field is now editable.");
-  };
-
-
-  // Handle image change (when a new image is selected)
-  const handleImageChange = (e) => {
-    const file = e.target.files[0]; // Get the selected file
-    if (file) {
-      const imageUrl = URL.createObjectURL(file); // Create a URL for previewing the image
-      setSelectedImage(imageUrl); // Update the image preview
-      setCroppedImage(null); // Reset the cropped image
-      setFormData({ ...formData, userImage: file }); // Store the file in formData for submission
-      setIsModalOpen(true); // Open the modal for cropping
-    } else {
-      handleWarning("No image selected.");
-    }
-  };
-
-  const handleCrop = () => {
-    const cropperInstance = cropperRef.current?.cropper; // Access Cropper instance
-    if (cropperInstance) {
-      const croppedData = cropperInstance.getCroppedCanvas({
-        width: 400,
-        height: 400,
-      }).toDataURL(); // Get cropped image
-      setCroppedImage(croppedData); // Save cropped image
-      setNewImage(croppedData)
-      setSelectedImage(null); // Close the cropper
-
-    } else {
-      console.error("Cropper instance is not available.");
-    }
-  };
-
-  const handleSelectChange = (e) => {
-    const value = e.target.value;
-    setSelectedOption(value); // Update the selected option state
-    setFormData((prev) => ({
-      ...prev,
-      origin: value, // Update the formSelect field in formData
-    }));
   };
 
   const calculateAge = (dob) => {
@@ -149,63 +201,251 @@ const UpdateProfile = () => {
     return age;
   };
 
-
-
-  const validatePhoneNumber = (phone, countryCode) => {
-    console.log('Validating phone:', phone, 'Country code:', countryCode);
-
-    // Ensure phone number starts with '+' (for E.164 format)
-    if (!phone.startsWith('+')) {
-      phone = `+${phone}`;
+  const handleNameClick = () => {
+    if (!alertShown) {
+      handleSuccess("Update Name field is enable now, where you can update the Name.");
+      setAlertShown(true);
+      setShowUpdateField(true); // Make the update field visible
     }
-
-    const phoneNumber = parsePhoneNumberFromString(phone, countryCode);
-    console.log('Parsed phone number:', phoneNumber);
-
-    return phoneNumber?.isValid() || false;
+    handleSuccess("New Name field is now editable.");
+  };
+  const EditMobile = () => {
+    setSavedDataLS(false);
+    setFormData((prevData) => ({ ...prevData, mobile: "" }));
+    handleSuccess("Mobile field is now editable.");
   };
 
-  const handleChange = (e, value = null, countryCode = null, isPhoneInput = false) => {
-    if (isPhoneInput) {
-      const isValid = validatePhoneNumber(value, countryCode); // Validate using dynamic country code
-      if (isValid) {
-        console.log('Phone number is valid:', value);
-        setFormData((prevData) => ({ ...prevData, mobile: value }));
-        setFormError((prevError) => ({ ...prevError, mobile: '' })); // Clear error
-      } else {
-        console.error('Invalid phone number:', value);
-        setFormError((prevError) => ({ ...prevError, mobile: 'Invalid phone number' })); // Set error
-      }
-    } else if (e) {
+  // Open modal
+  const handleInputFocus = () => {
+    setShowModal(true);
+  };
+
+  // Close modal manually (can be done from inside MobileVerification if needed)
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
+  const handlePhoneNumber = (phoneNumber) => {
+    setFormData((prevData) => ({ ...prevData, mobile: phoneNumber }));
+    setOnVerified(true);
+    handleCloseModal();  // Close modal after phone verification
+  };
+
+  const occupations = {
+    healthcare: ["Doctor", "Nurse", "Pharmacist", "Dentist", "Psychologist", "Caregiver", "Yoga Instructor", "Therapist"],
+    technology: ["Software Developer", "Web Developer", "IT Support", "Data Scientist", "SEO Specialist"],
+    business: ["Entrepreneur", "Salesperson", "Marketing", "Business Analyst", "HR Manager", "Wholesaler", "Retailer", "Small business"],
+    education: ["Student", "Home Tutor", "Primary School Teacher", "High School Teacher", "Professor", "Principal", "Researcher"],
+    engineering: ["Civil Engineer", "Mechanical Engineer", "Electrical Engineer", "Chemical Engineer", "Aerospace Engineer"],
+    legal: ["Judge", "Lawyer", "Paralegal", "Legal Advisor", "Notary", "Accountant"],
+    creative: ["Designer", "Artist", "Musician", "Photographer", "Writer", "Content Creater", "Influencer", "News Reporter", "News Anchor"],
+    service: ["Chef", "Bartender", "Waiter", "Event Planner", "Public Relations", "Hairdresser", "Shopkeeper", "Housekeeper"],
+    skilledTrades: ["Plumber", "Electrician", "Mechanic", "Construction Worker", "Farmer", "Driver"],
+    government: ["St. Govt. Employee", "Cnt. Govt. Employee"],
+    other: ["Freelancer", "Homemaker", "Retired", "Social Worker"]
+  };
+
+  // Function to update sub-category options
+  const updateOccupationOptions = (category) => {
+    if (category && occupations[category]) {
+      return occupations[category];
+    }
+    return [];
+  };
+
+  const handleChange = (e) => {
+    if (e) {
       const { name, value, type, checked } = e.target;
       if (type === "checkbox") {
         setFormData((prevData) => ({ ...prevData, [name]: checked }));
       } else if (name === "dob") {
         setFormData((prevData) => ({ ...prevData, dob: value, age: calculateAge(value) }));
-      } else {
+      } else if (name === "updateFullName") {
+        setErrorN(false);
+        setFormData((prevData) => ({ ...prevData, updateFullName: value }));
+      }
+      else {
         setFormData((prevData) => ({ ...prevData, [name]: value }));
       }
     }
   };
 
+  const handleNameChangeAlart = (e) => {
+    if (!showUpdateField) {
+      handleWarning("This field is disabled, to enable Click the Pencil icon.");
+      return; // Exit the function if the field is disabled
+    }
 
+  }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // step change
+  const handleSettingStep1 = () => {
+    setStep(1); // Proceed to the next step
+  };
+
+  const handleSettingStep2 = () => {
+    setStep(2); // Proceed to the next step
+  };
+
+  const handleSettingStep3 = () => {
+    setStep(3); // Proceed to the next step
+  };
+
+  const handleNext = (e) => {
+    e.preventDefault(); // Prevent form submission
+
+    // Validate Full Name
+    if (showUpdateField && (!formData.updateFullName || formData.updateFullName.trim() === "")) {
+      handleWarning("You Click the edit Icon, now Name is required. If dont want to update, reload this page");
+      return;
+    }
+
+    // Validate Mobile Number (empty or not verified)
+    if (!formData.mobile || !onVerified) {
+      handleWarning("Mobile number is required and must be verified");
+      return;
+    }
+    // Validate age (empty )
+    if (!formData.age) {
+      handleWarning("Age is not define! Select your Date of Birth its required!");
+      return;
+    }
+
     if (formData.gender === "") {
       handleWarning("Please select Gender.");
       return;
     }
 
-    if (formData.updateFullName === "") {
-      handleWarning("Click to edit Button to Update Full Name")
+    if (!formData.updateFullName) {
+      setShowConfirmN(true); // Show confirmation modal
+    } else {
+      setStep(2); // Proceed to the next step
+      setComplete(1)
+      // Store form data in localStorage before proceeding
+      localStorage.setItem("savedFormData", JSON.stringify(formData));
+      localStorage.setItem("currentStep", "2"); // Save current step
+    }
+  };
+
+  const handleNext2 = (e) => {
+    e.preventDefault(); // Prevent form submission
+
+    if (!formData.hobby) {
+      handleWarning("Please select your Interest.");
+      return;
+    }
+    if (!formData.bloodGroup) {
+      handleWarning("Please select your Blood Group.");
+      return;
+    }
+    if (!formData.occupationCategory) {
+      handleWarning("Please select Occupation Category.");
+      return;
+    }
+    if (!formData.occupation) {
+      handleWarning("Please select Occupation.");
+      return;
+    }
+
+    if (!formData.moreAboutOccupation) {
+      setShowConfirm(true); // Show confirmation modal
+    } else {
+      setStep(3); // Proceed to the next step
+      setComplete(2)
+      // Store form data in localStorage before proceeding
+      localStorage.setItem("savedFormData", JSON.stringify(formData));
+      localStorage.setItem("currentStep", "3"); // Save current step
+    }
+    // if (!formData.moreAboutOccupation) {
+    //   const userResponse = window.confirm(
+    //     "You have not mentioned Occupation Details. Do you want to add?"
+    //   );
+
+    //   if (userResponse) {
+    //     return; // Stay on the same page
+    //   }
+    // }
+
+    // setStep(3); // Proceed to the next step
+  };
+
+  const handleConfirmYesN = () => {
+    setShowConfirmN(false); // Stay on the same page
+  };
+
+  const handleConfirmNoN = () => {
+    setShowConfirmN(false);
+    setStep(2); // Proceed to the next step
+    setComplete(1);
+    // Store form data in localStorage before proceeding
+    localStorage.setItem("savedFormData", JSON.stringify(formData));
+    localStorage.setItem("currentStep", "2"); // Save current step
+  };
+
+  const handleConfirmYes = () => {
+    setShowConfirm(false); // Stay on the same page
+  };
+
+  const handleConfirmNo = () => {
+    setShowConfirm(false);
+    setStep(3); // Proceed to the next step
+    setComplete(2);
+    // Store form data in localStorage before proceeding
+    localStorage.setItem("savedFormData", JSON.stringify(formData));
+    localStorage.setItem("currentStep", "3"); // Save current step
+  };
+
+  const handleSubmit = async (e) => {
+    if (showUpdateField && !formData.updateFullName) {
+      handleWarning("Update Name is required now!");
+      setStep(1);
+      setErrorN(true);
+
+      return;
+
+    }
+    if (!formData.mobile) {
+      handleWarning("Mobile No is required!")
+      setStep(1);
+      setError(true);
+      return;
+    }
+    if (!formData.age) {
+      handleWarning("Select Your Date of Birth!")
+      setStep(1);
+      return;
+    }
+
+    if (Number(formData.age) < 15) {
+      handleWarning("You are too young to proceed!");
+      navigate("/dashboard");
+      return;
+    }
+
+    if (!formData.gender) {
+      handleWarning("Select Your Gender!")
+      setStep(1);
+      return;
+    }
+    if (!formData.hobby) {
+      handleWarning("Select your topic of Interest!")
+      setStep(2);
+      return;
+    }
+    if (!formData.bloodGroup) {
+      handleWarning("Select your Bloog Group!")
+      setStep(2);
+      return;
+    }
+    if (!formData.occupation) {
+      handleWarning("Select your Occupation!")
+      setStep(2);
       return;
     }
 
 
-
-    if (!formData.userImage) {
-      handleWarning("Please upload a profile image before submitting.");
+    if (!profileImage) {
+      handleWarning("Please upload a profile image before submitting!");
       return;
     }
 
@@ -223,10 +463,12 @@ const UpdateProfile = () => {
       formDataToSend.append('formData', JSON.stringify(formData)); // Add form data
 
       // Append cropped image as Blob
-      if (croppedImage) {
-        const blob = await fetch(croppedImage).then((res) => res.blob());
+      if (profileImage) {
+        const blob = await fetch(profileImage).then((res) => res.blob());
         formDataToSend.append("userUpload", blob, "croppedImage.png");
       }
+      console.log("fromdata update", formDataToSend);
+
 
       console.log("sending data", formDataToSend);
       const response = await fetch(`${process.env.REACT_APP_API_URL}/user/profile`, {
@@ -245,9 +487,14 @@ const UpdateProfile = () => {
         handleSuccess('Profile Update successful!');
         setSubmissionStatus('Your Profile has been Updated successfully!');
         //window.location.href = '/user/survey';
-        const redirectPath = localStorage.getItem("redirectAfterUpdate") || "/forum";
-        
+
+        // Clear stored form data after submission
+        localStorage.removeItem("savedFormData");
+        localStorage.removeItem("currentStep");
+        const redirectPath = localStorage.getItem("redirectAfterUpdate") || `/user/${userId}/profile`;
+
         navigate(redirectPath);
+
       } else {
         const errorData = await response.json();
         handleError(`Update failed: ${errorData.message || 'Please try again.'}`);
@@ -257,7 +504,19 @@ const UpdateProfile = () => {
       console.error('Error updating profile:', error);
       handleError(`Failed to update profile: ${error.message}`);
     }
+  }
+
+  const handleImageUpload = (croppedImage) => {
+    setProfileImage(croppedImage); // Store cropped image in state  
+    // setFormData({ ...formData, userImage: croppedImage }); // Store the file in formData for submission  
+    console.log("Uploaded Image:", croppedImage); // You can upload it to the server here
   };
+
+  const renderTooltip = (props, tooltipText) => (
+    <Tooltip id="button-tooltip" {...props}>
+      {tooltipText}
+    </Tooltip>
+  );
 
 
   if (loading) {
@@ -284,289 +543,261 @@ const UpdateProfile = () => {
   }
 
 
-  const imagePreview = croppedImage ? croppedImage : selectedImage ? selectedImage : placeholderImage ? placeholderImage : "";
+  const imagePreview = profileImage ? profileImage : selectedImage ? selectedImage : placeholderImage ? placeholderImage : "";
 
   return (
-    <div className="update-profile-container">
-      <div className="content-container">
-        {/* Left Image */}
-        <div className="image-container"></div>
+    <>
+      <Hero />
 
-        {/* Card Section */}
-        <div className="form-container">
-          <h2 className="text-center mt-2 mb-4">Update User Profile</h2>
+      <div className="update-us-container">
 
+        <div className="update-image"></div>
 
-          <Card className="shadow-sm profile-card">
-            <Card.Body>
-              <form onSubmit={handleSubmit}>
+        <Card className="update-form-card" >
+          <h1 className="hero__title ">Update & Edit Profile</h1>
 
+          <ImageUploader onImageUpload={handleImageUpload} defaultImage={imagePreview} />
 
-                {/* Profile Image */}
-                <div className="d-flex justify-content-center align-items-center">
-                  <div className="image-upload-container">
-                    {/* Image Preview / Placeholder */}
-                    <div
-                      onClick={() => document.getElementById("imageInput").click()} // Trigger file input click
-                      style={{
-                        cursor: "pointer", width: "120px", height: "120px", borderRadius: "50%", border: "1px dashed gray", display: "flex", alignItems: "center", justifyContent: "center", backgroundSize: "cover",
-                        backgroundPosition: "center", backgroundImage: `url(${imagePreview})`
-                      }}
-                    >
-                      {/* Select Image Button */}
-                      <>
-                        <FaCamera
-                          size={24}
-                          color="LightGray"
-                          style={{
-                            position: "absolute",
-                            top: "22%",
-                            left: "62%",
-                            transform: "translate(-50%, -50%)",
-                          }}
-                        />
-                      </>
-
-                    </div>
-
-                    {/* Hidden File Input */}
-                    <input
-                      id="imageInput" type="file" name="userImage" accept="image/*" style={{ display: "none" }} onChange={handleImageChange}
-                    />
-                  </div>
-
-                  {/* Image Cropper */}
-
-                  {/* Modal for Cropping */}
-                  {selectedImage && isModalOpen && (
-                    <div
-                      style={{
-                        position: "fixed",
-                        top: 0,
-                        left: 0,
-                        width: "100vw",
-                        height: "100vh",
-                        backgroundColor: "rgba(0, 0, 0, 0.5)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        zIndex: 1000,
-                      }}
-                    >
-                      <div
-                        style={{
-                          backgroundColor: "#fff",
-                          padding: "20px",
-                          borderRadius: "8px",
-                          width: "90%",
-                          maxWidth: "400px",
-                          textAlign: "center",
-                        }}
-                      >
-                        <h5>Crop Image</h5>
-                        <Cropper
-                          className="join-crop"
-                          src={selectedImage}
-                          style={{ width: "100%", height: "auto" }}
-                          initialAspectRatio={1}
-                          aspectRatio={1}
-                          guides={false}
-                          background={true}
-                          rotatable={true}
-                          dragMode="move" // Allows moving the image
-                          ref={cropperRef}
-                        />
-                        <div style={{ marginTop: "10px" }}>
-                          <button
-                            onClick={handleCrop}
-                            style={{
-                              marginRight: "10px",
-                              backgroundColor: "#007bff",
-                              color: "#fff",
-                              padding: "5px 10px",
-                              borderRadius: "5px",
-                              border: "none",
-                              cursor: "pointer",
-                            }}
-                          >
-                            Save
-                          </button>
-                          <button
-                            onClick={() => setIsModalOpen(false)}
-                            style={{
-                              backgroundColor: "gray",
-                              color: "#fff",
-                              padding: "5px 10px",
-                              borderRadius: "5px",
-                              border: "none",
-                              cursor: "pointer",
-                            }}
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Email */}
-                <div className="mb-3">
-                  <FormGroup>
-                    <Form.Label>Email</Form.Label>
-                    <FormControl type="email" name="email" value={formData.email} readOnly />
-                  </FormGroup>
-                </div>
-
-                {/* Full Name */}
-                <div className="mb-3">
-                  <Form.Group className="mb-2">
-                    <Form.Label>Full Name</Form.Label>
-                    <div className="d-flex align-items-center border border-primary rounded">
-                      {/* Input Field */}
-                      <Form.Control
-                        type="text" name="fullName" value={formData.fullName}
-                        onClick={handleNameClick} // Show alert on first click
-                        readOnly
+          <Card.Body>
+            {/* {submissionStatus && <div className="alert alert-success">{submissionStatus}</div>} */}
+            <Form
+              onSubmit={(e) => {
+                e.preventDefault(); handleSubmit();
+              }}>
 
 
-                        aria-describedby="basic-verify"
-                        style={{ flex: 1 }}
-                      />
-
-                      {/* Send Button */}
-                      <button
-                        type="submit"
-                        variant='outline-primary'
-                        title='Update Name'
-                        id="basic-verify"
-                        onClick={handleNameClick} // Show alert on first click
-
-                        className="basic-verify"
-                        style={{
-                          border: 'none',
-                          backgroundColor: 'transparent',
-                          color: loading ? 'green' : 'blue',
-                          cursor: loading ? 'not-allowed' : 'pointer',
-                          padding: '0px 10px',
-                        }} >
-                        <BsPencilSquare />
-                      </button>
-                    </div>
-                  </Form.Group>
-
-
-                  {/* <FormGroup>
-                    <Form.Label>Full Name</Form.Label>
-                    <FormControl type="text" name="fullName" value={formData.fullName}
-                      onClick={handleNameClick} // Show alert on first click
-                      readOnly />
-                  </FormGroup> */}
-                </div>
-                
-                {/* Update Name */}
-                {showUpdateField && (
-                  <div className="mb-3">
-                    <FormGroup>
-                      <Form.Label>Update Full Name</Form.Label>
-                      <FormControl
-                        type="text"
-                        name="updateFullName"
-                        placeholder="Enter your Updated Name..."
-                        value={formData.updateFullName}
-                        onChange={handleChange}
-                      />
-                    </FormGroup>
-                  </div>
-                )}
-
-                {/* Mobile No */}
-                <div className="mb-3">
-                  <FormGroup>
-                    <Form.Label>Mobile Number</Form.Label>
-                    <PhoneInput
-                      name="mobile"
-                      country={'in'} // Default country is India
-                      value={formData.mobile || ''} // Ensure controlled component
-                      onChange={(value, data) => handleChange(null, value, data.countryCode, true)} // Pass value and country code
-                      inputProps={{
-                        name: 'mobile',
-                      }}
-                    />
-                    {formError.mobile && <div className="text-danger">{formError.mobile}</div>}
-                  </FormGroup>
-                </div>
-
-                {/* Date of Birth */}
-                <div className="mb-3">
+              {step === 1 && (
+                <>
                   <Row>
-                    <Col>
-                      <Form.Group>
-                        <Form.Label>Date of Birth</Form.Label>
-                        <Form.Control type="date" name="dob" value={formData.dob} onChange={handleChange} required />
-                      </Form.Group>
+                    <Col sm>
+                      <InputGroup className="mb-3" >
+                        <InputGroup.Text style={{ fontWeight: "bold" }}>User Email</InputGroup.Text>
+                        <Form.Control aria-label="User Email" type="email" name="email" value={formData.email} readOnly disabled />
+                      </InputGroup>
                     </Col>
 
-                    {/* Age */}
-                    <Col>
-                      <Form.Group>
-                        <Form.Label>Age</Form.Label>
-                        <Form.Control type="number" name="age" value={formData.age} readOnly />
-                      </Form.Group>
+                    <Col sm>
+                      <InputGroup className="mb-3" >
+                        <InputGroup.Text style={{ fontWeight: "bold" }}>Full Name</InputGroup.Text>
+                        <Form.Control aria-label="Full Name"
+                          type="text" name="fullName" value={formData.fullName}
+                          onClick={handleNameClick} // Show alert on first click
+                          disabled
+                          readOnly
+                          aria-describedby="basic-verify"
+                        />
+
+                        <Button
+                          type="submit"
+                          variant='light'
+                          title='Update Name'
+                          id="basic-verify"
+                          onClick={handleNameClick} // Show alert on first click
+                          className="basic-verify"
+                          style={{
+                            border: 'none',
+                            // backgroundColor: 'transparent',
+                            color: loading ? 'green' : 'blue',
+                            cursor: loading ? 'not-allowed' : 'pointer',
+                            padding: '0px 10px',
+                          }} >
+                          <BsPencilSquare />
+                        </Button>
+                      </InputGroup>
                     </Col>
                   </Row>
-                </div>
 
-                {/* Gender */}
-                <div className="mb-3">
-                  <label id='gen'>Gender</label>
-                  <div className="radio-group">
-                    <label> <input type="radio" name="gender" value="Male" onChange={handleChange} /> Male</label>
-                    <label> <input type="radio" name="gender" value="Female" onChange={handleChange} />Female</label>
-                    <label> <input type="radio" name="gender" value="Other" onChange={handleChange} />Other</label>
-                  </div>
-                </div>
-
-                <div className="mb-3">
-                  <div className="form-group">
-                    <label className="mb-2">Passionate for or Interested in</label>
-                    <select
-                      className="form-select"
-                      name="hobby"
-                      value={formData.hobby}
-                      onChange={handleChange}
-                      required
-                    >
-                      <option value="">Select</option>
-                      <option value="Spirituality">Spirituality</option>
-                      <option value="Sanatan Culture">Sanatan Culture</option>
-                      <option value="Hindu Unity">Hindu Unity</option>
-                      <option value="History">Vedic History</option>
-                      <option value="Technology">Technology</option>
-                      <option value="Environment">Environment</option>
-                      <option value="Politics">Politics</option>
-                      <option value="News & Event">News & Event</option>
-                      <option value="Geopolitics">Geopolitics</option>
-                    </select>
-                  </div>
-
-                </div>
-
-                {/* Blood Group and Occupation */}
-                <div className="mb-3">
                   <Row>
-                    {/* Blood Group */}
+                    <Col sm>
+                      <div onClick={handleNameChangeAlart}>
+                        <InputGroup className="mb-3"  >
+                          <InputGroup.Text style={{ fontWeight: "bold" }}>New Full Name</InputGroup.Text>
+                          <Form.Control aria-label="New Full Name" type="text"
+                            name="updateFullName"
+                            placeholder="Enter your Updated Name..."
+                            value={formData.updateFullName}
+                            onChange={handleChange}
+                            readOnly={!showUpdateField}
+                            required={showUpdateField} />
+                          {errorN ? <OverlayTrigger
+                            placement="top"
+                            delay={{ show: 250, hide: 400 }}
+                            overlay={props => renderTooltip(props, "You Clicked Update Name Icon, Now its Mendatory")}
+                          ><InputGroup.Text><BsBracesAsterisk /></InputGroup.Text></OverlayTrigger> : ""}
+                        </InputGroup>
+                      </div>
+
+                    </Col>
+
+                    <Col sm>
+                      {formData?.mobile ? (
+                        // If mobile exists, render the Mobile number with Verification mark
+                        <div className="position-relative mb-3">
+                          <PhoneInput
+                            name="mobile"
+                            placeholder='Enter Phone Number'
+                            disabled={onVerified || savedDataLS}
+                            country={'in'}
+                            value={formData.mobile}
+                            inputProps={{ name: 'mobile' }}
+                            className="w-100"
+                          />
+                          {(onVerified || savedDataLS) && (
+                            <GoVerified
+                              className="position-absolute"
+                              style={{
+                                right: savedDataLS ? 30 : 10,
+                                top: "50%",
+                                transform: "translateY(-50%)",
+                                color: "green",
+                              }}
+                            />
+                          )}
+
+                          {savedDataLS && (
+                            <BiSolidEdit
+                              onClick={EditMobile}
+                              className="position-absolute"
+                              style={{ right: 10, top: "50%", transform: "translateY(-50%)", color: "blue", cursor: 'pointer' }}
+                            />
+                          )}
+                        </div>
+
+                      ) : (
+
+                        // If mobile does not exist, show the mobile number in InputGroup
+                        <InputGroup className="mb-3" onClick={handleInputFocus}>
+                          <InputGroup.Text style={{ fontWeight: "bold" }}>Mobile No.</InputGroup.Text>
+                          <Form.Control
+                            aria-label="Mobile No."
+                            type="tel"
+                            name="mobile"
+                            value={formData.mobile}
+                            placeholder="Enter your Mobile No"
+                          />
+                          {error ? <OverlayTrigger
+                            placement="top"
+                            delay={{ show: 250, hide: 400 }}
+                            overlay={props => renderTooltip(props, "Mobile No is Mendatory, Enter your Mobile No")}
+                          ><InputGroup.Text><BsBracesAsterisk /></InputGroup.Text></OverlayTrigger> : ""}
+                        </InputGroup>
+                      )}
+                    </Col>
+                  </Row>
+
+                  <Row>
+                    <Col sm>
+                      <div className="position-relative mb-3">
+                        <InputGroup className="mb-3" >
+                          <InputGroup.Text style={{ fontWeight: "bold" }}>Date of Birth</InputGroup.Text>
+                          <Form.Control type="date" name="dob" value={formData.dob} onChange={handleChange} required />
+                        </InputGroup>
+
+                        {formData.dob && (
+                          <Badge
+                            className="position-absolute"
+                            style={{ right: 40, top: "50%", transform: "translateY(-50%)", color: "white" }}
+                          > {formData.age} years</Badge>
+                        )}
+                      </div>
+                    </Col>
+
+                    <Col sm>
+                      <div className='bg-light rounded'>
+                        <InputGroup className="mb-3">
+                          <InputGroup.Text style={{ fontWeight: 'bold' }}>Gender</InputGroup.Text>
+                          <Form.Check
+                            className='mt-2 ms-3'
+                            type="radio"
+                            id="male"
+                            autoFocus
+                            label="Male"
+                            name="gender"
+                            value="Male"
+                            onChange={handleChange}
+                            inline
+                          />
+                          <Form.Check
+                            className='mt-2'
+                            type="radio"
+                            id="female"
+                            label="Female"
+                            name="gender"
+                            value="Female"
+                            onChange={handleChange}
+                            inline
+                          />
+                          <Form.Check
+                            className='mt-2'
+                            type="radio"
+                            id="other"
+                            label="Other"
+                            name="gender"
+                            value="Other"
+                            onChange={handleChange}
+                            inline
+                          />
+                        </InputGroup>
+                      </div>
+                    </Col>
+
+                  </Row>
+
+
+                  {/* Next Button */}
+                  <Row>
                     <Col>
-                      <div className="form-group">
-                        <label className="mb-2">Blood Group</label>
-                        <select
-                          className="form-select"
+                      <Button className="w-100" onClick={handleNext} variant="primary" type='submit'>
+                        Next <GrNext />
+                      </Button>
+                    </Col>
+                  </Row>
+
+                </>
+              )}
+
+              {step === 2 && (
+                <>
+                  <Row>
+                    <Col sm>
+                      <InputGroup className="mb-3" >
+                        <InputGroup.Text style={{ fontWeight: "bold" }}>Interested in</InputGroup.Text>
+                        <Form.Control
+                          as="select"
+                          aria-label="Interested in"
+                          name="hobby"
+                          value={formData.hobby}
+                          onChange={handleChange}
+                          required
+                        >
+                          <option value="">Select Interest</option>
+                          <option value="Spirituality">Spirituality</option>
+                          <option value="Sanatan Culture">Sanatan Culture</option>
+                          <option value="Hindu Unity">Hindu Unity</option>
+                          <option value="History">Vedic History</option>
+                          <option value="Technology">Technology</option>
+                          <option value="Environment">Environment</option>
+                          <option value="Politics">Politics</option>
+                          <option value="News & Event">News & Event</option>
+                          <option value="Geopolitics">Geopolitics</option>
+                          <option value="Yoga">Yoga</option>
+                        </Form.Control>
+                      </InputGroup>
+
+                    </Col>
+
+                    <Col sm>
+                      <InputGroup className="mb-3" >
+                        <InputGroup.Text style={{ fontWeight: "bold" }}>Blood Group</InputGroup.Text>
+                        <Form.Control
+                          as="select"
+                          aria-label="Blood Group"
                           name="bloodGroup"
                           value={formData.bloodGroup}
                           onChange={handleChange}
                           required
                         >
-                          <option value="">Select</option>
+                          <option value="">Select Blood Group</option>
                           <option value="A+">A+</option>
                           <option value="A-">A-</option>
                           <option value="B+">B+</option>
@@ -575,247 +806,439 @@ const UpdateProfile = () => {
                           <option value="O-">O-</option>
                           <option value="AB+">AB+</option>
                           <option value="AB-">AB-</option>
-                        </select>
-                      </div>
+                        </Form.Control>
+                      </InputGroup>
                     </Col>
+                  </Row>
 
-                    {/* Occupation */}
-                    <Col >
-                      <div className="form-group">
-                        <label className="mb-2">Occupation</label>
-                        <select
-                          className="form-select"
-                          name="occupation"
-                          value={formData.occupation}
+                  <Row>
+                    {/* Occupation Category Select */}
+                    <Col sm>
+                      <InputGroup className="mb-3">
+                        <InputGroup.Text style={{ fontWeight: "bold" }}>Occupation Category</InputGroup.Text>
+                        <Form.Control
+                          as="select"
+                          aria-label="Occupation Category"
+                          name="occupationCategory"
+                          value={formData.occupationCategory}
                           onChange={handleChange}
                           required
                         >
-                          <option value="">Select</option>
-                          <option value="Student">Student</option>
-                          <option value="Professional">Professional</option>
-                          <option value="GovernmentJob">Government Job</option>
-                          <option value="PrivateJob">Private Job</option>
-                          <option value="Business">Business</option>
-                          <option value="SmallBusiness">Small Business</option>
-                          <option value="Artist">Artist</option>
-                          <option value="Other">Other</option>
-                        </select>
-                      </div>
+                          <option value="">Select Occupation Category</option>
+                          <option value="healthcare">Healthcare</option>
+                          <option value="technology">Technology</option>
+                          <option value="business">Business</option>
+                          <option value="education">Education</option>
+                          <option value="engineering">Engineering</option>
+                          <option value="legal">Legal</option>
+                          <option value="creative">Creative</option>
+                          <option value="service">Service</option>
+                          <option value="skilledTrades">Skilled Trades</option>
+                          <option value="government">Government Employee</option>
+                          <option value="other">Others</option>
+                        </Form.Control>
+                      </InputGroup>
                     </Col>
-                  </Row>
-                </div>
 
-                {/* Conditional Rendering */}
-                {["Other", "Professional", "GovernmentJob", "Business", "Artist"].includes(formData.occupation) && (
-                  <div className="mb-3">
-                    <label className="mb-2">More About Occupation</label>
-                    <textarea
-                      className="form-control" name="moreAboutOccupation" value={formData.moreAboutOccupation} onChange={handleChange} rows="1" placeholder="Tell us about your Occupation..." required={formData.occupation === "Other" || "Professional" || "GovernmentJob" || "Business" || "Artist"} />
-                  </div>
-                )}
-
-                {/* Address */}
-                <Form.Group className="mb-3" >
-                  <Form.Label>Residential status</Form.Label>
-                  <Form.Select
-                    name='origin'
-                    aria-label="Default select example"
-                    required
-                    onChange={handleSelectChange}
-                    value={selectedOption}>
-                    <option value="">Choose any one...</option>
-                    <option value="Indain_Hindu">Hindus Living in India</option>
-                    <option value="Gobal_Hindu">Hindus Living Outside India</option>
-                  </Form.Select>
-                </Form.Group>
-                {/* Additional form logic */}
-
-                {selectedOption === 'Indain_Hindu' && (
-                  <div id="addressIn">
-                    <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Enter your Address, like- Village, Area</Tooltip>}>
-                      <Form.Group className="mb-3" >
-                        <Form.Label>Your Current Address</Form.Label>
-                        <Form.Control
-                          name='address'
-                          placeholder="House No, St. No, Locality"
-                          value={formData.address}
-                          onChange={handleChange}
-                          required />
-                      </Form.Group></OverlayTrigger>
-
-                    <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Enter your City and District</Tooltip>}>
-                      <Row className="mb-3">
-
-                        <Form.Group as={Col} >
-                          <Form.Label>City</Form.Label>
-                          <Form.Control name='city'
-                            placeholder='Enter City' value={formData.city} onChange={handleChange} required />
-                        </Form.Group>
-                        <Form.Group as={Col} >
-                          <Form.Label>District</Form.Label>
-                          <Form.Control name='district' placeholder='District' value={formData.district} required={selectedOption === "Indain_Hindu"} // Required for Indian Hindus
-                            onChange={handleChange} />
-                        </Form.Group>
-                      </Row>
-                    </OverlayTrigger>
-
-
-
-                    <Row className="mb-3">
-                      <Form.Group as={Col} >
-                        <Form.Label>State</Form.Label>
-                        <Form.Select name='state' value={formData.state} onChange={handleChange} required={selectedOption === "Indain_Hindu"} // Required for Indian Hindus
-                        >
-                          <option value="">Choose One..</option>
-                          <option>Andhra Pradesh</option>
-                          <option>Arunachal Pradesh</option>
-                          <option>Assam</option>
-                          <option>Bihar</option>
-                          <option>Chhattisgarh</option>
-                          <option>Goa</option>
-                          <option>Gujarat</option>
-                          <option>Haryana</option>
-                          <option>Himachal</option>
-                          <option>Dharamshala</option>
-                          <option>Jharkhand</option>
-                          <option>Karnataka</option>
-                          <option>Kerala</option>
-                          <option>Madhya Pradesh</option>
-                          <option>Maharashtra</option>
-                          <option>Nagpur</option>
-                          <option>Manipur</option>
-                          <option>Meghalaya</option>
-                          <option>Mizoram</option>
-                          <option>Nagaland</option>
-                          <option>Odisha</option>
-                          <option>Punjab</option>
-                          <option>Rajasthan</option>
-                          <option>Sikkim</option>
-                          <option>Tamil Nadu</option>
-                          <option>Telangana</option>
-                          <option>Tripura</option>
-                          <option>Uttar Pradesh</option>
-                          <option>Uttarakhand</option>
-                          <option>Dehradun</option>
-                          <option>West Bengal</option>
-                          <option>Andaman and Nicobar Islands</option>
-                          <option>Chandigarh</option>
-                          <option>Dadra and Nagar Haveli and Daman and Diu</option>
-                          <option>Delhi</option>
-                          <option>Jammu and Kashmir</option>
-                          <option>Jammu</option>
-                          <option>Ladakh</option>
-                          <option>Kargil</option>
-                          <option>Lakshadweep</option>
-                          <option>Puducherry</option>
-
-                          {/* Add remaining states */}
-                        </Form.Select>
-                      </Form.Group>
-                      <Form.Group as={Col} >
-                        <Form.Label>PIN Code</Form.Label>
-                        <Form.Control name='PIN' placeholder='PIN Code' value={formData.PIN} onChange={handleChange} required={selectedOption === "Indain_Hindu"} // Required for Indian Hindus
-                        />
-                      </Form.Group>
-                    </Row>
-                  </div>
-                )}
-
-                {selectedOption === 'Gobal_Hindu' && (
-                  <div id="addOutIn">
-
-                    <Form.Group className="mb-3" >
-                      <Form.Label>Address</Form.Label>
-                      <Form.Control
-                        name='address'
-                        placeholder="Your Current Address"
-                        value={formData.address}
-                        onChange={handleChange}
-                        required
-                      />
-                    </Form.Group>
-
-                    <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Write the name of your City!</Tooltip>}>
-                      <Row className="mb-3">
-                        <Form.Group as={Col} >
-                          <Form.Label>City</Form.Label>
+                    {/* Occupation Select (Only shown when category is selected) */}
+                    {formData.occupationCategory && (
+                      <Col sm>
+                        <InputGroup className="mb-3">
+                          <InputGroup.Text style={{ fontWeight: "bold" }}>Occupation</InputGroup.Text>
                           <Form.Control
-                            name='city'
-                            placeholder="The City you live in"
-                            value={formData.city}
+                            as="select"
+                            aria-label="Occupation"
+                            name="occupation"
+                            value={formData.occupation}
                             onChange={handleChange}
                             required
-                          />
-                        </Form.Group>
-                      </Row>
-                    </OverlayTrigger>
-                    <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Write your Country or Territory!</Tooltip>}>
-                      <Row className="mb-3">
-                        <Form.Group as={Col} >
-                          <Form.Label>Country</Form.Label>
-                          <Form.Control
-                            name='country'
-                            placeholder="Name your Country or Territory or Region"
-                            value={formData.country}
+                          >
+                            <option value="">Select Occupation</option>
+                            {updateOccupationOptions(formData.occupationCategory).map((occupationOption, index) => (
+                              <option key={index} value={occupationOption}>
+                                {occupationOption}
+                              </option>
+                            ))}
+                          </Form.Control>
+                        </InputGroup>
+                      </Col>
+                    )}
+
+
+
+                  </Row>
+
+                  <Row>
+                    <Col sm>
+                      <OverlayTrigger
+                        placement="top"
+                        delay={{ show: 250, hide: 400 }}
+                        overlay={props => renderTooltip(props, "Share your Occupation Details like, *If select Doctor then about speciality, *If Govt. Employee then tell us your Department, *If Survice or Business then tell us your Sector!")}
+                      >
+                        <InputGroup className="mb-3" >
+                          <InputGroup.Text style={{ fontWeight: "bold" }}>Occupation Details</InputGroup.Text>
+                          <Form.Control aria-label="More About Occupation"
+                            name="moreAboutOccupation"
+                            value={formData.moreAboutOccupation}
                             onChange={handleChange}
-                            required={selectedOption === "Gobal_Hindu"} // Required for Global Hindus
+                            type="text"
+                            placeholder="Tell us about your Occupation..."
                           />
-                        </Form.Group>
-                      </Row>
-                    </OverlayTrigger>
-                  </div>
-                )}
+                        </InputGroup>
+                      </OverlayTrigger>
 
-                {/* Terms and Conditions */}
-                <div className="form-check mb-3 d-flex justify-content-center align-items-center">
-                  <input
-                    type="checkbox"
-                    className="form-check-input me-2"
-                    name="agreedTerms"
-                    required
-                    onChange={handleChange} />
+                    </Col>
+                  </Row>
 
-                  <label className="form-check-label">
-                    I agree to the <a href="/terms" target="_blank" rel="noopener noreferrer">Terms and Conditions</a>
-                  </label>
-                </div>
+                  {/* Next Button */}
 
-                {submissionStatus && <div className="alert alert-success">{submissionStatus}</div>}
+                  <Row>
+                    <Col >
+                      <Button className="w-100" onClick={handleNext2} variant="primary" type='submit'>
+                        Next <GrNext />
+                      </Button>
+                    </Col>
+                  </Row>
+                </>
 
-                {/* Submit Button Wrapper */}
-                <div
-                  onClick={() => {
-                    if (!formData.agreedTerms) {
-                      handleError("Please check the Terms and Conditions checkbox first.");
-                    }
-                  }}
-                  style={{ display: "inline-block", width: "100%" }}
-                >
-                  <Button
-                    variant="primary"
-                    type="submit"
-                    className="w-100"
-                    disabled={loading || !formData.agreedTerms}
-                  >
+              )}
+
+              {step === 3 && (
+                <>
+                  <Row>
+                    <Col sm>
+                      <InputGroup className="mb-2" >
+                        <InputGroup.Text style={{ fontWeight: "bold" }}>Residential status</InputGroup.Text>
+                        <Form.Control
+                          as="select"
+                          aria-label="Residential status"
+                          name='origin'
+                          value={formData.origin}
+                          onChange={handleChange}
+                          required
+                        >
+                          <option value="">Choose Origin</option>
+                          <option value="Indian Hindu">Hindus Living in India</option>
+                          <option value="Gobal Hindu">Hindus Living Outside India</option>
+                        </Form.Control>
+                      </InputGroup>
+
+                    </Col>
+
+                    <Col sm>
+                      <OverlayTrigger
+                        placement="top"
+                        delay={{ show: 250, hide: 400 }}
+                        overlay={props => renderTooltip(props, "Enter your local Address, like- Street Addres, Village, Near by place")}
+                      >
+                        <InputGroup className="mb-2" >
+                          <InputGroup.Text style={{ fontWeight: "bold" }}>Locality</InputGroup.Text>
+                          <Form.Control
+                            name='address'
+                            placeholder="House No, St. No, Locality"
+                            value={formData.address}
+                            onChange={handleChange}
+                            required />
+                        </InputGroup>
+                      </OverlayTrigger>
+
+                    </Col>
+                  </Row>
+
+                  <Row>
+                    <Col sm>
+                      <OverlayTrigger
+                        placement="top"
+                        delay={{ show: 250, hide: 400 }}
+                        overlay={props => renderTooltip(props, "Enter your City")}
+                      >
+                        <InputGroup className="mb-2" >
+                          <InputGroup.Text style={{ fontWeight: "bold" }}>City</InputGroup.Text>
+                          <Form.Control name='city'
+                            placeholder='Enter City'
+                            value={formData.city}
+                            onChange={handleChange}
+                            required />
+                        </InputGroup>
+                      </OverlayTrigger>
+
+                    </Col>
+
+                    <Col sm>
+                      <OverlayTrigger
+                        placement="top"
+                        delay={{ show: 250, hide: 400 }}
+                        overlay={props => renderTooltip(props, "Enter your District")}
+                      >
+                        <InputGroup className="mb-2" >
+                          <InputGroup.Text style={{ fontWeight: "bold" }}>District</InputGroup.Text>
+                          <Form.Control
+                            name='district'
+                            placeholder='Enter District Name'
+                            value={formData.district}
+                            onChange={handleChange}
+                            disabled={formData.origin === "Gobal Hindu"}
+                            required={formData.origin === "Indian Hindu"}
+                          />
+                        </InputGroup>
+                      </OverlayTrigger>
+
+                    </Col>
+                  </Row>
+
+                  <Row>
+                    <Col sm>
+                      {formData.origin === "Indian Hindu" ? (
+                        <OverlayTrigger
+                          placement="top"
+                          delay={{ show: 250, hide: 400 }}
+                          overlay={props => renderTooltip(props, "Select your State")}
+                        >
+                          <InputGroup className="mb-2" >
+                            <InputGroup.Text style={{ fontWeight: "bold" }}>State</InputGroup.Text>
+                            <Form.Control
+                              as="select"
+                              aria-label="State"
+                              name='state'
+                              placeholder='Choose State'
+                              value={formData.state}
+                              onChange={handleChange}
+                              required={formData.origin === "Indian Hindu"}
+                            >
+                              <option value="">Choose State</option>
+                              <option>Andhra Pradesh</option>
+                              <option>Arunachal Pradesh</option>
+                              <option>Assam</option>
+                              <option>Bihar</option>
+                              <option>Chhattisgarh</option>
+                              <option>Goa</option>
+                              <option>Gujarat</option>
+                              <option>Haryana</option>
+                              <option>Himachal</option>
+                              <option>Dharamshala</option>
+                              <option>Jharkhand</option>
+                              <option>Karnataka</option>
+                              <option>Kerala</option>
+                              <option>Madhya Pradesh</option>
+                              <option>Maharashtra</option>
+                              <option>Nagpur</option>
+                              <option>Manipur</option>
+                              <option>Meghalaya</option>
+                              <option>Mizoram</option>
+                              <option>Nagaland</option>
+                              <option>Odisha</option>
+                              <option>Punjab</option>
+                              <option>Rajasthan</option>
+                              <option>Sikkim</option>
+                              <option>Tamil Nadu</option>
+                              <option>Telangana</option>
+                              <option>Tripura</option>
+                              <option>Uttar Pradesh</option>
+                              <option>Uttarakhand</option>
+                              <option>Dehradun</option>
+                              <option>West Bengal</option>
+                              <option>Andaman and Nicobar Islands</option>
+                              <option>Chandigarh</option>
+                              <option>Dadra and Nagar Haveli and Daman and Diu</option>
+                              <option>Delhi</option>
+                              <option>Jammu and Kashmir</option>
+                              <option>Jammu</option>
+                              <option>Ladakh</option>
+                              <option>Kargil</option>
+                              <option>Lakshadweep</option>
+                              <option>Puducherry</option>
+                            </Form.Control>
+                          </InputGroup>
+                        </OverlayTrigger>
+                      ) : (
+                        <OverlayTrigger
+                          placement="top"
+                          delay={{ show: 250, hide: 400 }}
+                          overlay={props => renderTooltip(props, "Enter your State")}
+                        >
+                          <InputGroup className="mb-2" >
+                            <InputGroup.Text style={{ fontWeight: "bold" }}>State</InputGroup.Text>
+                            <Form.Control
+                              name='state'
+                              placeholder='Enter State'
+                              value={formData.state}
+                              onChange={handleChange}
+                              required={formData.origin === "Gobal Hindu"} />
+                          </InputGroup>
+                        </OverlayTrigger>
+
+
+                      )}
+
+
+                    </Col>
+
+                    <Col sm>
+                      <>
+                        {formData.origin === "Indian Hindu" || formData.origin === "" ? (
+
+                          <InputGroup className="mb-2" >
+                            <InputGroup.Text style={{ fontWeight: "bold" }}>Country</InputGroup.Text>
+                            <Form.Control
+                              name='country'
+                              placeholder="Name your Country or Territory or Region"
+                              value={formData.origin === "Indian Hindu" ? "India" : formData.country} // Set value to 'India' if origin is "Indian Hindu"
+                              disabled={formData.origin === "Indian Hindu" || formData.origin === ""} />
+                          </InputGroup>
+
+
+                        ) : (
+                          <OverlayTrigger
+                            placement="top"
+                            delay={{ show: 250, hide: 400 }}
+                            overlay={props => renderTooltip(props, "Enter your Country")}
+                          >
+                            <InputGroup className="mb-2" >
+                              <InputGroup.Text style={{ fontWeight: "bold" }}>Country</InputGroup.Text>
+                              <Form.Control
+                                name='country'
+                                placeholder="Name your Country or Territory or Region"
+                                value={formData.country}
+                                onChange={handleChange}
+                                required={formData.origin === "Gobal Hindu"} />
+                            </InputGroup>
+                          </OverlayTrigger>
+                        )}
+
+
+                      </>
+
+
+                    </Col>
+                    <Col sm>
+                      <OverlayTrigger
+                        placement="top"
+                        delay={{ show: 250, hide: 400 }}
+                        overlay={props => renderTooltip(props, "Enter your PIN or ZIP Code. If you are located outside India and there is no specific code for your area, then write N/A.")}
+                      >
+                        <InputGroup className="mb-2" >
+                          <InputGroup.Text style={{ fontWeight: "bold" }}>{formData.origin === "Indian Hindu" ? 'PIN Code' : "ZIP Code"}</InputGroup.Text>
+                          <Form.Control name='PIN' placeholder={formData.origin === "Indian Hindu" ? 'PIN Code' : "ZIP Code"} value={formData.PIN} onChange={handleChange} required
+                          />
+                        </InputGroup>
+                      </OverlayTrigger>
+
+                    </Col>
+
+
+                  </Row>
+
+                  <Row>
+                    <Col>
+                      {/* Terms and Conditions */}
+                      <div className="form-check mb-3 d-flex justify-content-center align-items-center">
+                        <input
+                          type="checkbox"
+                          className="form-check-input me-2"
+                          name="agreedTerms"
+                          required
+                          onChange={handleChange} />
+
+                        <label className="form-check-label">
+                          I agree to the <a href="/terms" target="_blank" rel="noopener noreferrer">Terms and Conditions</a>
+                        </label>
+                      </div>
+                    </Col>
+
+
+                  </Row>
+
+
+
+
+                  <Button type="submit" className=' w-100' disabled={loading} variant='secondary'>
                     {loading ? (
                       <span>
-                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                        Submitting...
+                        <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true" style={{ marginRight: '8px' }}></span>
+                        Submitting... <BsFillSendArrowUpFill />
                       </span>
                     ) : (
-                      "Submit"
+                      <>Submit <BsFillSendFill /></>  // Correctly rendered as a React component
                     )}
                   </Button>
-                </div>
 
-              </form>
-            </Card.Body>
-          </Card>
-        </div>
+                </>
+              )}
+
+              <div className='d-flex justify-content-center' style={{ fontSize: "30px" }}>
+                <div onClick={handleSettingStep1} style={{ cursor: "pointer" }}> {step === 1 ? (<GoDotFill />) : (<GoDot />)} </div>
+                <div onClick={handleSettingStep2} style={{ cursor: "pointer" }}> {step === 2 ? (<GoDotFill />) : (<GoDot />)} </div>
+                <div onClick={handleSettingStep3} style={{ cursor: "pointer" }}> {step === 3 ? (<GoDotFill />) : (<GoDot />)} </div>
+
+
+              </div>
+            </Form>
+          </Card.Body>
+        </Card>
+
+        <ToastContainer />
+
+        {/* Custom Modal for Mobile Verification */}
+        <Modal show={showModal} onHide={handleCloseModal} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>Phone Number Verification</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {/* Render the MobileVerification component inside the modal */}
+            <MobileVerification onPhoneVerified={handlePhoneNumber} />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseModal}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+
+        {/* Custom Modal for Confirmation occupation details */}
+        <Modal show={showConfirm} onHide={handleConfirmNo} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>Confirm Action</Modal.Title>
+          </Modal.Header>
+          <Modal.Body> You have not mentioned Occupation Details. Do you want to add?</Modal.Body>
+          <Modal.Footer>
+
+            <Button variant="primary" onClick={handleConfirmYes}>Yes</Button>
+            <Button variant="secondary" onClick={handleConfirmNo}>No</Button>
+          </Modal.Footer>
+        </Modal>
+
+
+        {/* Custom Modal for Confirmation update name */}
+        <Modal show={showConfirmN} onHide={handleConfirmNoN} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>Confirm Action</Modal.Title>
+          </Modal.Header>
+          <Modal.Body> You have not Update Full Name yet. Do you want to Update?</Modal.Body>
+          <Modal.Footer>
+
+            <Button variant="primary" onClick={handleConfirmYesN}>Yes</Button>
+            <Button variant="secondary" onClick={handleConfirmNoN}>No</Button>
+          </Modal.Footer>
+        </Modal>
+
       </div>
-      <ToastContainer />
-    </div>
-  );
-};
 
-export default UpdateProfile;
+
+
+
+
+
+
+
+    </>
+
+
+
+
+
+
+  )
+}
+
+export default Test

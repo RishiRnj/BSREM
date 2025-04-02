@@ -3,12 +3,16 @@ import { Link } from 'react-router-dom';
 import "./Admin.css";
 import { Button, InputGroup, Form, Row, Col, Card } from "react-bootstrap";
 import { handleWarning } from "../Components/Util";
+import * as XLSX from 'xlsx';  // Import SheetJS
+import NoteInput from "./NoteInput";
+import AmountInput from "./AmountInput";
 
 const AdminDashboardToHandleBeneficiary = () => {
     const [pendingBeneficiaries, setPendingBeneficiaries] = useState([]);
     const [allBeneficiaries, setallBeneficiaries] = useState([]);
     const [noteByVerifier, setNoteByVerifier] = useState("");
     const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Manage button disabled state
+    const [isNoteButtonDisabled, setIsNoteButtonDisabled] = useState(false); // Manage button disabled state
     const [notes, setNotes] = useState({});  // Object to hold notes for each beneficiary
     const [exAmount, setExAmount] = useState({});  // Object to hold notes for each beneficiary
 
@@ -46,28 +50,23 @@ const AdminDashboardToHandleBeneficiary = () => {
             .catch((err) => console.error("Error updating beneficiary:", err));
     };
 
-    // const handleNoteChange = (id, value) => {
-    //     setNotes((prevNotes) => ({
-    //         ...prevNotes,
-    //         [id]: value,  // Update the note for this beneficiary
-    //     }));
-    // };
+ 
 
     // Handle Note Change
-const handleNoteChange = (id, value) => {
-    setNotes((prevNotes) => ({
-        ...prevNotes,
-        [id]: value,
-    }));
-};
+    const handleNoteChange = (id, value) => {
+        setNotes((prevNotes) => ({
+            ...prevNotes,
+            [id]: value,
+        }));
+    };
 
-// Handle Amount Change
-const handleAmountChange = (id, value) => {
-    setExAmount((prevAmount) => ({
-        ...prevAmount,
-        [id]: value,
-    }));
-};
+    // Handle Amount Change
+    const handleAmountChange = (id, value) => {
+        setExAmount((prevAmount) => ({
+            ...prevAmount,
+            [id]: value,
+        }));
+    };
 
 
     // const handleAddVerifierNote = async (id, note) => {
@@ -98,67 +97,67 @@ const handleAmountChange = (id, value) => {
     //     }
     // };
 
-    const handleAddVerifierNote = async (id, note) => {
-        if (!note || note === "") {
-            handleWarning("Note Must be Entered!");
-            return;
-        }
-        try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/beneficiary/addNote/byVerifier/${id}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ noteByVerifier: note }),
-            });
+    // const handleAddVerifierNote = async (id, note) => {
+    //     if (!note || note === "") {
+    //         handleWarning("Note Must be Entered!");
+    //         return;
+    //     }
+    //     try {
+    //         const response = await fetch(`${process.env.REACT_APP_API_URL}/api/beneficiary/addNote/byVerifier/${id}`, {
+    //             method: "PUT",
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //             },
+    //             body: JSON.stringify({ noteByVerifier: note }),
+    //         });
 
-            const data = await response.json();
-            if (response.ok) {
-                alert(data.message); // Notify the user about the success
-                setNotes((prevNotes) => ({ ...prevNotes, [id]: "" }));  // Clear the note for this beneficiary
-                setIsButtonDisabled(true); // Disable the button on success
-            } else {
-                alert(data.error); // Show error message if something goes wrong
-            }
-        } catch (error) {
-            console.error("Error while adding verifier note:", error);
-            alert("Error adding note. Please try again.");
-        }
-    };
-    const handleAddExAmount = async (id, exAmount) => {
-        if (!exAmount || exAmount === "") {
-            handleWarning("Note Must be Entered!");
-            return;
-        }
-        try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/beneficiary/addNote/byVerifier/${id}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ expectedAmountOfMoney: exAmount }),
-            });
+    //         const data = await response.json();
+    //         if (response.ok) {
+    //             alert(data.message); // Notify the user about the success
+    //             setNotes((prevNotes) => ({ ...prevNotes, [id]: "" }));  // Clear the note for this beneficiary
+    //             setIsButtonDisabled(true); // Disable the button on success
+    //         } else {
+    //             alert(data.error); // Show error message if something goes wrong
+    //         }
+    //     } catch (error) {
+    //         console.error("Error while adding verifier note:", error);
+    //         alert("Error adding note. Please try again.");
+    //     }
+    // };
+    // const handleAddExAmount = async (id, exAmount) => {
+    //     if (!exAmount || exAmount === "") {
+    //         handleWarning("Note Must be Entered!");
+    //         return;
+    //     }
+    //     try {
+    //         const response = await fetch(`${process.env.REACT_APP_API_URL}/api/beneficiary/addNote/byVerifier/${id}`, {
+    //             method: "PUT",
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //             },
+    //             body: JSON.stringify({ expectedAmountOfMoney: exAmount }),
+    //         });
 
-            const data = await response.json();
-            if (response.ok) {
-                alert(data.message); // Notify the user about the success
-                setExAmount((prevNotes) => ({ ...prevNotes, [id]: "" }));  // Clear the note for this beneficiary
-                setIsButtonDisabled(true); // Disable the button on success
-            } else {
-                alert(data.error); // Show error message if something goes wrong
-            }
-        } catch (error) {
-            console.error("Error while adding verifier note:", error);
-            alert("Error adding note. Please try again.");
-        }
-    };
+    //         const data = await response.json();
+    //         if (response.ok) {
+    //             alert(data.message); // Notify the user about the success
+    //             setExAmount((prevNotes) => ({ ...prevNotes, [id]: "" }));  // Clear the note for this beneficiary
+    //             setIsButtonDisabled(true); // Disable the button on success
+    //         } else {
+    //             alert(data.error); // Show error message if something goes wrong
+    //         }
+    //     } catch (error) {
+    //         console.error("Error while adding verifier note:", error);
+    //         alert("Error adding note. Please try again.");
+    //     }
+    // };
 
     const handleAddField = async (id, field, value) => {
         if (!value || value === "") {
             handleWarning(`${field} must be entered!`);
             return;
         }
-    
+
         try {
             const response = await fetch(`${process.env.REACT_APP_API_URL}/api/beneficiary/addNote/byVerifier/${id}`, {
                 method: "PUT",
@@ -167,17 +166,15 @@ const handleAmountChange = (id, value) => {
                 },
                 body: JSON.stringify({ [field]: value }),
             });
-    
+
             const data = await response.json();
             if (response.ok) {
                 alert(data.message);  // Notify the user about the success
-                // Clear the input for this beneficiary
-                if (field === "noteByVerifier") {
-                    setNotes((prevNotes) => ({ ...prevNotes, [id]: "" }));
-                } else if (field === "expectedAmountOfMoney") {
+                if (field === "expectedAmountOfMoney") {
                     setExAmount((prevAmount) => ({ ...prevAmount, [id]: "" }));
+                    setIsButtonDisabled(true);  // Disable the button on success
                 }
-                setIsButtonDisabled(true);  // Disable the button on success
+                
             } else {
                 alert(data.error);  // Show error message if something goes wrong
             }
@@ -186,7 +183,47 @@ const handleAmountChange = (id, value) => {
             alert(`Error adding ${field}. Please try again.`);
         }
     };
-    
+    const handleAddNoteField = async (id, field, value) => {
+        if (!value || value === "") {
+            handleWarning(`${field} must be entered!`);
+            return;
+        }
+
+        try {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/beneficiary/addNote/byVerifier/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ [field]: value }),
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                alert(data.message);  // Notify the user about the success
+                // Clear the input for this beneficiary
+                if (field === "noteByVerifier") {
+                    setNotes((prevNotes) => ({ ...prevNotes, [id]: "" }));
+                    setIsNoteButtonDisabled(true)
+                } 
+            } else {
+                alert(data.error);  // Show error message if something goes wrong
+            }
+        } catch (error) {
+            console.error(`Error while adding ${field}:`, error);
+            alert(`Error adding ${field}. Please try again.`);
+        }
+    };
+
+    const downloadXLS = () => {
+        const ws = XLSX.utils.json_to_sheet(allBeneficiaries);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Beneficiaries");
+
+        // Download Excel file
+        XLSX.writeFile(wb, `All Beneficiaries.xlsx`);
+    };
+
 
 
 
@@ -218,8 +255,8 @@ const handleAmountChange = (id, value) => {
                             </Row>
 
                             <Row className="border border-dark p-2">
-                                {/* <Col>
-                                    <InputGroup className="me-3">
+                                <Col>
+                                    {/* <InputGroup className="me-3">
                                         <Form.Control
                                             value={notes[b._id] || ""}  // Get the note for the specific beneficiary
                                             disabled={b?.noteByVerifier || isButtonDisabled}
@@ -233,93 +270,56 @@ const handleAmountChange = (id, value) => {
                                             disabled={b?.noteByVerifier || isButtonDisabled || !notes[b._id]}  // Disable if note is empty for this beneficiary
                                             variant="outline-secondary"
                                             id="button-addon2"
-                                            onClick={() => handleAddVerifierNote(b._id, notes[b._id])}  // Pass specific note to the function
+                                            onClick={() => handleAddField(b._id, "noteByVerifier", notes[b._id])}  // Pass specific note to the function
                                         >
                                             Add Note
                                         </Button>
                                         <Form.Control.Feedback type="invalid">
                                             Note must be entered!
                                         </Form.Control.Feedback>
-                                    </InputGroup>
+                                    </InputGroup> */}
 
+                                    <NoteInput
+                                        beneficiaryId={b._id}
+                                        note={notes[b._id]}
+                                        isDisabled={b?.noteByVerifier || isNoteButtonDisabled}
+                                        onNoteChange={handleNoteChange}
+                                        onAddNote={handleAddNoteField}
+                                    />
                                 </Col>
-                                <Col sm={4}>
 
-                                    <InputGroup className="me-3">
+                                <Col sm={4}>
+                                    {/* <InputGroup className="me-3">
                                         <Form.Control
                                             value={exAmount[b._id] || ""}  // Get the note for the specific beneficiary
                                             disabled={b?.expectedAmountOfMoney || isButtonDisabled}
-                                            onChange={(e) => handleNoteChange(b._id, e.target.value)}  // Update note for this beneficiary
-                                            placeholder="Enter On-field Reference Note"
-                                            aria-label="Enter On-field Reference Note"
+                                            onChange={(e) => handleAmountChange(b._id, e.target.value)}  // Update expected amount for this beneficiary
+                                            placeholder="Enter Expected Amount"
+                                            aria-label="Enter Expected Amount"
                                             aria-describedby="basic-addon2"
                                             isInvalid={!exAmount[b._id] && !isButtonDisabled}  // Conditionally apply invalid style for this beneficiary
                                         />
                                         <Button
-                                            disabled={b?.expectedAmountOfMoney || isButtonDisabled || !exAmount[b._id]}  // Disable if note is empty for this beneficiary
+                                            disabled={b?.expectedAmountOfMoney || isButtonDisabled || !exAmount[b._id]}  // Disable if amount is empty for this beneficiary
                                             variant="outline-primary"
                                             id="button-addon2"
-                                            onClick={() => handleAddExAmount(b._id, exAmount[b._id])}  // Pass specific note to the function
+                                            onClick={() => handleAddField(b._id, "expectedAmountOfMoney", exAmount[b._id])}  // Pass specific amount to the function
                                         >
                                             Add Expected Amount
                                         </Button>
                                         <Form.Control.Feedback type="invalid">
                                             Expected Amount must be entered!
                                         </Form.Control.Feedback>
-                                    </InputGroup>
+                                    </InputGroup> */}
+                                    <AmountInput
+                                        beneficiaryId={b._id}
+                                        amount={exAmount[b._id]}
+                                        isDisabled={b?.expectedAmountOfMoney  || isButtonDisabled}
+                                        onAmountChange={handleAmountChange}
+                                        onAddAmount={handleAddField}
 
-
-                                </Col> */}
-
-<Col>
-    <InputGroup className="me-3">
-        <Form.Control
-            value={notes[b._id] || ""}  // Get the note for the specific beneficiary
-            disabled={b?.noteByVerifier || isButtonDisabled}
-            onChange={(e) => handleNoteChange(b._id, e.target.value)}  // Update note for this beneficiary
-            placeholder="Enter On-field Reference Note"
-            aria-label="Enter On-field Reference Note"
-            aria-describedby="basic-addon2"
-            isInvalid={!notes[b._id] && !isButtonDisabled}  // Conditionally apply invalid style for this beneficiary
-        />
-        <Button
-            disabled={b?.noteByVerifier || isButtonDisabled || !notes[b._id]}  // Disable if note is empty for this beneficiary
-            variant="outline-secondary"
-            id="button-addon2"
-            onClick={() => handleAddField(b._id, "noteByVerifier", notes[b._id])}  // Pass specific note to the function
-        >
-            Add Note
-        </Button>
-        <Form.Control.Feedback type="invalid">
-            Note must be entered!
-        </Form.Control.Feedback>
-    </InputGroup>
-</Col>
-
-<Col sm={4}>
-    <InputGroup className="me-3">
-        <Form.Control
-            value={exAmount[b._id] || ""}  // Get the note for the specific beneficiary
-            disabled={b?.expectedAmountOfMoney || isButtonDisabled}
-            onChange={(e) => handleAmountChange(b._id, e.target.value)}  // Update expected amount for this beneficiary
-            placeholder="Enter Expected Amount"
-            aria-label="Enter Expected Amount"
-            aria-describedby="basic-addon2"
-            isInvalid={!exAmount[b._id] && !isButtonDisabled}  // Conditionally apply invalid style for this beneficiary
-        />
-        <Button
-            disabled={b?.expectedAmountOfMoney || isButtonDisabled || !exAmount[b._id]}  // Disable if amount is empty for this beneficiary
-            variant="outline-primary"
-            id="button-addon2"
-            onClick={() => handleAddField(b._id, "expectedAmountOfMoney", exAmount[b._id])}  // Pass specific amount to the function
-        >
-            Add Expected Amount
-        </Button>
-        <Form.Control.Feedback type="invalid">
-            Expected Amount must be entered!
-        </Form.Control.Feedback>
-    </InputGroup>
-</Col>
+                                    />
+                                </Col>
 
 
                                 <Col xs lg="2">
@@ -419,6 +419,7 @@ const handleAmountChange = (id, value) => {
 
 
                         </Row>
+
                     </div>
 
 
@@ -426,6 +427,13 @@ const handleAmountChange = (id, value) => {
 
 
                 ))}
+
+                {/* Download Button */}
+                <div className="text-center mt-3">
+                    <Button onClick={downloadXLS} variant="success">
+                        Download XLS
+                    </Button>
+                </div>
 
             </div>
 

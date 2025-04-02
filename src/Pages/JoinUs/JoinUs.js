@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Card, Col, Form, FormControl, FormGroup, OverlayTrigger, Tooltip, Row, Spinner, Button, InputGroup, Modal } from "react-bootstrap";
+import { Card, Col, Form, FormControl, FormGroup, OverlayTrigger, Tooltip, Row, Spinner, Button } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
 import { handleSuccess, handleError, handleWarning } from '../../Components/Util';
 import "./JoinUs.css"; // Include your custom styles here
@@ -9,9 +9,9 @@ import 'react-phone-input-2/lib/style.css';
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import { BsPencilSquare } from "react-icons/bs";
 import AuthContext from "../../Context/AuthContext";
-import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
-import { FaEyeSlash, FaEye, FaCamera } from "react-icons/fa";
+import { FaEyeSlash, FaEye } from "react-icons/fa";
+import ImageUploader from "../../Components/ImageUploader";
 
 
 
@@ -21,19 +21,12 @@ const JoinUs = () => {
   const currentUser = user;
   const isAuthenticated = !!user;
   const userId = user?.id;
-  const [selectedImage, setSelectedImage] = useState(null); // State for preview image
   const placeholderImage = "/user.png";
   const [loading, setLoading] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
-  const [newImage, setNewImage] = useState(null);
   const [submissionStatus, setSubmissionStatus] = useState(null);
   const [formError, setFormError] = useState({});
-  const [alertShown, setAlertShown] = useState(false); // Track if the alert has been shown
-  const [showUpdateField, setShowUpdateField] = useState(false); // Control visibility of the update field
   const [userData, setUserData] = useState(null);
-  const [croppedImage, setCroppedImage] = useState(null);
-  const cropperRef = useRef(null); // Use `useRef` for the Cropper instance
-
   const [isEditable, setIsEditable] = useState(false);
   const [showMobInput, setShowMobInput] = useState(false);
   const [dobPicker, setDobPicker] = useState(false); // Store the date of birth value
@@ -41,9 +34,8 @@ const JoinUs = () => {
   const [sex, setSex] = useState(false); // Store the date of birth value
   const [bgOco, setBgOco] = useState(false); // Store the date of birth value
   const [mail, setMail] = useState(false); // Store the Email value
-  const [isModalOpen, setIsModalOpen] = useState(false); // Track if modal is open
   const [showPassword, setShowPassword] = useState(false);
-  const [uwNM, setUwNM] = useState(false);
+  const [profileImage, setProfileImage] = useState(null);
 
 
 
@@ -52,17 +44,17 @@ const JoinUs = () => {
     email: "",
     username: "",
     password: "",
-    updateFullName: "",    
+    updateFullName: "",
     fathersName: "",
     maritalStatus: "",
     spouseName: "",
     partnerName: "",
-    haveAnyChild: "",    
+    haveAnyChild: "",
     numberOfChildren: "",
     mobile: "",
     dob: "",
     age: "",
-    gender: "",    
+    gender: "",
     bloodGroup: "",
     occupation: "",
     moreAboutOccupation: "",
@@ -79,6 +71,11 @@ const JoinUs = () => {
     userImage: "",
     agreedTerms: false,
   });
+
+  const handleImageUpload = (croppedImage) => {
+    setProfileImage(croppedImage); // Store cropped image in state    
+    console.log("Uploaded Image:", croppedImage); // You can upload it to the server here
+  };
 
   useEffect(() => {
     CheckUserProfileBeforeProcced();
@@ -186,6 +183,7 @@ const JoinUs = () => {
             const data = await response.json();
 
             setUserData(data);  // Set the fetched user data
+            setProfileImage(data.userImage);
             setFormData({
 
               email: data?.email || '',
@@ -313,38 +311,7 @@ const JoinUs = () => {
         setFormData((prevData) => ({ ...prevData, [name]: value }));
       }
     }
-  };
-
-  // Handle image change (when a new image is selected)
-  const handleImageChange = (e) => {
-    const file = e.target.files[0]; // Get the selected file
-    if (file) {
-      const imageUrl = URL.createObjectURL(file); // Create a URL for previewing the image
-      setSelectedImage(imageUrl); // Update the image preview
-      setCroppedImage(null); // Reset the cropped image
-      setFormData({ ...formData, userImage: file }); // Store the file in formData for submission
-      setIsModalOpen(true); // Open the modal for cropping
-    } else {
-      handleWarning("No image selected.");
-    }
-  };
-
-  const handleCrop = () => {
-    const cropperInstance = cropperRef.current?.cropper; // Access Cropper instance
-    if (cropperInstance) {
-      const croppedData = cropperInstance.getCroppedCanvas({
-        width: 400,
-        height: 400,
-      }).toDataURL(); // Get cropped image
-      setCroppedImage(croppedData); // Save cropped image
-      setNewImage(croppedData)
-      setSelectedImage(null); // Close the cropper
-
-    } else {
-      console.error("Cropper instance is not available.");
-    }
-  };
-
+  };  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -411,8 +378,8 @@ const JoinUs = () => {
       formDataToSend.append("formData", JSON.stringify(formData));
 
       // Append cropped image as Blob
-      if (croppedImage) {
-        const blob = await fetch(croppedImage).then((res) => res.blob());
+      if (profileImage) {
+        const blob = await fetch(profileImage).then((res) => res.blob());
         formDataToSend.append("userUpload", blob, "croppedImage.png");
       }
 
@@ -490,7 +457,7 @@ const JoinUs = () => {
   //fornmated DOB
   const formatedDob = formatDate(userData?.dob);
   // Image preview (will show selectedImage or userData?.userImage or placeholder)
-  const imagePreview = croppedImage ? croppedImage : selectedImage ? selectedImage : userData?.userImage ? userData.userImage : placeholderImage ? placeholderImage : "";
+  const imagePreview = profileImage ? profileImage : userData?.userImage ? userData.userImage : placeholderImage ? placeholderImage : "";
 
 
   if (loading) {
@@ -523,113 +490,8 @@ const JoinUs = () => {
 
       <Card className="shadow-sm profile-card-join">
         <Card.Body>
-          <form onSubmit={handleSubmit}>           
-            {/* Profile Image */}
-            <div className="d-flex justify-content-center align-items-center">
-              <div className="image-upload-container">
-                {/* Image Preview / Placeholder */}
-                <div
-                  onClick={() => document.getElementById("imageInput").click()} // Trigger file input click
-                  style={{
-                    cursor: "pointer", width: "120px", height: "120px", borderRadius: "50%", border: "1px dashed gray", display: "flex", alignItems: "center", justifyContent: "center", backgroundSize: "cover",
-                    backgroundPosition: "center", backgroundImage: `url(${imagePreview})`
-                  }}
-                >
-                  {/* Select Image Button */}
-                  <>
-                    <FaCamera
-                      size={24}
-                      color="LightGray"
-                      style={{
-                        position: "relative",
-                        top: "42%",
-                        left: "55%",
-                        transform: "translate(-50%, -50%)",
-                      }}
-                    />
-                  </>
-
-                </div>
-
-                {/* Hidden File Input */}
-                <input
-                  id="imageInput" type="file" name="userImage" accept="image/*" style={{ display: "none" }} onChange={handleImageChange}
-                />
-              </div>
-
-              {/* Modal for Cropping */}
-              {selectedImage && isModalOpen && (
-                <div
-                  style={{
-                    position: "fixed",
-                    top: 0,
-                    left: 0,
-                    width: "100vw",
-                    height: "100vh",
-                    backgroundColor: "rgba(0, 0, 0, 0.5)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    zIndex: 1000,
-                  }}
-                >
-                  <div
-                    className="join-crop"
-                    style={{
-                      backgroundColor: "#fff",
-                      padding: "20px",
-                      borderRadius: "8px",
-                      width: "90%",
-                      maxWidth: "400px",
-                      textAlign: "center",
-                    }}
-                  >
-                    <h5>Crop Image</h5>
-                    <Cropper
-                      className="join-crop"
-                      src={selectedImage}
-                      style={{ width: "100%", height: "auto" }}
-                      initialAspectRatio={1}
-                      aspectRatio={1}
-                      guides={false}
-                      background={true}
-                      rotatable={true}
-                      dragMode="move" // Allows moving the image
-                      ref={cropperRef}
-                    />
-                    <div style={{ marginTop: "10px" }}>
-                      <button
-                        onClick={handleCrop}
-                        style={{
-                          marginRight: "10px",
-                          backgroundColor: "#007bff",
-                          color: "#fff",
-                          padding: "5px 10px",
-                          borderRadius: "5px",
-                          border: "none",
-                          cursor: "pointer",
-                        }}
-                      >
-                        Save
-                      </button>
-                      <button
-                        onClick={() => setIsModalOpen(false)}
-                        style={{
-                          backgroundColor: "gray",
-                          color: "#fff",
-                          padding: "5px 10px",
-                          borderRadius: "5px",
-                          border: "none",
-                          cursor: "pointer",
-                        }}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
+          <form onSubmit={handleSubmit}>
+            <ImageUploader onImageUpload={handleImageUpload} defaultImage={imagePreview} />
 
 
             {/* Email */}
@@ -746,25 +608,25 @@ const JoinUs = () => {
             )}
 
             {/* father's name */}
-              <div className="mb-3">
-                <Form.Group className="mb-2">
-                  <Form.Label>Father's Name</Form.Label>
-                  <div className="d-flex align-items-center border border-primary rounded">
-                    <Form.Control
-                      type="text"
-                      name="fathersName"
-                      placeholder="Enter your father's Name its mandatory"
-                      required
-                      value={formData.fathersName || ""}
-                      onChange={handleChange}
-                      style={{ flex: 1 }}
-                    />
-                  </div>
-                </Form.Group>
-              </div>       
+            <div className="mb-3">
+              <Form.Group className="mb-2">
+                <Form.Label>Father's Name</Form.Label>
+                <div className="d-flex align-items-center border border-primary rounded">
+                  <Form.Control
+                    type="text"
+                    name="fathersName"
+                    placeholder="Enter your father's Name its mandatory"
+                    required
+                    value={formData.fathersName || ""}
+                    onChange={handleChange}
+                    style={{ flex: 1 }}
+                  />
+                </div>
+              </Form.Group>
+            </div>
 
 
-            {/* MObile */}        
+            {/* MObile */}
             {/* For users without an ID (Fresh User) */}
             {!currentUser?.id && (
               <div className="mb-3">
@@ -912,7 +774,7 @@ const JoinUs = () => {
             )}
 
             {/* current user but  who have no data */}
-            {(dobPicker || ( currentUser?.id && !formatedDob)) && (
+            {(dobPicker || (currentUser?.id && !formatedDob)) && (
               <div className="mb-3">
                 <Row>
                   <Col>
@@ -932,7 +794,7 @@ const JoinUs = () => {
                   </Col>
                 </Row>
               </div>
-            )} 
+            )}
 
             {/* no current user */}
             {(!currentUser?.id) && (
@@ -1187,7 +1049,7 @@ const JoinUs = () => {
             {["Other", "Professional", "GovernmentJob", "Business", "Artist"].includes(formData.occupation) && (
               <div className="mb-3">
                 <label className="mb-2">
-                More About Your Occupation {formData.occupation && `(${formData.occupation})`}
+                  More About Your Occupation {formData.occupation && `(${formData.occupation})`}
 
                 </label>
                 <textarea
@@ -1212,7 +1074,7 @@ const JoinUs = () => {
                   <option value="Living common law">Living common law</option>
                   <option value="Widowed">Widowed</option>
                   <option value="Separated">Separated</option>
-                  <option value="Divorced">Divorced</option>                  
+                  <option value="Divorced">Divorced</option>
                 </select>
               </div>
             </div>
@@ -1221,7 +1083,7 @@ const JoinUs = () => {
             {["Married"].includes(formData.maritalStatus) && (
               <div className="mb-3">
                 <label className="mb-2">
-                Your Spouse name:
+                  Your Spouse name:
 
                 </label>
                 <textarea
@@ -1233,7 +1095,7 @@ const JoinUs = () => {
             {["Living common law"].includes(formData.maritalStatus) && (
               <div className="mb-3">
                 <label className="mb-2">
-                Your Partner name:
+                  Your Partner name:
 
                 </label>
                 <textarea
@@ -1276,7 +1138,7 @@ const JoinUs = () => {
             )}
 
             {/* Conditional Rendering for number of children */}
-            {formData.haveAnyChild === "yes" && (formData.maritalStatus == "Married" || "Widowed" || "Separated"  || "Divorced") && (
+            {formData.haveAnyChild === "yes" && (formData.maritalStatus == "Married" || "Widowed" || "Separated" || "Divorced") && (
               <div className="mb-3">
                 <label className="mb-2">How many children do you have?</label>
                 <textarea

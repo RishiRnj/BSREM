@@ -11,6 +11,7 @@ export const WebSocketProvider = ({ children }) => {
   const [realTimeData, setRealTimeData] = useState([]);
   const [posts, setPosts] = useState([]);
   const [users, setUsers] = useState([]);
+  const [blogPosts, setBlogPosts] = useState([]);
 
 
   const reconnectInterval = 5000; // Interval for reconnection attempts in milliseconds
@@ -52,31 +53,31 @@ export const WebSocketProvider = ({ children }) => {
 
       } else if (eventType === "repost") {
         setPosts((prevPosts) => {
-            const {
-                repostedPost,
-                repostedPostId,
-                repostedPostCount,
-                originalPostId,
-                originalPostCount,
-                followerCount,
-            } = data;
+          const {
+            repostedPost,
+            repostedPostId,
+            repostedPostCount,
+            originalPostId,
+            originalPostCount,
+            followerCount,
+          } = data;
 
-            // Update posts based on repost logic
-            const updatedPosts = prevPosts.map((post) => {
-                if (post._id === originalPostId) {
-                    return { ...post, repostCount: originalPostCount };
-                } else if (post._id === repostedPostId) {
-                    return { ...post, repostCount: repostedPostCount, followerCount };
-                }
-                return post;
-            });
+          // Update posts based on repost logic
+          const updatedPosts = prevPosts.map((post) => {
+            if (post._id === originalPostId) {
+              return { ...post, repostCount: originalPostCount };
+            } else if (post._id === repostedPostId) {
+              return { ...post, repostCount: repostedPostCount, followerCount };
+            }
+            return post;
+          });
 
-            // Add the new repost to the top of the list
-            console.log("update repost", updatedPosts);
-            
-            return [repostedPost, ...updatedPosts];
+          // Add the new repost to the top of the list
+          console.log("update repost", updatedPosts);
+
+          return [repostedPost, ...updatedPosts];
         });
-    } else if (eventType === "likePost") {
+      } else if (eventType === "likePost") {
         setPosts((prevPosts) => {
           const { _id: postId, likes } = data;
           return prevPosts.map((post) =>
@@ -175,20 +176,55 @@ export const WebSocketProvider = ({ children }) => {
 
       } else if (eventType === 'userSuggestionFollowStatus') {
         setUsers((prevUsers) =>
-            prevUsers.map((user) =>
-                user._id === data.targetUserId
-                    ? {
-                        ...user,
-                        followers: user.isFollowed ? user.followers - 1 : user.followers + 1,
-                        isFollowed: data.action === 'follow',
-                    }
-                    : user
+          prevUsers.map((user) =>
+            user._id === data.targetUserId
+              ? {
+                ...user,
+                followers: user.isFollowed ? user.followers - 1 : user.followers + 1,
+                isFollowed: data.action === 'follow',
+              }
+              : user
+          )
+        );
+      } else if (eventType === "NEW_POST") {
+        console.log("New blog post received:", data);
+        // setBlogPosts((prev) => [data, ...prev]); // Add new post to the top
+        setBlogPosts((prev) => {
+          const exists = prev.some((post) => post._id === data._id);
+          return exists ? prev : [data, ...prev];
+        });
+
+      } else if (eventType === "POST_LIKE_UPDATE") {
+        // console.log("New blog post received:", data);
+        // setBlogPosts((prev) =>
+        //   prev.map((post) => 
+        //     post._id === data.postId ? { ...post, likes: data.likes } : post
+        //   )
+        // );  BLOG_POST_COMMENT
+
+        console.log("Post like update received:", data);
+        setBlogPosts((prev) =>
+          prev.map((post) =>
+            post._id === data.postId ? { ...post, likes: data.likes } : post
+          )
+        );
+      } else if (eventType === "BLOG_POST_COMMENT") {       
+        console.log("New comment received:", data);
+        setBlogPosts((prev) =>
+            prev.map((post) =>
+                post._id === data.postId
+                    ? { ...post, comments: [...post.comments, data.comment] } // ✅ Append comment instead of replacing
+                    : post
             )
         );
     }
     
-    
-    
+
+
+
+
+
+
 
 
 
@@ -229,7 +265,7 @@ export const WebSocketProvider = ({ children }) => {
   };
 
   return (
-    <WebSocketContext.Provider value={{ realTimeData, sendMessage, posts, setPosts, users, setUsers }}>
+    <WebSocketContext.Provider value={{ realTimeData, sendMessage, posts, setPosts, users, setUsers, blogPosts, setBlogPosts }}>
       {children}
     </WebSocketContext.Provider>
   );

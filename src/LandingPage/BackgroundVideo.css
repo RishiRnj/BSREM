@@ -48,6 +48,11 @@
   .bd{
     padding: 24px;
   }
+
+
+  .verimail:hover {
+    background-color: rgba(95, 158, 160, 0.527);
+  }
   
   @media (max-width: 568px) {
     .crd-log {

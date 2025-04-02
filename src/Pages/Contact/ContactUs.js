@@ -3,7 +3,7 @@ import { Button, Card, Form, InputGroup, Modal, OverlayTrigger, Tooltip, Row, Co
 import './Contact.css';
 import EmailVerify from '../../Components/EmailVerify'
 import { handleError, handleSuccess, handleWarning } from '../../Components/Util';
-import ToastContainer from 'react-bootstrap/ToastContainer';
+import { ToastContainer } from 'react-toastify';
 
 
 

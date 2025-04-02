@@ -335,8 +335,8 @@ const Forum = () => {
   return (
     <>
       <>
-        <div >
-          {/* notice Board */}
+        {/* <div >
+          {/* notice Board *
           <div style={{
             cursor: "pointer",
             position: "fixed",
@@ -354,29 +354,8 @@ const Forum = () => {
 
           </div>
 
-          {/* Button for New Survey */}
-          {/* <div
-            id="forum_btn"
-            title="Go to Survey Page"
-            onClick={checkUserProgress}
-            style={{
-              cursor: "pointer",
-              position: "fixed",
-              bottom: "45px",
-              left: "0px", // Move to bottom-left corner
-              zIndex: 1000,
-            }}
-          >
-            <img
-              src="/btn.webp"
-              alt="forum"
-              width={200}
-              height={70}
-              className="forum-img"
-              style={{ transition: "transform 0.3s ease" }}
-            />
-          </div> */}
-        </div>
+          
+        </div> */}
 
         {/* Show Modal */}
         <div>

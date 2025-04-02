@@ -1,0 +1,120 @@
+/* Hero.css */
+@import url('https://fonts.googleapis.com/css?family=Montserrat:700');
+
+
+.month-header {
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    background: #f1f1f1;
+    border-radius: 5px;
+    margin-bottom: 5px;
+  }
+  
+  .archived-posts {
+    padding: 10px;
+    background: #fff;
+    border-left: 3px solid #007bff;
+    margin-bottom: 10px;
+  }
+  
+  .month-header:hover {
+    background: #d183cdc0;
+  }
+
+
+  /* post form */
+  .send-icon {
+    margin-left: 8px; /* Add spacing between text and icon */
+    vertical-align: middle; /* Align the icon vertically with the text */
+  }
+
+  .blog-card{
+    margin-left: 20px;
+    margin-right: 50px;
+    margin-bottom: 20px;
+    
+    transition: transform 0.2s; 
+    
+  }
+
+  /* blog main */
+  .b-head {
+    font-size: 50px;
+    font-family: 'Montserrat', sans-serif;
+
+  }
+
+  .b-title{
+    display: flex;
+    justify-content: space-between;
+    flex-flow: row;
+    margin-top: 5px;
+    /* margin-bottom: 10px; */
+  }
+
+  .author{
+    font-size: 15px;
+    font-family: 'Montserrat', sans-serif;
+    
+  }
+
+  /* .pContent{
+    display: flex;
+    
+   align-items: center;
+   width: 400px;
+  } */
+
+  .tweet-container {
+    /* margin: 1em 0; */
+    min-width: 300px;
+    max-width: 400px;
+    
+  }
+
+  
+  
+  /* .video-container {
+    margin: 1em 0;
+  } */
+
+  @media (max-width: 768px) {
+    .b-arch{
+      margin-top: 20px;
+    }
+
+    .b-title{
+      flex-direction: column;
+      
+    }
+  }
+
+
+  .post-text {
+    min-height: 150px;
+    max-height: 280px;
+    padding: 5px 10px;
+  }
+
+  @media (max-width: 568px) {
+    .blog-card{
+      margin-left: 20px;
+      margin-right: 25px;
+      margin-bottom: 15px;
+      
+    
+      
+    }
+
+    .post-text {
+      min-height: 80px;
+      max-height: 100px;
+    }
+   
+ 
+  }
+  
+  

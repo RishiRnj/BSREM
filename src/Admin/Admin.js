@@ -44,6 +44,28 @@ const Admin = () => {
           }}>Handle Beneficiaries
           </Button>
 
+          <Button className='mt-3' onClick={() => navigate("/admin/donor")}
+           style={{
+            display: 'flex', alignItems: 'center', padding: '10px 20px',
+            backgroundColor: '#007bff',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+          }}>Handle Donors
+          </Button>
+          
+          <Button className='mt-3' onClick={() => navigate("/admin/conference")}
+           style={{
+            display: 'flex', alignItems: 'center', padding: '10px 20px',
+            backgroundColor: '#007bff',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+          }}>Handle Conference
+          </Button>
+
         </div>
 
         </>

@@ -65,7 +65,7 @@
 
 @media (max-width: 664px) {
   .donate-card {
-    width: 21rem !important;
+    width: 25rem !important;
 
   }
 
@@ -165,12 +165,12 @@
 
 .norm-gap{
   display: block;
-  height: 40px;
+  height: 30px;
 }
 
 
   .bbb {
-    margin-bottom: 15px;  /* Adds space between checkboxes */
+    margin-bottom: 12px;  /* Adds space between checkboxes */
     font-size: 20px;
     font-weight: bolder;
     font-family: 'Courier New', Courier, monospace;
@@ -227,7 +227,20 @@
     margin-top: 25px;
   }
 
+  .cds_col{
+    margin-top: 15px;
+  }
+
   @media (max-width: 764px) {
+    
+
+
+    .cds_col{
+      margin-top: 10px;
+    }
+    .cds_col_bld{
+      margin-top: 5px;
+    }
     .scanner{
       width: 100%;
       object-fit: cover;
@@ -237,6 +250,7 @@
 
     .amt-div{
       margin-top: 15px;
+      font-size: 95%;
     }
 
     .cardlbl{
@@ -297,6 +311,159 @@
 .payment .carousel-indicators {
   bottom: 56px; /* Adjust this value to move the indicators up */
 }
+
+.cds_lbl{
+  font-size: 15px;
+  
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.CDS Form {
+  text-align: left !important; /* Force alignment to the left */
+}
+
+#blank-donation{
+  min-height: 1vh;
+}
+
+
+@media (max-width: 764px) {
+   #blank-donation{
+    min-height: 25vh;
+  }
+}
+
+/* .crd-opt{
+  width: 36rem;
+  padding: 15px;
+}
+.crd-opt-n{
+  width: 36rem;
+  margin-top: 25px;
+  padding: 15px;
+}
+
+
+@media (max-width: 764px) {
+   .crd-opt{
+    width: 27rem;
+    padding: 15px;
+  }
+   .crd-opt-n{
+    width: 27rem;
+    padding: 15px;
+  }
+}
+@media (max-width: 500px) {
+
+  .amt-div{
+      margin-top: 15px;
+      font-size: 95%;
+    }
+   .crd-opt{
+    width: 20rem;
+    padding-top: 5px;    /* Padding superior 
+  padding-right: 15px;  /* Padding derecho *
+  padding-bottom: 5px; /* Padding inferior *
+  padding-left: 15px;   /* Padding izquierdo *
+  }
+   .crd-opt-n{
+    width: 20rem;
+    padding-top: 5px;    /* Padding superior *
+  padding-right: 15px;  /* Padding derecho *
+  padding-bottom: 5px; /* Padding inferior *
+  padding-left: 15px;   /* Padding izquierdo *
+  }
+} */
+
+.crd-opt {
+  width: 38rem;
+  max-width: 40rem; /* Set a max width so it doesn't grow too large */
+  padding: 15px;
+  box-sizing: border-box; /* Ensure padding doesn't affect width */
+}
+
+.crd-opt-n {
+  width: 38rem;
+  max-width: 40rem; /* Set a max width */
+  
+  margin-top: 25px;
+  padding: 15px;
+  box-sizing: border-box; /* Ensure padding doesn't affect width */
+}
+
+@media (max-width: 764px) {
+  .crd-opt {
+    width: 26rem;
+    max-width: 28rem; /* Reduce max-width for mid-sized screens */
+    padding: 15px;
+  }
+  
+  .crd-opt-n {
+    width: 26rem;
+    max-width: 28rem; /* Reduce max-width for mid-sized screens */
+    padding: 15px;
+  }
+}
+
+
+
+@media (max-width: 500px) {
+  
+
+
+  .amt-div {
+    margin-top: 15px;
+    font-size: 95%;
+  }
+
+  .crd-opt {
+    width: 22rem;
+    max-width: 26rem; /* Reduce max-width for smaller screens */
+    padding-top: 5px;
+    padding-right: 15px;
+    padding-bottom: 5px;
+    padding-left: 15px;
+  }
+  
+  .crd-opt-n {
+    width: 100%;
+    max-width: 26rem; /* Reduce max-width for smaller screens */
+    padding-top: 5px;
+    padding-right: 15px;
+    padding-bottom: 5px;
+    padding-left: 15px;
+  }
+}
+@media (max-width: 400px) {
+  .amt-div {
+    margin-top: 15px;
+    font-size: 95%;
+  }
+
+  .crd-opt {
+    width: 100%;
+    max-width: 22rem; /* Reduce max-width for smaller screens */
+    padding-top: 5px;
+    padding-right: 15px;
+    padding-bottom: 5px;
+    padding-left: 15px;
+  }
+  
+  .crd-opt-n {
+    width: 100%;
+    max-width: 22rem; /* Reduce max-width for smaller screens */
+    padding-top: 5px;
+    padding-right: 15px;
+    padding-bottom: 5px;
+    padding-left: 15px;
+  }
+}
+
+
+
+
+
   
 
 

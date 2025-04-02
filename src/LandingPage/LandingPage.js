@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 import BackgroundVideo from './BackgroundVideo';
-import LoginCard from './LoginCard';
+import LoginCard from './LogIn/LoginCard';
 import RegisterModal from './RegisterModal';
 import { ToastContainer } from 'react-toastify';
 
@@ -23,7 +23,7 @@ function LandingPage() {
     const token = localStorage.getItem("token");
     if (token) {
       // If the user is already logged in, redirect to the homepage or dashboard
-      navigate("/forum"); // Or any other page you want the user to land on after login
+      navigate("/user/:id?/profile"); // Or any other page you want the user to land on after login
     }
   }, [navigate]);
   

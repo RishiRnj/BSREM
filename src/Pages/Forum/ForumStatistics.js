@@ -11,15 +11,14 @@ const PartialStatistics = ({ maxResponses }) => {
 
     useEffect(() => {
         const fetchStats = async () => {
-            const token = localStorage.getItem("token");
-            if (!token) throw new Error("Missing user authentication details.");
+            
             setIsLoading(true)
             try {
                 const response = await fetch(`${process.env.REACT_APP_API_URL}/survey/api/stats/forum`, {
                     method: 'GET',
                     credentials: 'include', // Send cookies
                     headers: {
-                        'Authorization': `Bearer ${token}`,
+                        
                         'Content-Type': 'application/json',
                     },
                 });

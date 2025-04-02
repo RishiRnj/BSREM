@@ -25,6 +25,22 @@
        /* Bootstrap primary color */
        transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
    }
+
+   #itmSu{
+    
+    margin-right: 10px;
+    padding-right: 10px;
+  
+   }
+   #itmSu:hover {
+       
+       background-color: #442daa;
+       margin-right: 10px;
+       /* Light grey background */
+       color: #ffffff;
+       /* Bootstrap primary color */
+       transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+   }
    #itmso:hover {
        
        background-color: #817f02;

@@ -98,7 +98,7 @@ const Survey = () => {
           const userResponse = window.confirm(
             "Your profile is not updated. Update your profile to post. Press OK to update your profile or Cancel to stay here."
           );
-  
+
           if (userResponse) {
             navigateToProfileUpdate();
           }
@@ -261,20 +261,20 @@ const Survey = () => {
   return (
     <>
 
-{navigationModal && (
+      {navigationModal && (
         <Modal show={navigationModal} onHide={() => setNavigationModal(false)} centered>
-        <ModalHeader closeButton>
-          <Modal.Title>Survey Completed</Modal.Title>
-        </ModalHeader>
-        <ModalBody>
-          Your survey is completed. If you would like to Update your "Survey" responses, click on "Update".
-        </ModalBody>
-        <ModalFooter>
-          <Button onClick={() => navigate(`/user/${userId}/surveyResponse`)}>Update</Button>
-          <Button variant="secondary" onClick={() => navigate('/forum')}>Back To Home</Button>
-        </ModalFooter>
-      </Modal>
-      
+          <ModalHeader closeButton>
+            <Modal.Title>Survey Completed</Modal.Title>
+          </ModalHeader>
+          <ModalBody>
+            Your survey is completed. If you would like to Update your "Survey" responses, click on "Update".
+          </ModalBody>
+          <ModalFooter>
+            <Button onClick={() => navigate(`/user/${userId}/surveyResponse`)}>Update</Button>
+            <Button variant="secondary" onClick={() => navigate('/forum')}>Back To Home</Button>
+          </ModalFooter>
+        </Modal>
+
       )}
       {/* Display Fetched Answers */}
       <div className="survey-container">
@@ -287,7 +287,7 @@ const Survey = () => {
             {/* Title for Previously Answered Questions */}
             {responses.length > 0 && (
               <div className="answered-questions">
-                
+
                 <h2>Answered Questions</h2>
                 <ul>
                   {responses.map((qa, index) => (
@@ -387,10 +387,10 @@ const Survey = () => {
         )}
       </div>
       <div>
-        
+
       </div>
 
-      
+
     </>
   );
 };

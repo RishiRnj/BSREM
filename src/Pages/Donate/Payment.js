@@ -105,11 +105,14 @@ const PaymentOption = () => {
         // Automatically set currency based on the selected country
         const selectedCurrency = currencyMapping[selectedCountry] || "";
         setCurrency(selectedCurrency);
+        // setSelectedAmount(""); // Reset selected amount if user changes country
         handleSuccess("selection", country)
     };
 
     const handleChangeCurrency = (event) => {
         setCurrency(event.target.value);
+        // setSelectedAmount(""); // Reset selected amount if user changes currency
+
         handleSuccess("selection", country)
     };
 
@@ -152,7 +155,7 @@ const PaymentOption = () => {
 
         // Gather all the data for submission
         const formData = {
-            contributorType: activeSwitch, // "Indian Donor", "switch2", or "switch3"
+            contributorType: activeSwitch, // "Indian Donor", "NRI Donor", or "switch3"
             contributionType: activeButton, // for Indian Donor only
             amount: amountToSubmit, // Selected or manual amount
             country: country, // Selected country (for NRI or Foreign)
@@ -171,6 +174,21 @@ const PaymentOption = () => {
     const handleButtonClick = () => {
         const amountToSubmit = selectedAmount || manualAmount;
 
+        // Gather all the data for submission
+        const formData = {
+            contributorType: activeSwitch, // "Indian Donor", "NRI Donor", or "switch3"
+            contributionType: activeButton, // for Indian Donor only
+            amount: amountToSubmit, // Selected or manual amount
+            country: country, // Selected country (for NRI or Foreign)
+            currency: currency, // Selected currency
+        };
+
+        if (formData.country === "" || !formData.country) {
+            handleWarning("Country is required");
+            return;
+
+        }
+
         // Make sure there's a valid amount before submitting
         if (!amountToSubmit) {
             handleError("Please select an amount or enter a custom amount.");
@@ -181,16 +199,6 @@ const PaymentOption = () => {
         setNriOpt(false);
         setNextNRI(true);
 
-
-        // Gather all the data for submission
-        const formData = {
-            contributorType: activeSwitch, // "Indian Donor", "switch2", or "switch3"
-            contributionType: activeButton, // for Indian Donor only
-            amount: amountToSubmit, // Selected or manual amount
-            country: country, // Selected country (for NRI or Foreign)
-            currency: currency, // Selected currency
-        };
-
         // Log or send this data for further use (e.g., API call)
         console.log("Form Data:", formData);
 
@@ -200,131 +208,136 @@ const PaymentOption = () => {
     };
 
 
-
-    // const handlePaymentInit = () => {
-    //     const amountToSubmit = selectedAmount || manualAmount;
-
-    //     // Make sure there's a valid amount before submitting
-    //     if (!amountToSubmit) {
-    //         handleError("Please select an amount or enter a custom amount.");
-    //         return;
-    //     }
-    //     // Gather all the data for submission
-    //     const formData = {
-    //         contributorType: activeSwitch, // "Indian Donor", "switch2", or "switch3"
-    //         contributionType: activeButton, // for Indian Donor only
-    //         amount: amountToSubmit, // Selected or manual amount
-    //         country: country, // Selected country (for NRI or Foreign)
-    //         currency: currency, // Selected currency
-    //         name: name || userData?.updateFullName,
-    //         email: mail || userData?.email,
-    //         address: address || fuladdress,
-    //         mobile: mobile || userData?.mobile,
-    //         pan: pan,
-    //         passport: passport,
-    //     };
-
-    //     handleSuccess("success")
-
-    //     // Log or send this data for further use (e.g., API call)
-    //     console.log("Form Data:", formData);
-
-
-    // }
-
     const handlePaymentInit = async () => {
         const amountToSubmit = selectedAmount || manualAmount;
-    
+
         if (!amountToSubmit) {
             handleError("Please select an amount or enter a custom amount.");
             return;
         }
-    
+
         const formData = {
-            contributorType: activeSwitch, 
-            contributionType: activeButton, 
-            amount: amountToSubmit, 
-            country, 
-            currency, 
-            name: name || userData?.updateFullName,
-            email: mail || userData?.email,
+            contributorType: activeSwitch,
+            contributionType: activeButton,
+            amount: amountToSubmit,
+            country,
+            currency,
+            name: name || (userData ? userData.updateFullName : ""),
+            email: mail || (userData ? userData.email : ""),
+            mobile: mobile || (userData ? userData.mobile : ""),
             address: address || fuladdress,
-            mobile: mobile || userData?.mobile,
-            pan, 
+            pan,
             passport,
+            checked,
         };
-    
-        try {
-            // Step 1: Create an order on the backend
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/payment/create-order`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ amount: amountToSubmit, currency: currency || "INR" }),
-            });
-    
-            const order = await response.json();
-    
-            if (!order.id) {
-                throw new Error("Failed to create Razorpay order");
+        console.log("Form Data:", formData);
+
+        if (formData.email === "" || !formData.email) {
+            handleWarning("Email is required");
+            return;
+
+        } else if (formData.mobile === "" || !formData.mobile) {
+            handleWarning("Mobile is required");
+            return;
+
+        } else if (formData.name === "" || !formData.name) {
+            handleWarning("Name is required");
+            return;
+
+        } else if (formData.address === "" || !formData.address) {
+            handleWarning("Address is required");
+            return;
+
+        } else if (formData.contributorType === "Indian Donor") {
+            if (formData.checked === true) {
+                if (formData.pan === "" || !formData.pan) {
+                    handleWarning("PAN is required");
+                    return;
+                }
             }
-    
-            console.log("Order Created: ", order);
-    
-            // Step 2: Initiate Razorpay Checkout
-            const options = {
-                key: process.env.REACT_APP_RAZORPAY_KEY_ID,  // Replace with your Razorpay Key ID
-                amount: order.amount, // Amount in paisa
-                currency: order.currency,
-                name: "Your Organization Name",
-                description: "Donation Payment",
-                image: "/logo.png", // Add your organization logo
-                order_id: order.id,
-                handler: async function (response) {
-                    console.log("Payment Success", response);
-                    
-                    // Step 3: Verify Payment on Backend
-                    const verifyResponse = await fetch(`${process.env.REACT_APP_API_URL}/payment/verify-payment`, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(response),
-                    });
-    
-                    const verificationResult = await verifyResponse.json();
-    
-                    if (verificationResult.success) {
-                        handleSuccess("Payment Verified Successfully!");
-                        console.log("Payment Verified");
-                    } else {
-                        handleError("Payment Verification Failed!");
-                    }
-                },
-                prefill: {
-                    name: formData.name,
-                    email: formData.email,
-                    contact: formData.mobile,
-                },
-                notes: {
-                    address: formData.address,
-                    pan: formData.pan,
-                    passport: formData.passport,
-                },
-                theme: {
-                    color: "#3399cc",
-                },
-            };
-    
-            const rzp = new window.Razorpay(options);
-            rzp.open();
-        } catch (error) {
-            console.error("Error initiating payment:", error);
-            handleError("Payment initiation failed. Please try again.");
+
+
+        } else if (formData.contributorType === "NRI Donor" || formData.contributorType === "switch3") {
+            if (formData.passport === "" || !formData.passport) {
+                handleWarning("Passport is required");
+                return;
+            }
         }
+
+
+        alert("Payment Initiated");
+
+        // try {
+        //     // Step 1: Create an order on the backend
+        //     const response = await fetch(`${process.env.REACT_APP_API_URL}/payment/create-order`, {
+        //         method: "POST",
+        //         headers: {
+        //             "Content-Type": "application/json",
+        //         },
+        //         body: JSON.stringify({ amount: amountToSubmit, currency: currency || "INR" }),
+        //     });
+
+        //     const order = await response.json();
+
+        //     if (!order.id) {
+        //         throw new Error("Failed to create Razorpay order");
+        //     }
+
+        //     console.log("Order Created: ", order);
+
+        //     // Step 2: Initiate Razorpay Checkout
+        //     const options = {
+        //         key: process.env.REACT_APP_RAZORPAY_KEY_ID,  // Replace with your Razorpay Key ID
+        //         amount: order.amount, // Amount in paisa
+        //         currency: order.currency,
+        //         name: "Your Organization Name",
+        //         description: "Donation Payment",
+        //         image: "/logo.png", // Add your organization logo
+        //         order_id: order.id,
+        //         handler: async function (response) {
+        //             console.log("Payment Success", response);
+
+        //             // Step 3: Verify Payment on Backend
+        //             const verifyResponse = await fetch(`${process.env.REACT_APP_API_URL}/payment/verify-payment`, {
+        //                 method: "POST",
+        //                 headers: {
+        //                     "Content-Type": "application/json",
+        //                 },
+        //                 body: JSON.stringify(response),
+        //             });
+
+        //             const verificationResult = await verifyResponse.json();
+
+        //             if (verificationResult.success) {
+        //                 handleSuccess("Payment Verified Successfully!");
+        //                 console.log("Payment Verified");
+        //             } else {
+        //                 handleError("Payment Verification Failed!");
+        //             }
+        //         },
+        //         prefill: {
+        //             name: formData.name,
+        //             email: formData.email,
+        //             contact: formData.mobile,
+        //         },
+        //         notes: {
+        //             address: formData.address,
+        //             pan: formData.pan,
+        //             passport: formData.passport,
+        //         },
+        //         theme: {
+        //             color: "#3399cc",
+        //         },
+        //     };
+
+        //     const rzp = new window.Razorpay(options);
+        //     rzp.open();
+        // } catch (error) {
+        //     console.error("Error initiating payment:", error);
+        //     handleError("Payment initiation failed. Please try again.");
+        // }
     };
-    
+
 
 
     const handleShowOption = (button) => {
@@ -339,7 +352,7 @@ const PaymentOption = () => {
         // If the clicked switch is already active, do nothing
         if (activeSwitch === switchName) return;
 
-        if (activeSwitch === "switch2" || activeSwitch === "switch3") {
+        if (activeSwitch === "NRI Donor" || activeSwitch === "switch3") {
             setNriOpt(true);
 
         } else {
@@ -588,9 +601,9 @@ const PaymentOption = () => {
                                 <Card.Body>
                                     <Card.Text>
                                         <span style={{ fontSize: "40px" }}>
-                                            <img src='scan.png' width={80} height={80} style={{ marginRight: "10px" }} />
-                                            <img src='qr-co.webp' width={90} height={90} style={{ marginRight: "10px" }} />
-                                            <img src='scan_pay.jpg' width={90} height={90} style={{ marginRight: "10px" }} />
+                                            <img src='scan.png' alt='scan' width={80} height={80} style={{ marginRight: "10px" }} />
+                                            <img src='qr-co.webp' alt='qr' width={90} height={90} style={{ marginRight: "10px" }} />
+                                            <img src='scan_pay.jpg' alt='scanNpay' width={90} height={90} style={{ marginRight: "10px" }} />
 
                                         </span>
 
@@ -608,12 +621,12 @@ const PaymentOption = () => {
                             <Card.Title>Enter the Donation Amount & Pay </Card.Title>
                             <Card.Body>
                                 <Card.Text>
-                                <span style={{ fontSize: "40px" }}>
-                                            <img src='send2.webp' width={80} height={80} style={{ marginRight: "10px" }} />
-                                            <img src='send1.webp' width={90} height={90} style={{ marginRight: "10px" }} />
-                                            <img src='send3.jpg' width={90} height={90} style={{ marginRight: "10px" }} />
+                                    <span style={{ fontSize: "40px" }}>
+                                        <img src='send2.webp' alt='pay1' width={80} height={80} style={{ marginRight: "10px" }} />
+                                        <img src='send1.webp' alt='pay2' width={90} height={90} style={{ marginRight: "10px" }} />
+                                        <img src='send3.jpg' alt='pay3' width={90} height={90} style={{ marginRight: "10px" }} />
 
-                                        </span>
+                                    </span>
                                 </Card.Text>
                             </Card.Body>
                         </Card>
@@ -628,14 +641,14 @@ const PaymentOption = () => {
                                 <Card.Body>
 
 
-                                <Card.Text>
-                                <span style={{ fontSize: "40px" }}>
-                                            <img src='send2.webp' width={80} height={80} style={{ marginRight: "10px" }} />
-                                            <img src='send1.webp' width={90} height={90} style={{ marginRight: "10px" }} />
-                                            <img src='send3.jpg' width={90} height={90} style={{ marginRight: "10px" }} />
+                                    <Card.Text>
+                                        <span style={{ fontSize: "40px" }}>
+                                            <img src='send2.webp' alt='img1' width={80} height={80} style={{ marginRight: "10px" }} />
+                                            <img src='send1.webp' alt='img2' width={90} height={90} style={{ marginRight: "10px" }} />
+                                            <img src='send3.jpg' alt='img3' width={90} height={90} style={{ marginRight: "10px" }} />
 
                                         </span>
-                                </Card.Text>
+                                    </Card.Text>
 
 
                                 </Card.Body>
@@ -696,9 +709,9 @@ const PaymentOption = () => {
                         className="ms-2 me-2 doner"
                         type="switch"
                         id="custom-switch-doner2"
-                        label={<span className={activeSwitch === "switch2" ? "text-dark" : "text-muted"}>NRI Contributor</span>}
-                        checked={activeSwitch === "switch2"}
-                        onChange={() => handleSwitchClick("switch2")}
+                        label={<span className={activeSwitch === "NRI Donor" ? "text-dark" : "text-muted"}>NRI Contributor</span>}
+                        checked={activeSwitch === "NRI Donor"}
+                        onChange={() => handleSwitchClick("NRI Donor")}
                     />
                     <Form.Check
                         className="ms-2 me-2 doner"
@@ -731,8 +744,8 @@ const PaymentOption = () => {
                             <>
                                 <div>
                                     <div>
-                                        <Button className={`me-2 con-opt-1 ${activeButton === 'once' ? 'bg-info text-dark' : ''}`} variant="outline-primary" onClick={() => handleShowOption('once')}> <img className='donor-ico' src='/once.png' height={25} /> Contribute Once</Button>
-                                        <Button className={`me-2 con-opt-2 ${activeButton === 'monthly' ? 'bg-info text-dark' : ''}`} variant="outline-primary" onClick={() => handleShowOption('monthly')} > <img className='donor-ico' src='/monthly.png' /> Monthly Contribution</Button>
+                                        <Button className={`me-2 con-opt-1 ${activeButton === 'once' ? 'bg-info text-dark' : ''}`} variant="outline-primary" onClick={() => handleShowOption('once')}> <img className='donor-ico' src='/once.png' alt='once' height={25} /> Contribute Once</Button>
+                                        <Button className={`me-2 con-opt-2 ${activeButton === 'monthly' ? 'bg-info text-dark' : ''}`} variant="outline-primary" onClick={() => handleShowOption('monthly')} > <img className='donor-ico' alt='monthly' src='/monthly.png' /> Monthly Contribution</Button>
                                     </div>
 
                                     <div className='norm-gap'>
@@ -964,7 +977,7 @@ const PaymentOption = () => {
                 )}
 
 
-                {activeSwitch === "switch2" && (
+                {activeSwitch === "NRI Donor" && (
                     <Form.Text>
                         Those who hold an Indian passport but live outside of India
                     </Form.Text>
@@ -976,13 +989,10 @@ const PaymentOption = () => {
                 )}
 
 
-                {(activeSwitch === "switch2" || activeSwitch === "switch3") && (
+                {(activeSwitch === "NRI Donor" || activeSwitch === "switch3") && (
                     <>
-
-
                         {nriOpt && (
                             <>
-
                                 <div className='d-flex justify-content-center' >
                                     <div className='d-flex justify-content-center mt-5 mx-2' style={{ maxWidth: "300px" }} >
                                         <Box sx={{ minWidth: 200 }}>
@@ -1057,7 +1067,7 @@ const PaymentOption = () => {
 
                                             <Row>
                                                 <Card style={{ maxWidth: '28rem' }}>
-                                                    <>
+                                                    {/* <>
                                                         <label className='cardlbl'>Select Amount</label>
 
                                                         <input
@@ -1125,7 +1135,72 @@ const PaymentOption = () => {
                                                             Next {'>'}
                                                         </Button>
 
-                                                    </>
+                                                    </> */}
+
+<>
+    <label className='cardlbl'>Select Amount</label>
+
+    <input
+        type="checkbox"
+        className="btn-check p-1"
+        id="2000"
+        autoComplete="off"
+        name="amount"
+        value={currency === "INR" ? "2000" : currency === "USD" ? "30" : "20"}
+        checked={selectedAmount === (currency === "INR" ? "2000" : currency === "USD" ? "30" : "20")}
+        onChange={handleCheckboxChange}
+    />
+    <label className="btn btn-outline-primary bbb p-1" htmlFor="2000">
+        <span className='bbb'>  {currency} {currency === "INR" ? "2000" : currency === "USD" ? "30" : "20"} </span>
+    </label>
+
+    <input
+        type="checkbox"
+        className="btn-check p-1"
+        id="5000"
+        autoComplete="off"
+        name="amount"
+        value={currency === "INR" ? "5000" : currency === "USD" ? "65" : "50"}
+        checked={selectedAmount === (currency === "INR" ? "5000" : currency === "USD" ? "65" : "50")}
+        onChange={handleCheckboxChange}
+    />
+    <label className="btn btn-outline-primary bbb p-1" htmlFor="5000">
+        <span className='bbb'>  {currency} {currency === "INR" ? "5000" : currency === "USD" ? "65" : "50"}  </span>
+    </label>
+
+    <input
+        type="checkbox"
+        className="btn-check p-1"
+        id="10000"
+        autoComplete="off"
+        name="amount"
+        value={currency === "INR" ? "10000" : currency === "USD" ? "125" : "100"}
+        checked={selectedAmount === (currency === "INR" ? "10000" : currency === "USD" ? "125" : "100")}
+        onChange={handleCheckboxChange}
+    />
+    <label className="btn btn-outline-primary bbb p-1" htmlFor="10000">
+        <span className='bbb'>  {currency} {currency === "INR" ? "10000" : currency === "USD" ? "125" : "100"}</span>
+    </label>
+
+    <InputGroup className=" mt-1">
+        <Button variant="secondary" id="button-addon2" disabled>
+            {currency}
+        </Button>
+        <Form.Control
+            placeholder="Any Amount you wish to Contribute!"
+            aria-label="Any Amount you wish to Contribute!"
+            value={manualAmount}
+            onChange={handleManualAmountChange} // Allow manual input
+        />
+    </InputGroup>
+
+    <span className='endtxt'>What greater reward could there be than seeing a person benefit from <br /> Your Donation?</span>
+
+    <Button variant="dark" onClick={handleButtonClick}>
+        Next {'>'}
+    </Button>
+</>
+
 
                                                 </Card>
                                             </Row>
@@ -1157,6 +1232,172 @@ const PaymentOption = () => {
 
                 )}
 
+                {next && !nextNRI && (
+                    <>
+                        <div>
+
+                            <Button className='amt-div' variant="dark" size="lg"> Total Contribution  <span style={{ fontFamily: "monospace", fontWeight: "bolder" }} >
+                                {`${rupeeSymbol} ${selectedAmount || manualAmount}`} </span>
+                            </Button>
+
+                            {/* userdata for donation */}
+                            <div className='paymnt-contain p-5'>
+                                <div className='P-2 me-2 paymnt-1 '>
+
+                                    <Row className='pb-3'>
+                                        <Card style={{ maxWidth: '32rem' }}>
+                                            <Row className='pt-3'>
+                                                <Form.Group as={Col} controlId="formGridEmail">
+                                                    <Form.Label>Email</Form.Label>
+                                                    <Form.Control type="email" placeholder="Enter email" value={mail || (userData ? userData.email : "")} onChange={(e) => setMail(e.target.value)}
+                                                    />
+                                                </Form.Group>
+
+                                                <Form.Group as={Col} controlId="formGridMobile">
+                                                    <Form.Label>Mobile</Form.Label>
+                                                    <Form.Control type="tel" placeholder="Mobile" value={userData?.mobile ? `+${userData.mobile}` : mobile} onChange={(e) => setMobile(e.target.value)}
+
+                                                    />
+                                                </Form.Group>
+
+
+
+                                            </Row>
+                                            <Row>
+                                                <Form.Group as={Col} controlId="formGridName">
+                                                    <Form.Label>Full Name</Form.Label>
+                                                    <Form.Control type="text" placeholder="Enter Full Name" value={name || (userData ? userData?.updateFullName : "")}
+                                                        onChange={(e) => setName(e.target.value)} />
+                                                </Form.Group>
+                                                <Form.Group as={Col} controlId="formGridAddress">
+                                                    <Form.Label>Address</Form.Label>
+                                                    <Form.Control type="text" placeholder="Enter Address" value={address || fuladdress || ""}
+                                                        onChange={(e) => setAddress(e.target.value)}
+                                                    />
+                                                </Form.Group>
+
+                                            </Row>
+                                            <Row className='mt-2'>
+                                                <Form.Group as={Col} controlId="formGridPAN" style={{ display: 'flex', alignItems: 'center' }}>
+                                                    <Form.Text style={{ fontWeight: 'bold' }}> Require 80G Tax Exp. Certificate* </Form.Text>
+
+                                                    {/* Switch and labels in a single line */}
+                                                    <div style={{ display: 'flex', alignItems: 'center', marginLeft: 10 }}>
+                                                        <span style={{ marginRight: 10, fontWeight: 'bold' }} className={checked ? 'text-muted' : ''}>
+                                                            No
+                                                        </span>
+                                                        <Form.Check
+                                                            type="switch"
+                                                            id="custom-switch"
+                                                            label=""
+                                                            checked={checked}
+                                                            onChange={handleSwitchChange}
+                                                            style={{ marginRight: 10 }}
+                                                        />
+                                                        <span style={{ fontWeight: 'bold' }} className={checked ? '' : 'text-muted'}>
+                                                            Yes
+                                                        </span>
+                                                    </div>
+
+
+                                                </Form.Group>
+                                            </Row>
+
+                                            {/* PAN Number field when checked */}
+                                            {checked && (
+                                                <Row>
+                                                    <Form.Group as={Col} controlId="formGridPAN" style={{}}>
+                                                        <Form.Label>PAN Number</Form.Label>
+                                                        <Form.Control type="text" placeholder="Enter PAN Number" name="PAN" value={pan || ""}
+                                                            onChange={(e) => setPan(e.target.value)}
+                                                        />
+                                                    </Form.Group>
+                                                </Row>
+                                            )}
+
+                                            <Button className='mt-3 mb-3' onClick={handlePaymentInit}>
+                                                Contibute <FcLikePlaceholder />
+                                            </Button>
+                                        </Card>
+                                    </Row>
+                                </div>
+
+                            </div>
+                        </div>
+                    </>
+
+                )}
+
+                {!next && nextNRI && (
+                    <>
+                        <div>
+                            <Button className='amt-div ' variant="dark" size="lg"> Total Contribution  <span style={{ fontFamily: "monospace", fontWeight: "bolder" }} >
+                                {`${currency} ${selectedAmount || manualAmount}`} </span>
+                            </Button>
+
+                            {/* userdata for donation */}
+                            <div className='paymnt-contain p-5'>
+                                <div className='P-2 me-2 paymnt-1 '>
+
+                                    <Row className='pb-3'>
+                                        <Card style={{ maxWidth: '32rem' }}>
+                                            <Row className='pt-3'>
+                                                <Form.Group as={Col} controlId="formGridEmail">
+                                                    <Form.Label>Email</Form.Label>
+                                                    <Form.Control type="email" placeholder="Enter email" value={mail || (userData ? userData.email : "")} onChange={(e) => setMail(e.target.value)}
+                                                    />
+                                                </Form.Group>
+
+                                                <Form.Group as={Col} controlId="formGridMobile">
+                                                    <Form.Label>Mobile</Form.Label>
+                                                    <Form.Control type="tel" placeholder="Mobile" value={userData?.mobile ? `+${userData.mobile}` : mobile} onChange={(e) => setMobile(e.target.value)}
+
+                                                    />
+                                                </Form.Group>
+
+
+
+                                            </Row>
+                                            <Row>
+                                                <Form.Group as={Col} controlId="formGridName">
+                                                    <Form.Label>Full Name</Form.Label>
+                                                    <Form.Control type="text" placeholder="Enter Full Name" value={name || (userData ? userData.updateFullName : "")}
+                                                        onChange={(e) => setName(e.target.value)} />
+                                                </Form.Group>
+                                                <Form.Group as={Col} controlId="formGridAddress">
+                                                    <Form.Label>Address</Form.Label>
+                                                    <Form.Control type="text" placeholder="Enter Address" value={address || fuladdress || ""}
+                                                        onChange={(e) => setAddress(e.target.value)}
+                                                    />
+                                                </Form.Group>
+
+                                            </Row>
+                                            <Row className='mt-2'>
+                                                <Form.Group as={Col} controlId="formGridPassport" style={{}}>
+                                                    <Form.Label>Passport Number</Form.Label>
+                                                    <Form.Control type="text" placeholder="Enter Passport Number" name="Passport" value={passport || ""}
+                                                        onChange={(e) => setPassport(e.target.value)}
+                                                    />
+                                                </Form.Group>
+                                            </Row>
+
+
+
+                                            <Button className='mt-3 mb-3' onClick={handlePaymentInit}>
+                                                Contibute <FcLikePlaceholder />
+                                            </Button>
+
+                                        </Card>
+                                    </Row>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </>
+
+                )}
+
                 {activeSwitch === "UPI" && (
                     <>
                         <div className='mt-4 p-3'><h3> Contribute Via UPI </h3> </div>
@@ -1171,7 +1412,7 @@ const PaymentOption = () => {
                             <div>
                                 {CarouselExample()}
                             </div>
-                            
+
 
 
                         </div>
@@ -1180,192 +1421,7 @@ const PaymentOption = () => {
                 )}
 
 
-                {next && !nextNRI && (
-                    <>
-                    <div>
 
-                        <Button className='amt-div' variant="dark" size="lg"> Total Contribution  <span style={{ fontFamily: "monospace", fontWeight: "bolder" }} >
-                            {`${rupeeSymbol} ${selectedAmount || manualAmount}`} </span>
-                        </Button>
-
-                        {/* userdata for donation */}
-                        <div className='paymnt-contain p-5'>
-                            <div className='P-2 me-2 paymnt-1 '>
-
-                                <Row className='pb-3'>
-                                    <Card style={{ maxWidth: '32rem' }}>
-                                        <Row className='pt-3'>
-                                            <Form.Group as={Col} controlId="formGridEmail">
-                                                <Form.Label>Email</Form.Label>
-                                                <Form.Control type="email" placeholder="Enter email" value={mail || userData?.email || ""} onChange={(e) => setMail(e.target.value)}
-                                                />
-                                            </Form.Group>
-
-                                            <Form.Group as={Col} controlId="formGridMobile">
-                                                <Form.Label>Mobile</Form.Label>
-                                                <Form.Control type="tel" placeholder="Mobile" value={userData?.mobile ? `+${userData.mobile}` : mobile} onChange={(e) => setMobile(e.target.value)}
-
-                                                />
-                                            </Form.Group>
-
-
-
-                                        </Row>
-                                        <Row>
-                                            <Form.Group as={Col} controlId="formGridName">
-                                                <Form.Label>Full Name</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Full Name" value={name || userData?.updateFullName || ""}
-                                                    onChange={(e) => setName(e.target.value)} />
-                                            </Form.Group>
-                                            <Form.Group as={Col} controlId="formGridAddress">
-                                                <Form.Label>Address</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Address" value={address || fuladdress || ""}
-                                                    onChange={(e) => setAddress(e.target.value)}
-                                                />
-                                            </Form.Group>
-
-                                        </Row>
-                                        <Row className='mt-2'>
-                                            <Form.Group as={Col} controlId="formGridPAN" style={{ display: 'flex', alignItems: 'center' }}>
-                                                <Form.Text style={{ fontWeight: 'bold' }}> Require 80G Tax Exp. Certificate* </Form.Text>
-
-                                                {/* Switch and labels in a single line */}
-                                                <div style={{ display: 'flex', alignItems: 'center', marginLeft: 10 }}>
-                                                    <span style={{ marginRight: 10, fontWeight: 'bold' }} className={checked ? 'text-muted' : ''}>
-                                                        No
-                                                    </span>
-                                                    <Form.Check
-                                                        type="switch"
-                                                        id="custom-switch"
-                                                        label=""
-                                                        checked={checked}
-                                                        onChange={handleSwitchChange}
-                                                        style={{ marginRight: 10 }}
-                                                    />
-                                                    <span style={{ fontWeight: 'bold' }} className={checked ? '' : 'text-muted'}>
-                                                        Yes
-                                                    </span>
-                                                </div>
-
-
-                                            </Form.Group>
-                                        </Row>
-
-                                        {/* PAN Number field when checked */}
-                                        {checked && (
-                                            <Row>
-                                                <Form.Group as={Col} controlId="formGridPAN" style={{}}>
-                                                    <Form.Label>PAN Number</Form.Label>
-                                                    <Form.Control type="text" placeholder="Enter PAN Number" name="PAN" value={pan || ""}
-                                                        onChange={(e) => setPan(e.target.value)}
-                                                    />
-                                                </Form.Group>
-                                            </Row>
-                                        )}
-
-                                        <Button className='mt-3 mb-3' onClick={handlePaymentInit}>
-                                            Contibute <FcLikePlaceholder />
-                                        </Button>
-
-
-
-
-                                    </Card>
-                                </Row>
-
-
-
-
-                            </div>
-
-                        </div>
-                        </div>
-
-
-
-
-
-
-                    </>
-
-
-                )}
-                {!next && nextNRI && (
-                    <>
-                    <div> 
-
-                        <Button className='amt-div ' variant="dark" size="lg"> Total Contribution  <span style={{ fontFamily: "monospace", fontWeight: "bolder" }} >
-                            {`${currency} ${selectedAmount || manualAmount}`} </span>
-                        </Button>
-
-                        {/* userdata for donation */}
-                        <div className='paymnt-contain p-5'>
-                            <div className='P-2 me-2 paymnt-1 '>
-
-                                <Row className='pb-3'>
-                                    <Card style={{ maxWidth: '32rem' }}>
-                                        <Row className='pt-3'>
-                                            <Form.Group as={Col} controlId="formGridEmail">
-                                                <Form.Label>Email</Form.Label>
-                                                <Form.Control type="email" placeholder="Enter email" value={mail || userData?.email || ""} onChange={(e) => setMail(e.target.value)}
-                                                />
-                                            </Form.Group>
-
-                                            <Form.Group as={Col} controlId="formGridMobile">
-                                                <Form.Label>Mobile</Form.Label>
-                                                <Form.Control type="tel" placeholder="Mobile" value={userData?.mobile ? `+${userData.mobile}` : mobile} onChange={(e) => setMobile(e.target.value)}
-
-                                                />
-                                            </Form.Group>
-
-
-
-                                        </Row>
-                                        <Row>
-                                            <Form.Group as={Col} controlId="formGridName">
-                                                <Form.Label>Full Name</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Full Name" value={name || userData?.updateFullName || ""}
-                                                    onChange={(e) => setName(e.target.value)} />
-                                            </Form.Group>
-                                            <Form.Group as={Col} controlId="formGridAddress">
-                                                <Form.Label>Address</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Address" value={address || fuladdress || ""}
-                                                    onChange={(e) => setAddress(e.target.value)}
-                                                />
-                                            </Form.Group>
-
-                                        </Row>
-                                        <Row className='mt-2'>
-                                            <Form.Group as={Col} controlId="formGridPassport" style={{}}>
-                                                <Form.Label>Passport Number</Form.Label>
-                                                <Form.Control type="text" placeholder="Enter Passport Number" name="Passport" value={passport || ""}
-                                                    onChange={(e) => setPassport(e.target.value)}
-                                                />
-                                            </Form.Group>
-                                        </Row>
-
-
-
-                                        <Button className='mt-3 mb-3' onClick={handlePaymentInit}>
-                                            Contibute <FcLikePlaceholder />
-                                        </Button>
-
-
-
-
-                                    </Card>
-                                </Row>
-
-
-
-
-                            </div>
-
-                        </div>
-                        </div>
-                    </>
-
-                )}
 
             </div>
             <ToastContainer />

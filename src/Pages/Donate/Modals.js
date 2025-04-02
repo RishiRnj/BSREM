@@ -416,7 +416,7 @@ function DonationModal(props) {
         >
             <Modal.Header closeButton>
                 <Modal.Title id="contained-modal-title-vcenter">
-                Support Us to Support Others
+                Support Us to Support Our Community
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
