@@ -4,6 +4,7 @@ import NoticeBoard from '../../Components/Notice/NoticeBorad';
 import { useNavigate, useLocation } from "react-router-dom";
 import ForumStat from "../Forum/ForumStatistics";
 import { Button, Card, Row, Spinner, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { FaClipboardList  } from "react-icons/fa";
 import CountUp from 'react-countup';
 
 
@@ -77,7 +78,7 @@ const Dashboard = () => {
     };
 
     const redirectToBenrficiarySupport = () => {        
-        navigate('/needAssistance');
+        navigate('/register/for_support');
     };
 
     const redirectToDonate = () => {
@@ -191,7 +192,7 @@ const Dashboard = () => {
                 <span></span>
             </div>
             <div className='das' style={{ zIndex: "1000" }}><img src='om.webp' width={150} height={150} /></div>
-            <div className='d-flex justify-content-center text-white  text-center ddd ' style={{ minHeight: `calc(100vh - 145px)`, }}  >
+            <div className='d-flex justify-content-center text-white  text-center ddd ' style={{ minHeight: `calc(100vh - 165px)`, }}  >
                 <div className='hea' style={{ zIndex: "1000" }}>
 
                     <h1 className=''>Welcome to BSREM</h1>
@@ -202,7 +203,7 @@ const Dashboard = () => {
                     <div className='ppp ' style={{ zIndex: "1000" }}>
                         <Row xs={1} md={2} className="">
                             <Card className='bg-transparent text-white border border-light'>
-                                <Card.Body>
+                                <Card.Body className='p-0 pt-2'>
                                     <Card.Title className='txp'>Total Registered User!</Card.Title>
                                     <Card.Text className='nostyle'>
                                         <CountUp
@@ -216,7 +217,7 @@ const Dashboard = () => {
                                 </Card.Body>
                             </Card>
                             <Card className='bg-transparent text-white border border-light'>
-                                <Card.Body>
+                                <Card.Body className='p-0 pt-2'>
                                     <Card.Title className='txp'>Users asked for support!</Card.Title>
                                     <Card.Text className='nostyle'>
                                         <CountUp
@@ -234,7 +235,7 @@ const Dashboard = () => {
                     <div className='kkk' style={{ zIndex: "1000" }}>
                         <Row xs={1} md={1} className="">
                             <Card className='bg-transparent text-white border border-light'>
-                                <Card.Body>
+                            <Card.Body className='p-0 pt-2'>
                                     <Card.Title className='txp'>Users who received Support!</Card.Title>
                                     <Card.Text className='nostyle'>
                                         <CountUp
@@ -278,13 +279,22 @@ const Dashboard = () => {
 
                             </div>
                             <div>
-                                <div style={{ padding: "10px", zIndex: 1100, }}>
+                                <div style={{ padding: "5px", marginTop:"5px", zIndex: 1100, }}>
                                     <OverlayTrigger
                                         placement="top"
                                         delay={{ show: 250, hide: 400 }}
                                         overlay={props => renderTooltip(props, "This is our effort to strengthen every Hindu. If you are weak, click here to remove your weakness.")}
                                     >
-                                        <Button className='text-white' variant="outline-primary" onClick={redirectToBenrficiarySupport}>Need support! Click here to get Support.</Button>
+                                        <Button className='' variant="danger" onClick={redirectToBenrficiarySupport}>Need support! Click here to get Support.</Button>
+                                    </OverlayTrigger>
+                                </div>
+                                <div style={{ padding: "5px", zIndex: 1100, }}>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        delay={{ show: 250, hide: 400 }}
+                                        overlay={props => renderTooltip(props, "Click to find out where the upcoming youth conference is being held and to register yourself for the conference at that location.")}
+                                    >
+                                        <Button className='' variant="dark" onClick={() => navigate('/youth')}>Register for Youth Conference <FaClipboardList /></Button>
                                     </OverlayTrigger>
                                 </div>
 
@@ -294,7 +304,7 @@ const Dashboard = () => {
                 </div>
 
 
-
+                {/* buttons */}
                 <div style={{
                     cursor: "pointer",
                     position: "fixed", // Changed to relative to avoid affecting other elements            
@@ -363,16 +373,17 @@ const Dashboard = () => {
 
 
             </div>
+
+
             {/* Fetched Survey Stat only for Forum Page */}
             <div
-
                 style={{
-
                     cursor: "pointer",
-                    position: "relative", // Changed to relative to avoid affecting other elements            
+                    position: "relative", // Changed to relative to avoid affecting other elements   
+                    bottom: 10,         
                     left: "0px",
                     display: "inline-block", // Restrict clickable area to content only
-                    zIndex: 1100,
+                    zIndex: 1000,
                 }}
                 onClick={() => navigate('/survey-stats')}
             >

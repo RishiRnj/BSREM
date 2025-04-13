@@ -1,5 +1,5 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { Card, Button, Form, InputGroup, FormGroup } from 'react-bootstrap';
+import React, { useState, useEffect, useRef } from 'react';
+import { Button, Form, InputGroup,  } from 'react-bootstrap';
 import { auth, RecaptchaVerifier, signInWithPhoneNumber } from "./firebase";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
@@ -26,6 +26,7 @@ const MobileVerification = ({ onPhoneVerified }) => {
   const [isDisabled, setIsDisabled] = useState(false);
   const [verified, setVerified] = useState(false);
   const [onVerified, setOnVerified] = useState(false);
+  
 
 
   useEffect(() => {
@@ -40,31 +41,70 @@ const MobileVerification = ({ onPhoneVerified }) => {
   }, []); // Empty array ensures this runs only once when the component mounts
 
 
-  const validatePhoneNumber = (phone, countryCode) => {
-    console.log('Validating phone:', phone, 'Country code:', countryCode);
+ 
 
-    // Ensure phone number starts with '+' (for E.164 format)
-    if (!phone.startsWith('+')) {
-      phone = `+${phone}`;
-    }
+  // const validatePhoneNumber = (phone, countryCode) => {
+  //   console.log('Validating phone:', phone, 'Country code:', countryCode);
 
-    const phoneNumber = parsePhoneNumberFromString(phone, countryCode);
-    console.log('Parsed phone number:', phoneNumber);
+  //   // Ensure phone number starts with '+' (for E.164 format)
+  //   if (!phone.startsWith('+')) {
+  //     phone = `+${phone}`;
+  //   }
 
-    return phoneNumber?.isValid() || false;
-  };
+  //   const phoneNumber = parsePhoneNumberFromString(phone, countryCode);
+  //   console.log('Parsed phone number:', phoneNumber);
 
+  //   return phoneNumber?.isValid() || false;
+  // };
+
+  // const handleChange = (e, value = null, countryCode = null, isPhoneInput = false) => {
+  //   if (isPhoneInput) {
+  //     const isValid = validatePhoneNumber(value, countryCode); // Validate using dynamic country code
+  //     if (isValid) {
+  //       console.log('Phone number is valid:', value);
+  //       setFormData((prevData) => ({ ...prevData, mobile: value }));
+  //       setVerified(true)
+  //       setFormError((prevError) => ({ ...prevError, mobile: '' })); // Clear error
+  //     } else {
+  //       console.error('Invalid phone number:', value);
+  //       setFormError((prevError) => ({ ...prevError, mobile: 'Invalid phone number' })); // Set error
+  //     }
+  //   }
+  // }
+
+  
+
+const validatePhoneNumber = (phone, countryCode) => {
+  console.log('Validating phone:', phone, 'Country code:', countryCode);
+
+  // Ensure phone number starts with '+'
+  if (!phone.startsWith('+')) {
+    phone = `+${phone}`;
+  }
+
+  // Parse the phone number with country code as region (e.g., "IN" for India)
+  const phoneNumber = parsePhoneNumberFromString(phone);
+
+  console.log('Parsed phone number:', phoneNumber);
+
+  // Ensure the number is valid and has the correct length
+  return phoneNumber?.isValid() && phoneNumber?.nationalNumber.length >= 10;
+};
+
+  
+  
   const handleChange = (e, value = null, countryCode = null, isPhoneInput = false) => {
     if (isPhoneInput) {
-      const isValid = validatePhoneNumber(value, countryCode); // Validate using dynamic country code
+      // Only validate when input is complete (onBlur or when country changes)
+      const isValid = validatePhoneNumber(value, countryCode);
+      
       if (isValid) {
         console.log('Phone number is valid:', value);
-        setFormData((prevData) => ({ ...prevData, mobile: value }));
-        setVerified(true)
-        setFormError((prevError) => ({ ...prevError, mobile: '' })); // Clear error
+        setFormData(prev => ({ ...prev, mobile: value }));
+        setVerified(true);
+        setFormError(prev => ({ ...prev, mobile: '' }));
       } else {
-        console.error('Invalid phone number:', value);
-        setFormError((prevError) => ({ ...prevError, mobile: 'Invalid phone number' })); // Set error
+        setFormError(prev => ({ ...prev, mobile: 'Invalid phone number' }));
       }
     }
   }
@@ -78,66 +118,6 @@ const MobileVerification = ({ onPhoneVerified }) => {
   };
 
 
-
-
-  // const handleSendOTP = async () => {
-  //   const fullPhoneNumber = `+${formData.mobile}`;
-  //   //`+91${phone}`; // Prepend +91 when sending the phone number
-
-  //   console.log("phone ", fullPhoneNumber);
-
-
-  //   setupRecaptcha();
-  //   try {
-  //     const result = await signInWithPhoneNumber(auth, fullPhoneNumber, window.recaptchaVerifier);
-  //     setConfirmationResult(result);
-  //     setShowOtpField(true);
-
-  //     alert("OTP sent!");
-  //   } catch (error) {
-  //     console.error("Error sending OTP:", error);
-  //   }
-  // };
-
-
-  // const handleSendOTP = async () => {
-  //   const fullPhoneNumber = `+${formData.mobile}`;
-  //   //`+91${phone}`; // Prepend +91 when sending the phone number
-
-  //   console.log("phone ", fullPhoneNumber);
-
-  //   if (!formData.mobile || formData.mobile == "") {
-  //    return alert("valid mobile no required")
-  //   }
-
-
-  //   setupRecaptcha();
-  //   try {
-  //     const result = await signInWithPhoneNumber(auth, fullPhoneNumber, window.recaptchaVerifier);
-  //     setConfirmationResult(result);
-  //     setShowOtpField(true);
-
-  //     alert("OTP sent!");
-
-  //     setIsOtpSent(true);  // Set OTP as sent
-  //     setIsDisabled(true);  // Disable the button
-  //     let countdown = 40;   // Set initial countdown to 40 seconds
-  //     setTimer(countdown);
-
-  //     // Start the countdown
-  //     const interval = setInterval(() => {
-  //       countdown -= 1;
-  //       setTimer(countdown);
-  //       if (countdown <= 0) {
-  //         clearInterval(interval);  // Clear the interval when countdown reaches 0
-  //         setIsDisabled(false);  // Enable the button again
-  //         setIsOtpSent(false);   // Reset OTP sent state
-  //       }
-  //     }, 1000);
-  //   } catch (error) {
-  //     console.error("Error sending OTP:", error);
-  //   }
-  // };
 
 
   const handleSendOTP = async () => {
@@ -212,8 +192,8 @@ const MobileVerification = ({ onPhoneVerified }) => {
       <div>
 
 
-        <div className="position-relative">
-          <PhoneInput
+        <div className="position-relative bg-light ">
+          <PhoneInput 
             name="mobile"
             placeholder='Enter Phone Number'
             disabled={onVerified}
@@ -221,7 +201,7 @@ const MobileVerification = ({ onPhoneVerified }) => {
             value={formData.mobile || ''}
             onChange={(value, data) => handleChange(null, value, data.countryCode, true)}
             inputProps={{ name: 'mobile' }}
-            className="w-100"
+            inputStyle={{ width: '100%', borderRadius: '5px', position: 'relative',}}            
           />
           {onVerified && (
             <GoVerified
@@ -243,6 +223,8 @@ const MobileVerification = ({ onPhoneVerified }) => {
         </div>
 
       )}
+
+{formError.mobile && <div className="text-danger">{formError.mobile}</div>}
 
 
       {showOtpField && ( // Conditional rendering of OTP input

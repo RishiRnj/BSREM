@@ -2,17 +2,19 @@
 
 
 import React, { useEffect, useState } from 'react';
-import { Card, Button, CardGroup, Modal, Badge, Row } from 'react-bootstrap';
+import { Card, Button, CardGroup, Modal, Badge, Row, Carousel } from 'react-bootstrap';
 import DonationModal from './DonationModal';
 import './Donation.css';
 import { ToastContainer } from 'react-toastify';
+import { FaGooglePay, FaAmazonPay } from 'react-icons/fa';
+import { SiPhonepe } from 'react-icons/si';
 
 const Donate = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [approvedBeneficiaries, setApprovedBeneficiaries] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
-  const maxLength = 45; // Set the maximum length to display initially
+  const maxLength = 40; // Set the maximum length to display initially
   const [expandedCards, setExpandedCards] = useState({});
   const [showModal, setShowModal] = useState(false); // Modal state
   const [selectedCard, setSelectedCard] = useState(null); // Store the selected card details
@@ -48,13 +50,17 @@ const Donate = () => {
       'Learning Material': 'empowerSkillAndKnowledge',
       'Learning Gadgets': 'empowerSkillAndKnowledge',
       Mentorship: 'empowerSkillAndKnowledge',
-      Medicine: 'healthCare',
+
       Medications: 'healthCare',
       'Hospital Assistance': 'healthCare',
       Blood: 'healthCare',
+
       'Clothes for Underprivileged': 'essentialServices',
       'Food for the Hungry': 'essentialServices',
-      Essentials: 'essentialServices',
+      "Quality Education": 'essentialServices',
+      Shelter: 'essentialServices',
+      Employment: 'essentialServices',
+
       Volunteering: 'communityServices',
       Fundraising: 'monetarySupport',
     };
@@ -87,9 +93,9 @@ const Donate = () => {
   const getCategory = (applyFor) => {
     if (["Books", "Learning Material", "Learning Gadgets", "Mentorship"].includes(applyFor)) {
       return "Skill & Knowledge";
-    } else if (["Medications", "Hospital Assistance", "Medicine", "Blood"].includes(applyFor)) {
+    } else if (["Medications", "Hospital Assistance", "Blood"].includes(applyFor)) {
       return "Health Care";
-    } else if (["Clothes for Underprivileged", "Food for the Hungry", "Essentials"].includes(applyFor)) {
+    } else if (["Clothes for Underprivileged", "Food for the Hungry", "Quality Education", "Shelter", "Employment"].includes(applyFor)) {
       return "Essential Services";
     } else if (["Volunteering"].includes(applyFor)) {
       return "Community Services";
@@ -121,6 +127,26 @@ const Donate = () => {
   };
 
 
+  const CarouselExample = () => {
+
+    return (
+      <Carousel slide data-bs-theme="dark" indicators={false} controls={false}>
+        <Carousel.Item style={{ zIndex: 0 }}>          
+            <h6 className='text-center herO'>In Hinduism, Donating is a means of Earning Virtue,</h6>
+        </Carousel.Item>
+
+        <Carousel.Item style={{ zIndex: 0 }}>          
+            <h6 className='text-center herO'>but is the Money or Goods you Donate actually used</h6>
+        </Carousel.Item>
+
+        <Carousel.Item style={{ zIndex: 0 }}>          
+            <h6 className='text-center herO'>to Unite and Betterment for the Hindu Community?</h6>
+        </Carousel.Item>
+      </Carousel>
+    );
+  }
+
+
 
 
   const filteredBeneficiaries = approvedBeneficiaries.filter(b => b.donationStatus !== "fulfilled");
@@ -128,19 +154,18 @@ const Donate = () => {
 
   return (
     < >
-      <div className='text-center' style={{ fontSize: "25px" }}>Donate</div>
-      <div style={{ maxHeight: "300px" }}>
-
-
+      <div className='text-center herO' style={{ fontSize: "25px" }}>Donate</div>
+      <div style={{ maxHeight: "150px" }}>
+{CarouselExample()}
       </div>
 
 
 
-      <div className="container mt-4 p-5 mb-4" >
+      <div className="container mt-2 px-5 mb-4" >
         <div className="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4 mb-4">
           {filteredBeneficiaries.map((b) => {
             const donationStatus = b?.donationStatus == "in-progress";
-            const fundRised = b?.fundRaised > 0 ;
+            const fundRised = b?.fundRaised > 0;
             console.log([approvedBeneficiaries, filteredBeneficiaries]);
 
             const category = getCategory(b?.applyFor); // Determine category based on applyFor
@@ -173,6 +198,7 @@ const Donate = () => {
             const description = formatFieldName(b?.descriptionOfNeed);
             const remainingBloodUnits = (b?.bloodGroupUnitReceived);
 
+           
             //Render all needs
             const renderNeeds = () => {
               switch (b?.applyFor) {
@@ -190,7 +216,7 @@ const Donate = () => {
                   return (
                     <div>
 
-                      <Card.Text className="description" title="Looking for">  <span title='Type of Learning Material:'> Type of Material: <span /><strong>{learningMaterialType} </strong> </span>  ||  <span /> <strong> <span title='Quantity'> {b?.learningMaterialQuantity} </span> </strong>    <span /> </Card.Text>
+                      <Card.Text className="description" title="Looking for">  <span title='Type of Learning Material:'> Type of: <span /><strong>{learningMaterialType} </strong> </span>  ||  <span /> <strong> <span title='Quantity'> {b?.learningMaterialQuantity} </span> </strong>    <span /> </Card.Text>
 
                     </div>
                   );
@@ -198,7 +224,7 @@ const Donate = () => {
                   return (
                     <div>
 
-                      <Card.Text className="description" title="Looking for">  <span title='Type of Gadget:'> Type of Gadget: <span /> <strong> {gadgetType} </strong> </span>  ||  <span /> <strong> <span title='Quantity'> {b?.gadgetQuantity} </span> </strong>    <span /> </Card.Text>
+                      <Card.Text className="description" title="Looking for">  <span title='Type of Gadget:'> Type of: <span /> <strong> {gadgetType} </strong> </span>  ||  <span /> <strong> <span title='Quantity'> {b?.gadgetQuantity} </span> </strong>    <span /> </Card.Text>
                       {/* <p><strong>Gadget Type:</strong> {b?.gadgetType}</p>
                       <p><strong>Quantity:</strong> {b?.gadgetQuantity}</p> */}
                     </div>
@@ -207,7 +233,7 @@ const Donate = () => {
                   return (
                     <div>
 
-                      <Card.Text className="description" title="Looking for">  <span title='Type of Mentorship:'> Type of Mentorship: <span /> <strong> {mentorType} </strong> </span>  </Card.Text>
+                      <Card.Text className="description" title="Looking for">  <span title='Type of Mentorship:'> Type of: <span /> <strong> {mentorType} </strong> || </span> <span title='Expected number of mentee:'> Number of mentee: <span /> <strong> {b?.numberOfMentee} </strong> </span> || <span title='Recomended Platform'> <strong>{b?.mentorArena}</strong> </span>  </Card.Text>
 
                       {/* <p><strong>Mentor Type:</strong> {b?.mentorType}</p> */}
                     </div>
@@ -234,7 +260,7 @@ const Donate = () => {
                         Arrenged: <strong> <span title='Unit'> {remainingBloodUnits} </span> </strong>
                         <span />
                       </Card.Text>
-                      <div className="progress mt-2">
+                      <div className="progress ">
                         <div
                           className="progress-bar bg-danger"
                           role="progressbar"
@@ -275,13 +301,20 @@ const Donate = () => {
                       )} */}
                     </div>
                   );
-                case 'Essentials':
+                case 'Employment':
                   return (
                     <div>
-                      <Card.Text className="description" title="Looking for">  <span title='Cloth For'> Type of Need? <strong> {b?.essentials} </strong>  </span>  </Card.Text>
-                      {/* <p><strong>Type of Need?</strong> {b?.essentials}</p> */}
+                      <Card.Text className="description" title="Looking for Job">  <span title='Job Needed!'> Type of job Needed? <strong> {b?.expectedJobRole ? b?.expectedJobRole : b?.expectedJobRoleR} </strong> </span> <span title='Salary '> Exp. Salary: <strong> {b?.expectedSalary} </strong>  </span> <span title='Qualification'>Qualification: <strong> {b?.qualification ? b?.qualification : b?.qualificationDetails} </strong>  </span>  </Card.Text>
+
                     </div>
                   );
+                // case 'Shelter':
+                //   return (
+                //     <div>
+                //       <Card.Text className="description" title="Looking for Job">  <span title='job Needed!'> Type of job Needed? <strong> {b?.expectedJobRole ? b?.expectedJobRole : b?.expectedJobRoleR} </strong> </span> <span title='Salary '> Exp. Salary: <strong> {b?.expectedSalary} </strong>  </span> <span title='Qualification'>Qualification: <strong> {b?.qualification ? b?.qualification : b?.qualificationDetails} </strong>  </span>  </Card.Text>
+
+                //     </div>
+                //   );
                 case 'Fundraising':
                   return (
                     <div >
@@ -314,7 +347,7 @@ const Donate = () => {
                         {category}
                       </div>
                       <div>
-                        <Badge bg={donationStatus ? 'success' : 'primary'}> {donationStatus ? 'In-Progress' : 'Active'} {fundRised ? '/ Recieved': ""}</Badge>
+                        <Badge bg={donationStatus ? 'success' : 'primary'}> {donationStatus ? 'In-Progress' : 'Active'} {fundRised ? '/ Recieved' : ""}</Badge>
                       </div>
                     </div>
                   </Card.Header>
@@ -351,24 +384,38 @@ const Donate = () => {
 
                     <div className='d-flex justify-content-center'>
 
-                      {/* <Button
-                    disabled={donationStatus}
-                      className=""
-                      variant="outline-dark"
-                      onClick={() => handleDonate(b)}
-                    >
-                     {/* {donationStatus ? 'Donate': 'In-Progress ...'}  *
-                     Donate
-                    </Button> */}
+
+                      {/* {b?.applyFor !== "Employment" ?
+                        (<Button
+                          disabled={donationStatus} // Disable the button if donation status is "in-progress"
+                          className=""
+                          variant="outline-dark"
+                          onClick={() => handleDonate(b)}
+                        >
+                          {donationStatus ? 'In-Progress ...' : 'Donate'} 
+                        </Button>) : (
+                          <Button
+                            disabled={donationStatus} // Disable the button if donation status is "in-progress"
+                            className=""
+                            variant="outline-dark"
+                            onClick={() => handleDonate(b)}
+                          >
+                            {donationStatus ? 'In-Progress ...' : 'I have arranged a job for you.'} 
+                          </Button>
+                        )} */}
 
                       <Button
-                        disabled={donationStatus} // Disable the button if donation status is "in-progress"
-                        className=""
+                        disabled={donationStatus}
                         variant="outline-dark"
                         onClick={() => handleDonate(b)}
                       >
-                        {donationStatus ? 'In-Progress ...' : 'Donate'} {/* Conditionally render text */}
+                        {donationStatus
+                          ? 'In-Progress ...'
+                          : b?.applyFor === 'Employment'
+                            ? 'I able to arrange a job for you.'
+                            : 'Donate'}
                       </Button>
+
 
 
 
@@ -397,7 +444,7 @@ const Donate = () => {
 
 
       {/* modal for specific card show */}
-      <Modal show={showModal} onHide={handleCloseModal}>
+      <Modal show={showModal} onHide={handleCloseModal} centered>
         <Modal.Header closeButton>
           <Modal.Title>Category: {getCategory(selectedCard?.applyFor)}</Modal.Title>
         </Modal.Header>
@@ -415,6 +462,109 @@ const Donate = () => {
                 />
                 <Card.Body>
                   <Card.Title>{selectedCard?.applyFor || "No Title"}</Card.Title>
+                  <div>
+                    {selectedCard?.applyFor === 'Books' && (
+                      <Card.Text className="description" title="Looking for">
+                        <strong><span title='Book Name'> {selectedCard?.bookName} </span></strong> ||
+                        <strong><span title='Book Type'> {selectedCard?.bookType} </span></strong> ||
+                        {selectedCard?.bookLanguage && (
+                          <span title='Language'><strong>{selectedCard?.bookLanguage}</strong></span>
+                        )} ||
+                        {selectedCard?.bookOption && (
+                          <span title='Book Option'> <strong>{selectedCard?.bookOption}</strong> </span>
+                        )}
+                      </Card.Text>
+                    )}
+
+                    {selectedCard?.applyFor === 'Learning Material' && (
+                      <Card.Text className="description" title="Looking for">
+                        <span title='Type of Learning Material:'> Type of: <strong>{selectedCard?.learningMaterialType}</strong> </span> ||
+                        <strong><span title='Quantity'> {selectedCard?.learningMaterialQuantity} </span></strong>
+                      </Card.Text>
+                    )}
+
+                    {selectedCard?.applyFor === 'Learning Gadgets' && (
+                      <Card.Text className="description" title="Looking for">
+                        <span title='Type of Gadget:'> Type of: <strong>{selectedCard?.gadgetType}</strong> </span> ||
+                        <strong><span title='Quantity'> {selectedCard?.gadgetQuantity} </span></strong>
+                      </Card.Text>
+                    )}
+
+                    {selectedCard?.applyFor === 'Mentorship' && (
+                      <Card.Text className="description" title="Looking for">
+                        <span title='Type of Mentorship:'> Type of: <strong>{selectedCard?.mentorType}</strong> </span> <br />
+                        <span title='Recomended Platform'> Exp. Platform: <strong>{selectedCard?.mentorArena}</strong> </span> ||
+                        <span title='Expected number of mentee:'> Number of mentee: <strong>{selectedCard?.numberOfMentee}</strong> </span>
+                      </Card.Text>
+                    )}
+
+                    {selectedCard?.applyFor === 'Medications' && (
+                      <Card.Text className="description" title="Looking for">
+                        <strong><span title='Medicine Name:'> {selectedCard?.medicineName} </span></strong> ||
+                        <strong><span title='Prescription Link'>
+                          {selectedCard?.prescription && (
+                            <a href={selectedCard?.prescription} target="_blank" rel="noopener noreferrer">
+                              <strong>Prescription</strong>
+                            </a>
+                          )}
+                        </span></strong>
+                      </Card.Text>
+                    )}
+
+                    {selectedCard?.applyFor === 'Blood' && (
+                      <Card.Text className="description" title="Looking for">
+                        <span title='Blood Grp.'>Grp: <strong>{selectedCard?.bloodGroupNeed}</strong></span> ||
+                        Need: <strong>{selectedCard?.bloodGroupUnitNeed}</strong>
+                      </Card.Text>
+                    )}
+
+                    {selectedCard?.applyFor === 'Clothes for Underprivileged' && (
+                      <Card.Text className="description" title="Looking for">
+                        <span title='Cloth For'>Cloth For: <strong>{selectedCard?.clothFor}</strong></span> ||
+                        <strong><span title='Unit'> {selectedCard?.clothUnit}</span></strong>
+                      </Card.Text>
+                    )}
+
+                    {selectedCard?.applyFor === 'Food for the Hungry' && (
+                      <Card.Text className="description" title="Looking for FOOD">
+                        <span title='Food for.'>Number of People: <strong>{selectedCard?.headCountForFood}</strong></span> ||
+                        <span title='Unit'>Any Child There? <strong>{selectedCard?.anyChildHungry}</strong></span> ||
+                        {selectedCard?.anyChildHungry === 'yes' && (
+                          <span><strong>Number of Child:</strong> {selectedCard?.childCountForFood}</span>
+                        )}
+                      </Card.Text>
+                    )}
+
+                    {selectedCard?.applyFor === 'Employment' && (
+                      <Card.Text className="description" title="Looking for Job">
+                        <span title='Job Needed!'>Type of job Needed? <strong>{selectedCard?.expectedJobRole || selectedCard?.expectedJobRoleR}</strong></span> ||
+                        <span title='Salary'>Exp. Salary: <strong>{selectedCard?.expectedSalary}</strong></span> ||
+                        <span title='Qualification'>Qualification: <strong>{selectedCard?.qualification || selectedCard?.qualificationDetails}</strong></span>
+                      </Card.Text>
+                    )}
+
+                    {selectedCard?.applyFor === 'Shelter' && (
+                      <Card.Text className="description" title="Looking for Shelter">
+                        Shelter
+                      </Card.Text>
+                    )}
+
+                    {selectedCard?.applyFor === 'Fundraising' && (
+                      <Card.Text className="description" title="Looking for Fund">
+                        <span title={`Need Support for ${selectedCard?.fundraising}`}>Need Monetary Support: <strong>{selectedCard?.fundraising}</strong></span> ||
+                        {selectedCard?.fundraising === 'forParrents' && (
+                          <span><strong>Receive any Govt. Assistance?</strong> {selectedCard?.areParrentsReceiveGovtAssistance}</span>
+                        )}
+                      </Card.Text>
+                    )}
+
+
+                  </div>
+
+
+
+
+
                   <Card.Text className="description">{selectedCard?.descriptionOfNeed || "No description available"}</Card.Text>
                   <div className='d-flex flex-row-reverse bd-highlight'>
                     <Card.Subtitle title='Beneficiary' className="mb-2 bd-highlight"> — {selectedCard?.updateFullName}</Card.Subtitle> </div>
@@ -423,7 +573,7 @@ const Donate = () => {
 
 
 
-                  <Button variant="secondary">Secondary</Button>
+                  <Button variant="secondary" onClick={handleCloseModal}>Close</Button>
                 </Card.Body>
               </Card>
             </>

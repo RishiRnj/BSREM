@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Button, Card, Form, InputGroup, Modal, OverlayTrigger, Tooltip, Row, Col,  Badge, Spinner } from 'react-bootstrap';
+import { Button, Card, Form, InputGroup, Modal, OverlayTrigger, Tooltip, Row, Col, Badge, Spinner } from 'react-bootstrap';
 import { ToastContainer } from 'react-toastify';
 import './Test.css';
 import Hero from '../../Components/Background/Hero';
@@ -21,6 +21,8 @@ const Test = () => {
 
   const { user } = useContext(AuthContext);
   const userId = user?.id;
+  console.log("update", userId);
+
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -48,6 +50,7 @@ const Test = () => {
 
 
   const [formData, setFormData] = useState({
+    religion: "",
     email: "",
     fullName: "",
     updateFullName: "",
@@ -179,7 +182,20 @@ const Test = () => {
       }
 
       const userData = await response.json();
-      console.log(userData);
+      const userD = userData.user;
+      setFormData((prevData) => ({
+        ...prevData,
+        ...userD, // Merge parsed user data into formData       
+      }));
+      if (userD.userImage) {
+        setProfileImage(userD.userImage);
+      }
+      if (userD.mobile) {
+        setSavedDataLS(true);
+        setOnVerified(true);
+      }
+
+      console.log(profileImage, "formData from API");
 
       return userData.isProfileCompleted; // Ensure this key exists in API response
 
@@ -242,7 +258,7 @@ const Test = () => {
     service: ["Chef", "Bartender", "Waiter", "Event Planner", "Public Relations", "Hairdresser", "Shopkeeper", "Housekeeper"],
     skilledTrades: ["Plumber", "Electrician", "Mechanic", "Construction Worker", "Farmer", "Driver"],
     government: ["St. Govt. Employee", "Cnt. Govt. Employee"],
-    other: ["Freelancer", "Homemaker", "Retired", "Social Worker"]
+    other: ["Freelancer", "Homemaker", "Retired", "Social Worker", "Unemployed"]
   };
 
   // Function to update sub-category options
@@ -445,7 +461,7 @@ const Test = () => {
 
 
     if (!profileImage) {
-      handleWarning("Please upload a profile image before submitting!");
+      handleWarning("Please upload or Update a profile image before submitting!");
       return;
     }
 
@@ -467,6 +483,9 @@ const Test = () => {
         const blob = await fetch(profileImage).then((res) => res.blob());
         formDataToSend.append("userUpload", blob, "croppedImage.png");
       }
+
+
+
       console.log("fromdata update", formDataToSend);
 
 
@@ -570,14 +589,14 @@ const Test = () => {
                 <>
                   <Row>
                     <Col sm>
-                      <InputGroup className="mb-3" >
+                      <InputGroup className="mb-2" >
                         <InputGroup.Text style={{ fontWeight: "bold" }}>User Email</InputGroup.Text>
                         <Form.Control aria-label="User Email" type="email" name="email" value={formData.email} readOnly disabled />
                       </InputGroup>
                     </Col>
 
                     <Col sm>
-                      <InputGroup className="mb-3" >
+                      <InputGroup className="mb-2" >
                         <InputGroup.Text style={{ fontWeight: "bold" }}>Full Name</InputGroup.Text>
                         <Form.Control aria-label="Full Name"
                           type="text" name="fullName" value={formData.fullName}
@@ -610,7 +629,7 @@ const Test = () => {
                   <Row>
                     <Col sm>
                       <div onClick={handleNameChangeAlart}>
-                        <InputGroup className="mb-3"  >
+                        <InputGroup className="mb-2"  >
                           <InputGroup.Text style={{ fontWeight: "bold" }}>New Full Name</InputGroup.Text>
                           <Form.Control aria-label="New Full Name" type="text"
                             name="updateFullName"
@@ -632,7 +651,7 @@ const Test = () => {
                     <Col sm>
                       {formData?.mobile ? (
                         // If mobile exists, render the Mobile number with Verification mark
-                        <div className="position-relative mb-3">
+                        <div className="position-relative mb-2">
                           <PhoneInput
                             name="mobile"
                             placeholder='Enter Phone Number'
@@ -640,7 +659,7 @@ const Test = () => {
                             country={'in'}
                             value={formData.mobile}
                             inputProps={{ name: 'mobile' }}
-                            className="w-100"
+                            inputStyle={{ width: '100%', borderRadius: '5px' }}
                           />
                           {(onVerified || savedDataLS) && (
                             <GoVerified
@@ -666,7 +685,7 @@ const Test = () => {
                       ) : (
 
                         // If mobile does not exist, show the mobile number in InputGroup
-                        <InputGroup className="mb-3" onClick={handleInputFocus}>
+                        <InputGroup className="mb-2" onClick={handleInputFocus}>
                           <InputGroup.Text style={{ fontWeight: "bold" }}>Mobile No.</InputGroup.Text>
                           <Form.Control
                             aria-label="Mobile No."
@@ -687,8 +706,8 @@ const Test = () => {
 
                   <Row>
                     <Col sm>
-                      <div className="position-relative mb-3">
-                        <InputGroup className="mb-3" >
+                      <div className="position-relative mb-2">
+                        <InputGroup className="mb-2" >
                           <InputGroup.Text style={{ fontWeight: "bold" }}>Date of Birth</InputGroup.Text>
                           <Form.Control type="date" name="dob" value={formData.dob} onChange={handleChange} required />
                         </InputGroup>
@@ -702,43 +721,44 @@ const Test = () => {
                       </div>
                     </Col>
 
+                    <Col sm> 
+                      <InputGroup className="mb-2">
+                        <InputGroup.Text id="basic-addon1" style={{ fontWeight: "bold" }}>Gender</InputGroup.Text>
+                        <Form.Control as="select" aria-label="Gender" name="gender" 
+                          value={formData.gender} required
+                          onChange={(e) => {
+                            handleChange(e);
+                            
+                          }}
+                        >
+                          <option value="">Select</option>
+                          <option value="Male">Male</option>
+                          <option value="Female">Female</option>
+                          <option value="Other">Other</option>
+                          
+                        </Form.Control>
+                        
+                      </InputGroup>
+                    </Col>
+
                     <Col sm>
-                      <div className='bg-light rounded'>
-                        <InputGroup className="mb-3">
-                          <InputGroup.Text style={{ fontWeight: 'bold' }}>Gender</InputGroup.Text>
-                          <Form.Check
-                            className='mt-2 ms-3'
-                            type="radio"
-                            id="male"
-                            autoFocus
-                            label="Male"
-                            name="gender"
-                            value="Male"
-                            onChange={handleChange}
-                            inline
-                          />
-                          <Form.Check
-                            className='mt-2'
-                            type="radio"
-                            id="female"
-                            label="Female"
-                            name="gender"
-                            value="Female"
-                            onChange={handleChange}
-                            inline
-                          />
-                          <Form.Check
-                            className='mt-2'
-                            type="radio"
-                            id="other"
-                            label="Other"
-                            name="gender"
-                            value="Other"
-                            onChange={handleChange}
-                            inline
-                          />
-                        </InputGroup>
-                      </div>
+                    <InputGroup className="mb-2">
+                        <InputGroup.Text id="basic-addon1" style={{ fontWeight: "bold" }}>Religion</InputGroup.Text>
+                        <Form.Control as="select" aria-label="Religion" name="religion" 
+                          value={formData.religion} required
+                          onChange={(e) => {
+                            handleChange(e);
+                            
+                          }}
+                        >
+                          <option value="">Select Religion</option>
+                          <option value="Hinduism">Hinduism</option>
+                          <option value="Christianity">Christianity</option>
+                          <option value="Islam">Islam</option>
+                          
+                        </Form.Control>
+                        
+                      </InputGroup>
                     </Col>
 
                   </Row>
@@ -747,9 +767,11 @@ const Test = () => {
                   {/* Next Button */}
                   <Row>
                     <Col>
-                      <Button className="w-100" onClick={handleNext} variant="primary" type='submit'>
-                        Next <GrNext />
-                      </Button>
+                      <div className='d-flex justify-content-center'>
+                        <Button className="w-80" onClick={handleNext} variant="primary" type='submit'>
+                          Next <GrNext />
+                        </Button>
+                      </div>
                     </Col>
                   </Row>
 
@@ -825,7 +847,7 @@ const Test = () => {
                           required
                         >
                           <option value="">Select Occupation Category</option>
-                          <option value="healthcare">Healthcare</option>
+                          <option value="healthcare">Health Care</option>
                           <option value="technology">Technology</option>
                           <option value="business">Business</option>
                           <option value="education">Education</option>
@@ -894,9 +916,11 @@ const Test = () => {
 
                   <Row>
                     <Col >
-                      <Button className="w-100" onClick={handleNext2} variant="primary" type='submit'>
-                        Next <GrNext />
-                      </Button>
+                      <div className='d-flex justify-content-center'>
+                        <Button className="w-80" onClick={handleNext2} variant="primary" type='submit'>
+                          Next <GrNext />
+                        </Button>
+                      </div>
                     </Col>
                   </Row>
                 </>
@@ -1073,9 +1097,26 @@ const Test = () => {
 
                     </Col>
 
-                    <Col sm>
-                      <>
-                        {formData.origin === "Indian Hindu" || formData.origin === "" ? (
+                    {(formData.origin === "Gobal Hindu") && (
+                      <Col sm>
+                        <>
+                          <OverlayTrigger
+                            placement="top"
+                            delay={{ show: 250, hide: 400 }}
+                            overlay={props => renderTooltip(props, "Enter your Country")}
+                          >
+                            <InputGroup className="mb-2" >
+                              <InputGroup.Text style={{ fontWeight: "bold" }}>Country</InputGroup.Text>
+                              <Form.Control
+                                name='country'
+                                placeholder="Name your Country or Territory or Region"
+                                value={formData.country}
+                                onChange={handleChange}
+                                required={formData.origin === "Gobal Hindu"} />
+                            </InputGroup>
+                          </OverlayTrigger>
+
+                          {/* {formData.origin === "Indian Hindu" || formData.origin === "" ? (
 
                           <InputGroup className="mb-2" >
                             <InputGroup.Text style={{ fontWeight: "bold" }}>Country</InputGroup.Text>
@@ -1103,13 +1144,12 @@ const Test = () => {
                                 required={formData.origin === "Gobal Hindu"} />
                             </InputGroup>
                           </OverlayTrigger>
-                        )}
+                        )} */}
+                        </>
+                      </Col>
+                    )}
 
 
-                      </>
-
-
-                    </Col>
                     <Col sm>
                       <OverlayTrigger
                         placement="top"
@@ -1131,7 +1171,7 @@ const Test = () => {
                   <Row>
                     <Col>
                       {/* Terms and Conditions */}
-                      <div className="form-check mb-3 d-flex justify-content-center align-items-center">
+                      <div className="form-check mb-1 d-flex justify-content-center align-items-center">
                         <input
                           type="checkbox"
                           className="form-check-input me-2"
@@ -1150,17 +1190,18 @@ const Test = () => {
 
 
 
-
-                  <Button type="submit" className=' w-100' disabled={loading} variant='secondary'>
-                    {loading ? (
-                      <span>
-                        <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true" style={{ marginRight: '8px' }}></span>
-                        Submitting... <BsFillSendArrowUpFill />
-                      </span>
-                    ) : (
-                      <>Submit <BsFillSendFill /></>  // Correctly rendered as a React component
-                    )}
-                  </Button>
+                  <div className='d-flex justify-content-center'>
+                    <Button type="submit" className="w-80" disabled={loading} variant='secondary'>
+                      {loading ? (
+                        <span>
+                          <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true" style={{ marginRight: '8px' }}></span>
+                          Submitting... <BsFillSendArrowUpFill />
+                        </span>
+                      ) : (
+                        <>Submit <BsFillSendFill /></>  // Correctly rendered as a React component
+                      )}
+                    </Button>
+                  </div>
 
                 </>
               )}

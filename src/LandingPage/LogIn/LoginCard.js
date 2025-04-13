@@ -296,7 +296,7 @@ const handlePhoneNumber = (phoneNumber) => {
         const currentTime = Date.now() / 1000;
 
         if (decodedUser.exp > currentTime) {
-          const redirectPath = localStorage.getItem('redirectAfterLogin') || '/forum';
+          const redirectPath = localStorage.getItem('redirectAfterLogin') || '/donate';
           navigate(redirectPath);
           localStorage.removeItem('redirectAfterLogin');
         } else {

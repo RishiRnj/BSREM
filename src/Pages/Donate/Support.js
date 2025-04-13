@@ -1177,6 +1177,8 @@ const Support = () => {
                       </div>
                     )}
 
+
+
                     {/* Conditional Rendering for if selected Learning Material */}
                     {["Learning Material"].includes(formData.applyFor) && (
                       <div className="mb-3">
@@ -1433,7 +1435,7 @@ const Support = () => {
 
                     )}
 
-                    {/* Conditional Rendering for if selected Medications */}
+                    {/* Conditional Rendering for if selected Clothes */}
                     {["Clothes for Underprivileged"].includes(formData.applyFor) && (
                       <Row>
                         <Col>
@@ -1575,7 +1577,7 @@ const Support = () => {
                     )}
 
                     
-                    {/* Conditional Rendering for if selected Medications */}
+                    {/* Conditional Rendering for if selected Fundraising */}
                     {["Fundraising"].includes(formData.applyFor) && (
                       <div className="form-group">
                         <label className="mb-2 ">Need Monetory Support for?</label>
@@ -1616,7 +1618,9 @@ const Support = () => {
                   </Col>
                 </Row>
 
-                {moreInfo && (
+                {
+                
+                moreInfo && (
                   <Row>
                     <Form.Group className="mb-3 mt-2" controlId="exampleForm.ControlTextarea1">
                       <Form.Label>Describe your need</Form.Label>

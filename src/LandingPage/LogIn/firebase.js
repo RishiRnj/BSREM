@@ -4,7 +4,7 @@ import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth
 const firebaseConfig = {  
 
   apiKey: "AIzaSyBekecaWpPQTixtjbxg8_by14rYrlEq_KI",
-  authDomain: "bsrem-5c78b.firebaseapp.com",
+  authDomain: "bsrem-5c78b.firebaseapp.com" || "http://localhost:3000/",
   projectId: "bsrem-5c78b",
   storageBucket: "bsrem-5c78b.firebasestorage.app",
   messagingSenderId: "849848260275",

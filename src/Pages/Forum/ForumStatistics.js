@@ -73,7 +73,7 @@ const PartialStatistics = ({ maxResponses }) => {
                         className="statistics"
                         style={{
                             position: "fixed",
-                            bottom: "50px", // Space for footer
+                            bottom: "60px", // Space for footer
                             left: "0",
                             right: "0",
                             overflow: "hidden",

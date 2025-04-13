@@ -60,10 +60,27 @@
   font-weight: lighter;
 }
 
+.do-ca{
+  width: 26rem;
+  margin: auto;
+}
+
 
 
 
 @media (max-width: 664px) {
+
+  .do-ca{
+    width: 100%;
+    margin: auto;
+  }
+
+  .donate-card {
+    width: 100% !important;
+    padding: 5px;
+
+  }
+
   .donate-card {
     width: 25rem !important;
 
@@ -72,9 +89,7 @@
   .donate  {
     padding-top: 15px;
     
-  } 
-
-  
+  }  
 }
 
 
@@ -88,6 +103,8 @@
   .cl-2{
     margin-top: 15px;
   }
+
+  
   
   
 }
@@ -458,6 +475,12 @@
     padding-bottom: 5px;
     padding-left: 15px;
   }
+}
+
+
+.herO{
+  font-family: 'Montserrat', sans-serif;
+  
 }
 
 

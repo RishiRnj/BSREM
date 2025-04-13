@@ -16,9 +16,9 @@ import { ToastContainer } from 'react-toastify';
 
 
 const DonationModal = ({ show, onHide, beneficiary, donationType }) => {
-  const { user } = useContext(AuthContext);
-  const currentUser = user;
-  const isAuthenticated = !!user;
+  console.log("benefivciary", beneficiary);
+  
+  const { user } = useContext(AuthContext);  
   const userId = user?.id;
   const [donated, setDonated] = useState();
 
@@ -79,18 +79,6 @@ const DonationModal = ({ show, onHide, beneficiary, donationType }) => {
   };
 
 
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-
-  //   // Validate if the input is a number
-  //   if (name === 'amount' && !/^\d*\.?\d*$/.test(value)) {
-  //     // If the value is not a valid number, return early and don't update the state
-  //     return;
-  //   }
-
-  //   // Update state only if valid
-  //   setFormData({ ...formData, [name]: value });
-  // };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -131,6 +119,9 @@ const DonationModal = ({ show, onHide, beneficiary, donationType }) => {
         return;
       }
     }
+
+    console.log("send for make donation", formData );
+    
 
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/donate/make-donation`, {
@@ -191,9 +182,40 @@ const DonationModal = ({ show, onHide, beneficiary, donationType }) => {
     }
   };
 
+  //empolyment donation
+  const handleJobCreation = async () => {
+    if (formData.donateVia === `I want to finalize after "Meeting the Job Seeker".` || formData.donateVia === `I request the "BSREM" authority to speak to the candidate.`) {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/donate/make-donation`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...formData,
+            beneficiaryId: beneficiary?._id,
+            donorId: userId, // Replace with logged-in donor's ID
+
+          }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          handleSuccess("You have Successfully start Coopration for Community!");
+          setDonated(true);
+        } else {
+          alert(data.error || "Failed to record Coopration.");
+        }
+      } catch (err) {
+        console.error('Error:', err);
+        alert("An error occurred while processing your Coopration.");
+      }
+    } else {
+      alert("You Coopration not Successfull!");
+    }
+  };
+
   //mentorShip donation
   const handleMentorShipDonation = async () => {
-    if (formData.donateVia === 'Click here to "Donate Mentorship" Online.') {
+    if (formData.donateVia === 'Click here to "Donate Mentorship" Online.' || formData.donateVia === 'Click here to "Donate Mentorship" Offline.') {
       try {
         const response = await fetch(`${process.env.REACT_APP_API_URL}/api/donate/make-donation`, {
           method: 'POST',
@@ -259,7 +281,7 @@ const DonationModal = ({ show, onHide, beneficiary, donationType }) => {
         return (
           <div>
 
-            <Form.Text className="" title="Looking for">  <span title='Type of Mentorship:'> Type of Mentorship: <span /> <strong> {mentorType} </strong> </span>  </Form.Text>
+            <Form.Text className="" title="Looking for">  <span title='Type of Mentorship:'> Type of Mentorship: <span /> <strong> {mentorType} </strong> </span> <br/> <span title='Requested Platform:'> Requested Platform: <span /> <strong> {beneficiary?.mentorArena} </strong> </span> <br/><span title='Expected number of mentee:'> Expected number of mentee: <span /> <strong> {beneficiary?.numberOfMentee} </strong> </span> </Form.Text>
 
 
           </div>
@@ -307,10 +329,13 @@ const DonationModal = ({ show, onHide, beneficiary, donationType }) => {
 
           </div>
         );
-      case 'Essentials':
+      case "Employment":
         return (
           <div>
-            <Form.Text className="" title="Looking for">  <span title='Type of Need?'> Type of Need? <strong> {beneficiary?.essentials} </strong>  </span>  </Form.Text>
+            <Form.Text className="" title="Looking for Job">  
+              <span title='Type of Need?'>Job type: <strong> {beneficiary?.expectedJobRole ? beneficiary?.expectedJobRole : beneficiary?.expectedJobRoleR} </strong>  </span>  <br/>
+              <span title='Qualification'>Qualification: <strong> {beneficiary?.qualification ? beneficiary?.qualification : beneficiary?.qualificationDetails} </strong>  </span> <br/>
+              <span title='Salary '> Expected Salary: <strong> {beneficiary?.expectedSalary} </strong>  </span>   </Form.Text>
 
           </div>
         );
@@ -487,6 +512,8 @@ const DonationModal = ({ show, onHide, beneficiary, donationType }) => {
             {['radio'].map((type) => (
               <div key={`reverse-${type}`} className="mb-3">
 
+                {beneficiary?.mentorArena === "Online" && (
+
                 <OverlayTrigger overlay={<Tooltip placement="left" id="tooltip-left">Check the radio button to Donate Mentorship Online, directly to the Beneficiary. Note: We will facilitate a fruitful discussion between both the donor and the beneficiary.</Tooltip>}>
                   <div className="row justify-content-center">
                     <div className="col-auto">
@@ -515,23 +542,67 @@ const DonationModal = ({ show, onHide, beneficiary, donationType }) => {
                   </div>
                 </OverlayTrigger>
 
-                {formData.donateVia === 'Click here to "Donate Mentorship" Online.' && (
+                )}
+                {beneficiary?.mentorArena === "Offline" &&(
+
+                  <OverlayTrigger overlay={<Tooltip placement="left" id="tooltip-left">Check the radio button to Donate Mentorship Offline, directly to the Beneficiary. Note: We will facilitate a fruitful discussion between both the donor and the beneficiary.</Tooltip>}>
+                  <div className="row justify-content-center">
+                    <div className="col-auto">
+                      <Form.Check
+                        reverse
+                        label={
+                          <span
+                            style={{
+                              fontWeight: formData.donateVia === 'Click here to "Donate Mentorship" Offline.' ? 'bold' : 'normal',
+                              color: formData.donateVia === 'Click here to "Donate Mentorship" Offline.' ? 'black' : '#6c757d',
+                            }}
+                          >
+                            Click here to "Donate Mentorship" Offline.
+                          </span>
+                        }
+                        name="donateVia"
+                        value={`Click here to "Donate Mentorship" Offline.`}
+                        type={type}
+                        id={`reverse-${type}-1`}
+                        checked={formData.donateVia === 'Click here to "Donate Mentorship" Offline.'}
+                        onChange={handleChange}
+                        className='border-end'
+                        autoFocus
+                      />
+                    </div>
+                  </div>
+                </OverlayTrigger>
+
+                )}
+
+                {formData.donateVia === 'Click here to "Donate Mentorship" Online.' ? (
                   <div>
-                    <Form.Text> <span >To start the  <strong> {mentorType} Mentorship</strong>  </span>  process, we will share your contact number with the beneficiary, and the beneficiary's contact number will be shared with you. Once you click the "Donate" button, both parties will receive the contact details needed to begin Communication and Collaboration, <strong> for strenthening Hindu Community. </strong> </Form.Text>
+                    <Form.Text> <span >To start the online <strong> {mentorType} Mentorship</strong>  </span>  process, we will share your contact number with the beneficiary, and the beneficiary's contact number will be shared with you. Once you click the "Donate" button, both parties will receive the contact details needed to begin Communication and Collaboration, <strong> for strenthening Hindu Community. </strong> </Form.Text>
                     <div className="d-flex align-items-center">
                       <hr className="flex-grow-1" />
-                    </div>
-
-                    <Button disabled={donated} variant={donated ? "primary" : "success"} onClick={handleMentorShipDonation}>
-                      {donated ? 'Confirm Donation' : 'Donated'}
-                    </Button>
+                    </div>                    
+                  </div>
+                ):(
+                  <div>
+                    <Form.Text> <span >To start the offline <strong> {mentorType} Mentorship</strong>  </span>  process, we will share your contact number with the beneficiary, and the beneficiary's contact number will be shared with you. Once you click the "Donate" button, both parties will receive the contact details needed to begin Communication and Collaboration, <strong> for strenthening Hindu Community. </strong> </Form.Text>
+                    <div className="d-flex align-items-center">
+                      <hr className="flex-grow-1" />
+                    </div>                    
                   </div>
                 )}
+              
+
+                    <Button disabled={donated} variant={donated ? "primary" : "success"} onClick={handleMentorShipDonation}>
+                      {donated ? 'Donated' : 'Confirm Donation'}
+                    </Button>
 
               </div>
             ))}
           </Form.Group>
         </div>
+
+      
+
       );
 
     } else if (beneficiary?.applyFor === 'Blood') {
@@ -612,6 +683,100 @@ const DonationModal = ({ show, onHide, beneficiary, donationType }) => {
         </div>
       );
 
+
+      // need correction also need to add for shelter
+    } else if (beneficiary?.applyFor === 'Employment') {
+      return (
+        <div>
+
+          <Form.Group className="text-center bg-">
+            <Form.Label className="" style={{ fontSize: "20px" }}>  <Badge bg="warning" text="dark">Complete your Cooperation:</Badge> </Form.Label>
+            {['radio'].map((type) => (
+              <div key={`reverse-${type}`} className="mb-3">
+
+                <OverlayTrigger overlay={<Tooltip delay={{ show: 250, hide: 400 }} placement="left" id="tooltip-left">Check the radio button to Complete the contribution through Meeting directly to the Job Seeker. Note: We will facilitate a fruitful discussion between both the Contributor and the Job Seeker.</Tooltip>}>
+                  <div className="row justify-content-center">
+                    <div className="col-auto">
+                      <Form.Check
+                        reverse
+                        label={
+                          <span
+                            style={{
+                              fontWeight: formData.donateVia === `I want to finalize after "Meeting the Job Seeker".` ? 'bold' : 'normal',
+                              color: formData.donateVia === `I want to finalize after "Meeting the Job Seeker".` ? 'black' : '#6c757d',
+                            }}
+                          >
+                            I want to finalize after "Meeting the Job Seeker".
+                          </span>
+                        }
+                        name="donateVia"
+                        value={`I want to finalize after "Meeting the Job Seeker".`}
+                        type={type}
+                        id={`reverse-${type}-1`}
+                        checked={formData.donateVia === `I want to finalize after "Meeting the Job Seeker".`}
+                        onChange={handleChange}
+                        className='border-end'
+
+                      />
+
+                    </div>
+                  </div>
+                </OverlayTrigger>
+
+                {formData.donateVia === `I want to finalize after "Meeting the Job Seeker".` && (
+                  <div>
+                    <Form.Text> <span >To begin the process of <strong> your contribution to job creation,</strong>  </span> we will share your contact number with the Job Seeker, and the Job Seeker's details will be shared with you. Once you click the "I able to arrange Job for You" button, <strong>Note:</strong> Both parties will receive all the required details needed to begin Communication and Cooperation, <strong> for strenthening Hindu Community. </strong> </Form.Text>
+                  </div>
+                )}
+                <hr />
+
+                <OverlayTrigger overlay={<Tooltip delay={{ show: 250, hide: 400 }} placement="left" id="tooltip-left">By checking this radio button, we will review the candidate's background on your behalf and share various relevant information with you. Note: We will facilitate a productive discussion between both the contributor and the job seeker.</Tooltip>}>
+                  <div className="row justify-content-center">
+                    <div className="col-auto">
+
+                      <Form.Check
+                        reverse
+                        label={
+                          <span
+                            style={{
+                              fontWeight: formData.donateVia === `I request the "BSREM" authority to speak to the candidate.` ? 'bold' : 'normal',
+                              color: formData.donateVia === `I request the "BSREM" authority to speak to the candidate.` ? 'black' : '#6c757d',
+                            }}
+                          >
+                            I request the "BSREM" authority to speak to the candidate.
+                          </span>
+                        }
+                        name="donateVia"
+                        value={`I request the "BSREM" authority to speak to the candidate.`}
+                        type={type}
+                        id={`reverse-${type}-1`}
+                        checked={formData.donateVia === `I request the "BSREM" authority to speak to the candidate.`}
+                        onChange={handleChange}
+                        className='border-end'
+                        autoFocus
+                      />
+                    </div>
+                  </div>
+                </OverlayTrigger>
+
+
+
+                {formData.donateVia === `I request the "BSREM" authority to speak to the candidate.` && (
+                  <div>
+                    <Form.Text> To begin the process of <strong> your contribution to job creation,</strong> we will try to provide a qualified candidate for your job by talking to the job seeker on your behalf and then the details of the job seeker will be shared with you. After clicking on the "I am able to arrange a job for you" button, <strong>Note:</strong> Both parties will receive the contact details needed to begin Communication and Collaboration, <strong> for strenthening Hindu Community. </strong> </Form.Text>
+                  </div>
+                )}
+                <hr />
+                <Button disabled={donated} variant={donated ? "primary" : "success"} onClick={handleJobCreation}>
+                  {donated ? 'Contributed' : 'I able to arrange a job for you.'}
+                </Button>
+
+              </div>
+            ))}
+          </Form.Group>
+        </div>
+      );
+
     } else {
       // Calculate remaining amount
       const remainingAmount = beneficiary?.expectedAmountOfMoney - beneficiary?.fundRaised;
@@ -666,7 +831,7 @@ const DonationModal = ({ show, onHide, beneficiary, donationType }) => {
                   <hr className="flex-grow-1" /> <span className="px-2"> Or </span> <hr className="flex-grow-1" />
                 </div>
 
-                <OverlayTrigger placement="top" overlay={<Tooltip placement="top" id="tooltip-top"> Check this Radio Button for Sending the Donated item via BSREM to the Beneficiary. </Tooltip>}>
+                <OverlayTrigger placement="top" overlay={<Tooltip placement="top" id="tooltip-top"> Check this Radio Button for Sending the Donated item via "BSREM" to the Beneficiary. </Tooltip>}>
                   <div className="row justify-content-center">
                     <div className="col-auto">
                       <Form.Check
@@ -704,7 +869,7 @@ const DonationModal = ({ show, onHide, beneficiary, donationType }) => {
                 )}
 
                 {/* Display expected amount if applicable */}
-                {["Books", "Learning Material", "Learning Gadgets", "Medications", "Clothes for Underprivileged", "Food for the Hungry", "Essentials"].includes(beneficiary?.applyFor) && (
+                {["Books", "Learning Material", "Learning Gadgets", "Medications", "Clothes for Underprivileged", "Food for the Hungry", "Shelter"].includes(beneficiary?.applyFor) && (
                   <OverlayTrigger placement="top" overlay={<Tooltip placement="top" id="tooltip-top">Select any of these Radio Button for Donate the Expected Amount Full or partial to the Beneficiary.</Tooltip>}>
                     <div>
                       <div className="d-flex align-items-center">
@@ -869,7 +1034,20 @@ const DonationModal = ({ show, onHide, beneficiary, donationType }) => {
   return (
     <Modal show={show} onHide={onHide} centered>
       <Modal.Header closeButton>
-        <Modal.Title>Donate to {beneficiary?.updateFullName}</Modal.Title>
+        {/* <Modal.Title>{beneficiary?.applyFor === "Employment" ?  `Cooperation for the Betterment of the Community through ${beneficiary?.updateFullName}` : `Donate to ${beneficiary?.updateFullName}`}</Modal.Title> */}
+        <Modal.Title>
+          {beneficiary?.applyFor === "Employment" ? (
+            <>
+              <span className="text-muted">
+                Cooperation for the Betterment of the Community through{' '}
+              </span>
+              {beneficiary?.updateFullName}
+            </>
+          ) : (
+            `Donate to ${beneficiary?.updateFullName}`
+          )}
+        </Modal.Title>
+
       </Modal.Header>
       <Modal.Body>
         {/* <Form > */}
@@ -894,7 +1072,7 @@ const DonationModal = ({ show, onHide, beneficiary, donationType }) => {
 
             </div>
 
-            <Form.Label>Type of Donation: <span style={{ fontStyle: 'italic' }}>{donateType}</span> </Form.Label>
+            <Form.Label><span className='text-muted'>  {beneficiary?.applyFor === "Employment" ? "Type of Contribution:" : "Type of Donation:"}</span> <span style={{ fontStyle: 'italic' }}>{donateType}</span> </Form.Label>
             <hr className="flex-grow-1" />
 
 
@@ -903,7 +1081,7 @@ const DonationModal = ({ show, onHide, beneficiary, donationType }) => {
 
           </Form.Group>
 
-          {(beneficiary?.applyFor !== "Blood" && beneficiary?.applyFor !== "Mentorship") && (
+          {(beneficiary?.applyFor !== "Blood" && beneficiary?.applyFor !== "Mentorship" && beneficiary?.applyFor !== "Employment") && (
             <div className='d-flex justify-content-center'>
 
 

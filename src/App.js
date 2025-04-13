@@ -1,11 +1,8 @@
 // // App.js (client side)
-
-// import React, {Suspense, lazy} from "react";
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
 // Components
-//import GlobalSpinner from './Components/Spinner';
 import LandingPage from './LandingPage/LandingPage';
 import AppProviders from "./AppProviders";
 import ProtectedRoute from "./Components/ProtectedRoute";
@@ -18,7 +15,7 @@ import ResetPasswordModal from './LandingPage/ForgotPassword/ResetPasswordModal'
 import Terms from "./Components/Terms";
 import Forum from "./Pages/Forum/Forum";
 import AboutUs from "./Pages/About";
-import JoinUs from "./Pages/JoinUs/JoinUs";
+//import JoinUs from "./Pages/JoinUs/JoinUs";
 import User from "./Pages/User/User";
 import Header from "./Components/Header/Header";
 import ContactUs from "./Pages/Contact/ContactUs";
@@ -43,23 +40,12 @@ import Support from "./Pages/Donate/Support";
 import AdminDashboardToHandleBeneficiary from "./Admin/BeneficiaryHandle";
 import BeneficiaryDetailPage from './Admin/BenificiaryDetails';
 import Dashboard from "./Pages/Dashboard/Dashboard";
-import Donatedashboard from "./Pages/Donate/Donatedashboard";
+import RegisterforSupport from './Pages/Support/ResigterforSuppost';
 import Donor from "./Admin/Donor";
 import YouthConference from "./Pages/YouthConference/YouthConference";
 import Conference from "./Admin/Conference";
-import Test from "../src/Pages/UpdateProfile/Test";
-
-
-
-// // ✅ Lazy load heavy components
-// const Forum = lazy(() => import("./Pages/Forum/Forum"));
-// // const Home = lazy(() => import("./pages/Home"));
-// // const Dashboard = lazy(() => import("./pages/Dashboard"));
-
-
-
-
-
+import RealTimeLocation from "./Components/RealTimeLocation";
+import JoinUSup from "./Pages/JoinUs/JoinUSup";
 
 
 
@@ -72,21 +58,19 @@ const App = () => {
 
       <AppProviders>
         <Header />
-        {/* <GlobalSpinner /> */}
-        {/* <Suspense fallback={<div>Loading...</div>}> */}
-        
+       
         <Routes>
 
           
-
+          {/* Location */}
+          <Route path="/location" element={<RealTimeLocation/>}/>
+         
 
           {/* Default route redirects to /dashboard */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           
 
-          {/* test */}
-          <Route path="/test" element={<Test/>}/>
-
+          
           {/* Dashboard */}
           <Route path="/dashboard" element={<Dashboard/>}/>
           {/* Public route for login/signup */}
@@ -100,11 +84,13 @@ const App = () => {
 
           <Route path="/aboutUs" element={<AboutUs />} />
           <Route path="/donation" element={<Donation />} />
-          <Route path="/donate/dashboard" element={<Donatedashboard/>}/>
+          
           <Route path="/donate" element={<ProtectedRoute> <Donate /> </ProtectedRoute> } />
-          <Route path="/needAssistance" element={ <ProtectedRoute> <Support /> </ProtectedRoute> } />
+          {/* <Route path="/needAssistance" element={ <ProtectedRoute> <Support /> </ProtectedRoute> } />  */}
+          <Route path="/register/for_support" element={<ProtectedRoute> <RegisterforSupport/> </ProtectedRoute>}/>
 
-          <Route path="/joinUs" element={<JoinUs />} />
+          {/* <Route path="/joinUs" element={<JoinUs />} /> */}
+          <Route path="/joinUs" element={<ProtectedRoute><JoinUSup/></ProtectedRoute>}/>
           <Route path="/joinUs/volunteer" element={<ProtectedRoute><Voluntear /></ProtectedRoute>} />
 
           <Route path="/contactUs" element={<ContactUs />} />

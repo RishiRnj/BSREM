@@ -485,8 +485,10 @@ const Mentor = () => {
 
                 {activeSwitch === "To find those who need Mentorship" && (
                     <>
-                        <Card className="text-center mt-1 p-1" style={{ width: '26rem', margin: 'auto' }}>
-                            <Card.Img variant="top" style={{ width:"100%", height: "100%" }} src="mentorin.webp" />
+                        <Card className="text-center mt-1 p-1 do-ca">
+                            <Card.Img variant="top" width={400}
+                                        
+                                        height={200} style={{  objectFit:"cover" }} src="mentorin.webp"  />
                             <Card.Body>
                                 <Card.Title> <h6> To find those who need Mentorship</h6></Card.Title>
                                 <Card.Text style={{ fontSize: '.9rem' }}>  

@@ -787,7 +787,7 @@ const RegistrationForm = ({ venue, place, date, id, selectedConference }) => {
                             country={'in'}
                             value={phone}
                             inputProps={{ name: 'mobile' }}
-                            className="w-100"
+                            inputStyle={{ width: '100%', borderRadius: '5px', position: 'relative'}}
                           />
                           {(onVerified || phone) && (
                             <>
@@ -833,17 +833,7 @@ const RegistrationForm = ({ venue, place, date, id, selectedConference }) => {
                           ><InputGroup.Text><BsBracesAsterisk /></InputGroup.Text></OverlayTrigger> : ""}
                         </InputGroup>
                       )}
-                      {/* <InputGroup className="mb-3" >
-                    <InputGroup.Text style={{ fontWeight: "bold" }}>Mobile No.</InputGroup.Text>
-                    <Form.Control aria-label="Mobile"
-                      type="tel"
-                      placeholder="Enter your Mobile No"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      required />
-
-
-                  </InputGroup> */}
+                      
 
                     </Col>
                     <Col sm>

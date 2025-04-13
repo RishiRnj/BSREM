@@ -87,51 +87,6 @@ const Donation = () => {
 
 
 
-  // const handleDonate = () => {    
-  //   navigate("/donate/dashboard");
-  // }
-
-  // const handleDonate = () => {
-  //   // Scroll to the element with the ID 'food-donation'
-  //   const element = document.getElementById('food-donation');
-  //   if (element) {
-  //     window.scrollTo({
-  //       top: element.offsetTop,
-  //       behavior: 'smooth',  // Smooth scrolling
-  //     });
-  //   }
-  // };
-  // const handleFood = () => {
-  //   // Scroll to the element with the ID 'food-donation'
-  //   const element = document.getElementById('food-donation');
-  //   if (element) {
-  //     window.scrollTo({
-  //       top: element.offsetTop,
-  //       behavior: 'smooth',  // Smooth scrolling
-  //     });
-  //   }
-  // };
-  // const handleCloth = () => {
-  //   // Scroll to the element with the ID 'food-donation'
-  //   const element = document.getElementById('cloth-donation');
-  //   if (element) {
-  //     window.scrollTo({
-  //       top: element.offsetTop,
-  //       behavior: 'smooth',  // Smooth scrolling
-  //     });
-  //   }
-  // };
-  // const handlelaptop = () => {
-  //   // Scroll to the element with the ID 'food-donation'
-  //   const element = document.getElementById('laptop-donation');
-  //   if (element) {
-  //     window.scrollTo({
-  //       top: element.offsetTop,
-  //       behavior: 'smooth',  // Smooth scrolling
-  //     });
-  //   }
-  // };
-
 
   const handleDonateOwn = () => {
     navigate("/donate");
@@ -171,33 +126,6 @@ const Donation = () => {
   }
 
 
-  // const handleScrollToSection = (sectionId) => {
-
-  //   if (!userId) {
-
-  //     const userResponse = window.confirm(
-  //       "You have to login and update Profile data!"
-  //     );
-
-  //     if (userResponse) {
-  //       localStorage.setItem("redirectAfterUpdate", location.pathname);
-  //       localStorage.setItem("redirectAfterUpdateSEC", sectionId);
-  //       localStorage.setItem("redirectAfterLogin", `/user/${userId}/update-profile`);
-  //       navigate("/login"); // Replace with the actual route of your dashboard
-  //       return; // Prevent form submission
-  //     }
-
-
-  //   }
-
-  //   const element = document.getElementById(sectionId);
-  //   if (element) {
-  //     window.scrollTo({
-  //       top: element.offsetTop,
-  //       behavior: 'smooth', // Enables smooth scrolling
-  //     });
-  //   }
-  // };
 
   const handleScrollToSection = async (sectionId) => {
     
@@ -265,7 +193,7 @@ const Donation = () => {
       return userData.isProfileCompleted; // Ensure this key exists in API response
     } catch (error) {
       console.error("Error in checkUserProfile:", error);
-      navigate("/forum"); // Redirect to a fallback route if needed
+      navigate("/dashboard"); // Redirect to a fallback route if needed
       return false; // Default to false if there's an error
     }
   };
@@ -293,9 +221,9 @@ const Donation = () => {
 
       <>
         {/* Header Section */}
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: `calc(100vh - 125px)` }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: `calc(100vh - 135px)` }}>
           <>
-            <Carousel className='donate'>
+            <Carousel slide className='donate'>
 
             <Carousel.Item>
                 <Card className='donate-card' style={{ width: '28rem' }}>
@@ -672,7 +600,6 @@ const Donation = () => {
 
 
         {/* Blood Donation Section */}
-
         <div
           className="container mt-3"
           id="blood-donation"

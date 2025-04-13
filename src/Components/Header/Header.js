@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Navbar, Nav, Button, Offcanvas, Container, OverlayTrigger, Tooltip, NavDropdown, Form, Dropdown } from "react-bootstrap";
+import { Navbar, Nav, Button, Offcanvas, Container, OverlayTrigger, Tooltip, NavDropdown, Form, Dropdown, Accordion } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import AuthContext from "../../Context/AuthContext";
 import { Navigate } from "react-router-dom";
@@ -114,12 +114,13 @@ const Header = () => {
                         <Nav.Link href="/dashboard"><HouseFill /></Nav.Link>
                         <Nav.Link href="/forum">Forum</Nav.Link>
 
-                        <NavDropdown title="Donate" id="basic-nav-dropdown"
+                        <NavDropdown title="Donate for Community" id="basic-nav-dropdown"
                             show={showDonateDropdown}
                             onMouseEnter={() => setShowDonateDropdown(true)}
                             onMouseLeave={() => setShowDonateDropdown(false)}
                             align="end">
-                            <NavDropdown.Item id="itms" href="/donation">Make Donation</NavDropdown.Item>
+                            <NavDropdown.Item id="itms" href="/donate">Donor Dashboard</NavDropdown.Item>   
+                            <NavDropdown.Item id="itms" href="/donation">Make Donation, Earn Salvation</NavDropdown.Item>
                             <NavDropdown.Item id="itmSu" className="ps-4"
                                 onClick={redirectToDonate}
                             //  href="/donation"
@@ -132,7 +133,7 @@ const Header = () => {
                                 onClick={redirectToMentorDonate}
                             // href="/donation"
                             >Donate Mentorship</NavDropdown.Item>
-                            <NavDropdown.Item id="itms" href="/donate">Donor Dashboard</NavDropdown.Item>
+                            
 
                         </NavDropdown>
 
@@ -148,7 +149,7 @@ const Header = () => {
                             onMouseLeave={() => setShowDropdown(false)}
                             align="end">
 
-                            <NavDropdown.Item id="itms" href="/needAssistance">Request for Support!</NavDropdown.Item>
+                            <NavDropdown.Item id="itms" href="/register/for_support">Request for Support!</NavDropdown.Item>
 
 
                             <NavDropdown.Item id="itms" href="/user/survey">Perticipate in the Survey</NavDropdown.Item>
@@ -229,51 +230,33 @@ const Header = () => {
                                 Forum
                             </Nav.Link>
 
-                            {/* Donate Dropdown */}
-                            <Dropdown align="right" show={showJDropdown}
-                                onMouseEnter={() => setShowJDropdown(true)}
-                                onMouseLeave={() => setShowJDropdown(false)}>
+                            
+                            {/* Donate Accordion */}
+                            <Accordion align="right" className="py-2 me-5">
+                                <Accordion.Item eventKey="0">
+                                    <Accordion.Header>Make Donation, Earn Salvation</Accordion.Header>
+                                    <Accordion.Body>
+                                        <Nav className="flex-column">
+                                            <Nav.Link id="itmso" href="/donation" onClick={handleClose} className="py-2">
+                                            Donation Categories
+                                            </Nav.Link>
 
-                                <Dropdown.Toggle id="itmSu" className="py-2 me-5" >
+                                            <Nav.Link id="itmso" href="/donation" onClick={redirectToDonate} className="py-2">
+                                                Donate Money
+                                            </Nav.Link>
 
-                                    Donate
+                                            <Nav.Link id="itmso" href="/donation" onClick={redirectToBlDonate} className="py-2">
+                                                Donate Blood
+                                            </Nav.Link>
 
+                                            <Nav.Link id="itmso" href="/donation" onClick={redirectToMentorDonate} className="py-2">
+                                                Donate Mentorship
+                                            </Nav.Link>
+                                        </Nav>
+                                    </Accordion.Body>
+                                </Accordion.Item>
+                            </Accordion>
 
-                                </Dropdown.Toggle>
-
-
-                                <Dropdown.Menu>
-                                    {/* <Dropdown.Item id="itmso" href="/donation" onClick={handleClose}>Make Donation</Dropdown.Item> */}
-                                    <Dropdown.Item >
-                                        <Nav.Link id="itmso" href="/donation" onClick={handleClose} className="py-2">
-                                            Make Donation
-                                        </Nav.Link>
-                                    </Dropdown.Item>
-
-                                    <Dropdown.Item >
-                                        <Nav.Link id="itmso" href="/donation" onClick={redirectToDonate} className="py-2">
-                                        Donate Money
-                                        </Nav.Link>
-                                    </Dropdown.Item>
-
-                                    <Dropdown.Item >
-                                        <Nav.Link id="itmso" href="/donation" onClick={redirectToBlDonate} className="py-2">
-                                        Donate Blood
-                                        </Nav.Link>
-                                    </Dropdown.Item>
-
-                                    <Dropdown.Item >
-                                        <Nav.Link id="itmso" href="/donation" onClick={redirectToMentorDonate} className="py-2">
-                                        Donate Mentorship
-                                        </Nav.Link>
-                                    </Dropdown.Item>
-
-
-                                    {/* <Dropdown.Item id="itmso" href="/donation" onClick={redirectToDonate}>Donate Money</Dropdown.Item>
-                                    <Dropdown.Item id="itmso" href="/donation" onClick={redirectToBlDonate}>Donate Blood</Dropdown.Item>
-                                    <Dropdown.Item id="itmso" href="/donation" onClick={redirectToMentorDonate}>Donate Mentorship</Dropdown.Item> */}
-                                </Dropdown.Menu>
-                            </Dropdown>
 
 
 
@@ -282,51 +265,28 @@ const Header = () => {
                             <Nav.Link id="itmso" href="/donate" onClick={handleClose} className="py-2 mt-1">
                                 Donor Beneficiary Dashboard
                             </Nav.Link>
-                            <Nav.Link id="itmso" href="/needAssistance" onClick={handleClose} className="py-2 mb-1">
+                            <Nav.Link id="itmso" href="/register/for_support" onClick={handleClose} className="py-2 mb-1">
                                 Request for Support!
                             </Nav.Link>
 
-                            {/* survey Dropdown */}
-                            <Dropdown align="right" show={showSurveyMenu}
-                                onMouseEnter={() => setShowSurveyMenu(true)}
-                                onMouseLeave={() => setShowSurveyMenu(false)}>
+                          
+                            {/* Survey Accordion */}
+                            <Accordion align="right" className="py-2 me-5">
+                                <Accordion.Item eventKey="0">
+                                    <Accordion.Header>Survey</Accordion.Header>
+                                    <Accordion.Body>
+                                        <Nav className="flex-column">
+                                            <Nav.Link id="itmso" href="/user/survey" onClick={handleClose} className="py-2">
+                                                Participate in the Survey
+                                            </Nav.Link>
 
-                                <Dropdown.Toggle id="itmSu" className="py-2 me-5" >
-
-                                    Survey
-
-
-                                </Dropdown.Toggle>
-
-                                <Dropdown.Menu>
-                                    <Dropdown.Item >
-
-                                        <Nav.Link id="itmso" href="/user/survey" onClick={handleClose} className="py-2">
-                                            Participate in the Survey
-                                        </Nav.Link>
-
-                                    </Dropdown.Item>
-                                    <Dropdown.Item >
-
-                                        <Nav.Link id="itmso" href="/survey-stats" onClick={handleClose} className="py-2">
-                                            View the Survey Result
-                                        </Nav.Link>
-
-                                    </Dropdown.Item>
-
-                                </Dropdown.Menu>
-
-                            </Dropdown>
-
-
-                            {/* <Nav.Link id="itmso" href="/user/survey" onClick={handleClose} className="py-2">
-                                Participate in the Survey
-                            </Nav.Link>
-
-                            <Nav.Link id="itmso" href="/survey-stats" onClick={handleClose} className="py-2">
-                                View the Survey Result
-                            </Nav.Link> */}
-
+                                            <Nav.Link id="itmso" href="/survey-stats" onClick={handleClose} className="py-2">
+                                                View the Survey Result
+                                            </Nav.Link>
+                                        </Nav>
+                                    </Accordion.Body>
+                                </Accordion.Item>
+                            </Accordion>                           
 
 
 

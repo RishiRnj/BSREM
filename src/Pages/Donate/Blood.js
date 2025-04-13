@@ -213,15 +213,7 @@ const Blood = () => {
                 body,
             });
 
-            // if (response.ok) {
-            //     const data = await response.json();
-            //     console.log("Marked as Blood Donor:", data);
-            //     handleSuccess("You are now a registered blood donor!");
-            // } else {
-            //     const errorData = await response.json();
-            //     console.error("Error marking as blood donor:", errorData);
-            //     handleError("Error marking as blood donor. Please try again later.");
-            // }
+            
             const data = await response.json();
             if (response.ok) {
 
@@ -394,77 +386,7 @@ const Blood = () => {
                                     <>
                                         <Row>
                                             <Button className='mb-2' disabled size='sm'> Full Current Address & Some Personal Details </Button>
-
-                                            <Col xs={12} md={6} className='cds_col_bld'> {/* Full width on small screens, half width on large screens */}
-
-                                                <Row className="">
-                                                    {/* Blood Group Form */}
-                                                    <Col >
-                                                        <Form>
-                                                            <Form.Group controlId="formGridBloodGroup">
-                                                                <Form.Label className="form-label ps-3">Blood Group</Form.Label>
-                                                                <Form.Control
-                                                                    type="text"
-                                                                    placeholder="Enter Blood Group"
-                                                                    value={bloodGroup || userData?.bloodGroup || ""}
-                                                                    onChange={(e) => setBloodGroup(e.target.value)}
-                                                                />
-                                                            </Form.Group>
-                                                        </Form>
-                                                    </Col>
-
-                                                    {/* Age Form */}
-                                                    <Col >
-                                                        <Form>
-                                                            <Form.Group controlId="formGridAge">
-                                                                <Form.Label className="form-label ps-3">Age</Form.Label>
-                                                                <Form.Control
-                                                                    type="text"
-                                                                    placeholder="Enter Age"
-                                                                    value={age || userData?.age || ""}
-                                                                    onChange={(e) => setAge(e.target.value)}
-                                                                />
-                                                            </Form.Group>
-                                                        </Form>
-                                                    </Col>
-                                                </Row>
-
-                                            </Col>
-                                            <Col xs={12} md={6} className='cds_col_bld'> {/* Full width on small screens, half width on large screens */}
-
-                                                <Row className="">
-                                                    {/* Blood Group Form */}
-                                                    <Col >
-                                                        <Form>
-                                                            <Form.Group controlId="formGridBloodGroup">
-                                                                <Form.Label className="form-label ps-3">Blood Group</Form.Label>
-                                                                <Form.Control
-                                                                    type="text"
-                                                                    placeholder="Enter Blood Group"
-                                                                    value={bloodGroup || userData?.bloodGroup || ""}
-                                                                    onChange={(e) => setBloodGroup(e.target.value)}
-                                                                />
-                                                            </Form.Group>
-                                                        </Form>
-                                                    </Col>
-
-                                                    {/* Age Form */}
-                                                    <Col >
-                                                        <Form>
-                                                            <Form.Group controlId="formGridAge">
-                                                                <Form.Label className="form-label ps-3">Age</Form.Label>
-                                                                <Form.Control
-                                                                    type="text"
-                                                                    placeholder="Enter Age"
-                                                                    value={age || userData?.age || ""}
-                                                                    onChange={(e) => setAge(e.target.value)}
-                                                                />
-                                                            </Form.Group>
-                                                        </Form>
-                                                    </Col>
-                                                </Row>
-
-                                            </Col>
+                                           
                                         </Row>
 
                                         {/* Full Name and Address Fields */}
@@ -561,8 +483,8 @@ const Blood = () => {
 
                 {activeSwitch === "Search for Blood Recipient" && (
                     <>
-                        <Card className="text-center mt-1 p-1" style={{ width: '25rem', margin: 'auto' }}>
-                            <Card.Img variant="top" style={{ height: "100%" }} src="bloods.webp" />
+                        <Card className="text-center mt-1 p-1 do-ca">
+                            <Card.Img variant="top" width={450} height={200} style={{ objectFit:"cover" }} src="bloods.webp" />
                             <Card.Body>
                                 <Card.Title>Search for Blood Recipient</Card.Title>
                                 <Card.Text>

@@ -281,7 +281,7 @@ const Voluntear = () => {
   return (
     <>
     <div>
-      <h2 className="text-center">Welcome {formData.username}</h2>
+      <h2 className="text-center">Welcome {formData.updateFullName}</h2>
       <h4 className="text-center hw" style={{ marginTop: "10px" }}>
         You can download your ID card or detailed PDF here
       </h4>
@@ -337,9 +337,9 @@ const Voluntear = () => {
             </div>
           )}
         </div>
-        <h4>{formData.username}</h4>
+        <h4>{formData.updateFullName}</h4>
         <div className="crd-detail">
-          <p ><strong>Mobile: </strong> {`+${formData.mobile}`}</p>
+          <p ><strong>Mobile: </strong> {`${formData.mobile}`}</p>
           <p className="bC"><strong>Blood Gr. :</strong> {formData.bloodGroup} <strong> City : </strong> {formData.city} </p>
           <p> <strong> Ocopation: </strong>  {formData.occupation}</p>
         </div>

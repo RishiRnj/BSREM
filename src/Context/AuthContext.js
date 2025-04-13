@@ -69,7 +69,7 @@ export const AuthProvider = ({ children }) => {
 
   // Logout
   const logout = () => {
-    <Navigate to='/joinUs' replace/>
+    <Navigate to='/dashboard' replace/>
     console.log("Logging out. Clearing session and local storage.");
     setUser(null);    
     localStorage.removeItem("user");    
