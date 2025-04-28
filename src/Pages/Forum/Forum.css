@@ -1,26 +1,4 @@
- /* Forum Button */
- #forum_btn {
-   position: fixed;
-   bottom: 30px;
-   left: 0px;
-   animation: slide-in-out 3s infinite ease-in-out;
- }
 
- #forum_btn:hover {
-   animation-play-state: paused;
- }
-
- @keyframes slide-in-out {
-
-   0%,
-   100% {
-     left: 0px;
-   }
-
-   50% {
-     left: -120px;
-   }
- }
 
  /* Parent container styling */
  .statistics {
@@ -65,84 +43,6 @@
    cursor: pointer;
  }
  
- /* Main fPage Layout */
- #fPage {
-   display: flex;
-  justify-content: space-between; /* Add space between left, main, and right */
-  align-items: flex-start; /* Align top */
-   min-height: calc(100vh - 200px);   /* Ensure it fills the viewport height */
-   margin: 0;  
-   top: 0;
-   padding: 20px;
-   padding-top: 25px;
-  /* gap: 20px; */
-  box-sizing: border-box;
-  z-index: 900;
-  /*overflow: hidden; /* Prevent scrolling on the body */
-
- }
-
- /* Left and Right Sidebars */
- #fPage-left {
-  display: flex;
-  justify-content: flex-start; /* Add space between left, main, and right */
-  margin-top: 20px;
-  position: fixed;
-  align-items: flex-start; /* Align top */
-  max-width: 400px; /* Set max width for sidebars */
-  background-color: rgba(0, 0, 255, 0.1); /* Light background */
-  min-height: calc(100vh - 200px);   /* Ensure it fills the viewport height */
-  margin-top: 15px;
-  padding: 10px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  filter: blur(70%);
- }
- .lt{
-  width: 350px;
-  display: flex;
-  justify-content: flex-start; /* Add space between left, main, and right */
-  align-items: flex-start; /* Align top */
-  max-width: 400px; /* Set max width for sidebars */
-  background-color: rgba(0, 0, 255, 0.356); /* Light background */
-  padding: 15px;
-  margin-top: 5px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
- }
- 
- #fPage-right {
-  display: flex;
-  right: 0;
-  margin-right: 15px; 
-  padding-right: 15px;
-  justify-content: flex-start; /* Add space between left, main, and right */
-  margin-top: 20px;
-  position: fixed;
-  align-items: flex-start; /* Align top */
-  max-width: 400px; /* Set max width for sidebars */
-  background-color: rgba(0, 0, 255, 0.1); /* Light background */
-  min-height: calc(100vh - 200px);   /* Ensure it fills the viewport height */
-  margin-top: 15px;
-  padding: 10px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  
- }
-
- .rt{
-  width: 350px;
-  display: flex;
-  cursor: pointer;
-  justify-content: flex-end; /* Add space between left, main, and right */ 
-  max-width: 400px; /* Set max width for sidebars */
-  background-color: rgba(0, 0, 255, 0.356); /* Light background */
-  padding: 15px;  
-  margin-top: 5px; 
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  
- }
  
 
  
@@ -163,10 +63,12 @@
    max-width: 500px;   
    margin: auto;
    padding: 15px;
+   
  }
 
  .post-card:hover {
    transform: scale(1.05);
+   
    /* Slight scaling on hover */
  }
 
@@ -175,6 +77,9 @@
    padding: 10px;
    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
    border-radius: 8px;
+ }
+ .userCon:hover {
+  border-color: blueviolet;
  }
 
  .card-img-top {
@@ -190,17 +95,14 @@
 
   }
    .post-card {
-     max-width: 95%;     
-     padding: 5px;     /* Smaller card for mobile */
+     max-width: 97%;     
+     padding: 10px;     /* Smaller card for mobile */
    }
    .card-img-top {
     width: 300px;
     max-height: 200px;
     object-fit: cover;   /* Maintain the aspect ratio */
   }
-
-   
-
  }
 
  /* Hide sidebars on smaller screens */
@@ -212,6 +114,8 @@
   #fPage-left{
     display: none;
   }
+
+ 
   
 }
 
@@ -228,5 +132,18 @@
 }
 
 
+.c-ds {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
 
-
+@media (max-width: 676px) {
+  .c-ds {
+    justify-content: center;
+    margin-top: 20px;
+  }
+  .c-ds > div {
+    margin-right: 0;
+  }
+}

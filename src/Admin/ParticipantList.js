@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Table, Button } from 'react-bootstrap';
 import * as XLSX from 'xlsx';  // Import SheetJS
 
-const ParticipantList = ({ conferenceId, venue }) => {
+const ParticipantList = ({ conferenceId, venue, place }) => {
   const [participants, setParticipants] = useState([]);
 
   useEffect(() => {
@@ -36,7 +36,7 @@ const ParticipantList = ({ conferenceId, venue }) => {
 
   return (
     <div className='p-5'>
-      <h4 className='text-center'>Registered Participants</h4>
+      <h4 className='text-center'>Registered Participants for :- {venue}, {place}</h4>
       {participants.length > 0 ? (
         <>
         {/* Scrollable Table Container */}

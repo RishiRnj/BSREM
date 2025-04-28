@@ -15,6 +15,8 @@ import { GrNext } from "react-icons/gr";
 import { BsFillSendFill, BsFillSendArrowUpFill, BsBracesAsterisk } from "react-icons/bs";
 import AuthContext from "../../Context/AuthContext";
 import { BiSolidEdit } from "react-icons/bi";
+import LoadingSpinner from '../../Components/Common/LoadingSpinner';
+import UsernameInput from '../../Components/Common/UsernameInput ';
 
 
 const Test = () => {
@@ -34,6 +36,7 @@ const Test = () => {
   const [selectedImage, setSelectedImage] = useState(null); // State for preview image
   const placeholderImage = "/user.png";
   const [profileImage, setProfileImage] = useState(null);
+  const [uploadedImage, setUploadedImage] = useState(null);
   const [alertShown, setAlertShown] = useState(false); // Track if the alert has been shown
   const [showUpdateField, setShowUpdateField] = useState(false); // Control visibility of the update field
   const [showModal, setShowModal] = useState(false);  // State to control modal visibility
@@ -53,6 +56,7 @@ const Test = () => {
     religion: "",
     email: "",
     fullName: "",
+    username: "",
     updateFullName: "",
     mobile: "",
     dob: "",
@@ -106,7 +110,7 @@ const Test = () => {
 
 
         // Merge username and displayName into a single name field
-        const fullName = parsedUser.username || parsedUser.displayName || ""; // Prioritize username, fallback to displayName
+        const fullName = parsedUser.username; // Prioritize username, fallback to displayName
         // Update formData with the retrieved user data
         setFormData((prevData) => ({
           ...prevData,
@@ -188,7 +192,7 @@ const Test = () => {
         ...userD, // Merge parsed user data into formData       
       }));
       if (userD.userImage) {
-        setProfileImage(userD.userImage);
+        setUploadedImage(userD.userImage);
       }
       if (userD.mobile) {
         setSavedDataLS(true);
@@ -217,14 +221,8 @@ const Test = () => {
     return age;
   };
 
-  const handleNameClick = () => {
-    if (!alertShown) {
-      handleSuccess("Update Name field is enable now, where you can update the Name.");
-      setAlertShown(true);
-      setShowUpdateField(true); // Make the update field visible
-    }
-    handleSuccess("New Name field is now editable.");
-  };
+  
+
   const EditMobile = () => {
     setSavedDataLS(false);
     setFormData((prevData) => ({ ...prevData, mobile: "" }));
@@ -276,9 +274,6 @@ const Test = () => {
         setFormData((prevData) => ({ ...prevData, [name]: checked }));
       } else if (name === "dob") {
         setFormData((prevData) => ({ ...prevData, dob: value, age: calculateAge(value) }));
-      } else if (name === "updateFullName") {
-        setErrorN(false);
-        setFormData((prevData) => ({ ...prevData, updateFullName: value }));
       }
       else {
         setFormData((prevData) => ({ ...prevData, [name]: value }));
@@ -286,13 +281,7 @@ const Test = () => {
     }
   };
 
-  const handleNameChangeAlart = (e) => {
-    if (!showUpdateField) {
-      handleWarning("This field is disabled, to enable Click the Pencil icon.");
-      return; // Exit the function if the field is disabled
-    }
 
-  }
 
   // step change
   const handleSettingStep1 = () => {
@@ -310,9 +299,14 @@ const Test = () => {
   const handleNext = (e) => {
     e.preventDefault(); // Prevent form submission
 
+    if (!formData.fullName && !formData.username ) {
+      handleWarning("User Name is required!.");
+      return;
+    }
+
     // Validate Full Name
-    if (showUpdateField && (!formData.updateFullName || formData.updateFullName.trim() === "")) {
-      handleWarning("You Click the edit Icon, now Name is required. If dont want to update, reload this page");
+    if (!formData.updateFullName) {
+      handleWarning("Full Name is required.");
       return;
     }
 
@@ -331,16 +325,12 @@ const Test = () => {
       handleWarning("Please select Gender.");
       return;
     }
-
-    if (!formData.updateFullName) {
-      setShowConfirmN(true); // Show confirmation modal
-    } else {
-      setStep(2); // Proceed to the next step
-      setComplete(1)
-      // Store form data in localStorage before proceeding
-      localStorage.setItem("savedFormData", JSON.stringify(formData));
-      localStorage.setItem("currentStep", "2"); // Save current step
+    if (formData.religion === "") {
+      handleWarning("Please select Religion.");
+      return;
     }
+
+    setStep(2);
   };
 
   const handleNext2 = (e) => {
@@ -412,8 +402,8 @@ const Test = () => {
   };
 
   const handleSubmit = async (e) => {
-    if (showUpdateField && !formData.updateFullName) {
-      handleWarning("Update Name is required now!");
+    if (!formData.updateFullName) {
+      handleWarning("Full Name is required!");
       setStep(1);
       setErrorN(true);
 
@@ -540,33 +530,16 @@ const Test = () => {
 
   if (loading) {
     return (
-      <div className="loading-container"
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100vw",
-          height: "100vh",
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          zIndex: 1050,
-        }}
-      >
-        <Spinner animation="border" role="status" >
-          <span className="visually-hidden">Loading...</span>
-        </Spinner>
-      </div>
+      <LoadingSpinner />
     );
   }
 
 
-  const imagePreview = profileImage ? profileImage : selectedImage ? selectedImage : placeholderImage ? placeholderImage : "";
+  const imagePreview = profileImage ? profileImage : selectedImage ? selectedImage : uploadedImage ? uploadedImage : placeholderImage ? placeholderImage : "";
 
   return (
     <>
-      <Hero />
+
 
       <div className="update-us-container">
 
@@ -596,17 +569,20 @@ const Test = () => {
                     </Col>
 
                     <Col sm>
-                      <InputGroup className="mb-2" >
-                        <InputGroup.Text style={{ fontWeight: "bold" }}>Full Name</InputGroup.Text>
-                        <Form.Control aria-label="Full Name"
-                          type="text" name="fullName" value={formData.fullName}
-                          onClick={handleNameClick} // Show alert on first click
-                          disabled
-                          readOnly
+                      {/* <InputGroup className="mb-2" >
+                        <InputGroup.Text style={{ fontWeight: "bold" }}>User Name</InputGroup.Text>
+                        <Form.Control aria-label="User Name"
+                        name='username'
+                          type="text" value={formData.username}
+                          // onClick={handleNameClick} // Show alert on first click
+                          disabled={formData.fullName}
+                          readOnly={formData.fullName}
+                          required={!formData.fullName}
                           aria-describedby="basic-verify"
-                        />
+                          onChange={handleChange}
+                        /> */}
 
-                        <Button
+                      {/* <Button
                           type="submit"
                           variant='light'
                           title='Update Name'
@@ -621,27 +597,36 @@ const Test = () => {
                             padding: '0px 10px',
                           }} >
                           <BsPencilSquare />
-                        </Button>
-                      </InputGroup>
+                        </Button> */}
+                      {/* </InputGroup> */}
+
+                      <UsernameInput
+                        value={formData.username}
+                        onChange={handleChange}
+                        disabled={formData.fullName || formData.username}
+                        readOnly={formData.fullName }
+                      />
                     </Col>
                   </Row>
 
                   <Row>
                     <Col sm>
-                      <div onClick={handleNameChangeAlart}>
+                      <div >
                         <InputGroup className="mb-2"  >
-                          <InputGroup.Text style={{ fontWeight: "bold" }}>New Full Name</InputGroup.Text>
-                          <Form.Control aria-label="New Full Name" type="text"
+                          <InputGroup.Text style={{ fontWeight: "bold" }}>Full Name</InputGroup.Text>
+                          <Form.Control
+                            aria-label="Full Name"
+                            type="text"
                             name="updateFullName"
                             placeholder="Enter your Updated Name..."
-                            value={formData.updateFullName}
-                            onChange={handleChange}
-                            readOnly={!showUpdateField}
-                            required={showUpdateField} />
+                            value={formData.updateFullName || ""} // Always set value to an empty string if undefined
+                            onChange={handleChange} // Only provide `onChange` if editable                            
+                            required
+                          />
                           {errorN ? <OverlayTrigger
                             placement="top"
                             delay={{ show: 250, hide: 400 }}
-                            overlay={props => renderTooltip(props, "You Clicked Update Name Icon, Now its Mendatory")}
+                            overlay={props => renderTooltip(props, "Enter Full name, its Mendatory")}
                           ><InputGroup.Text><BsBracesAsterisk /></InputGroup.Text></OverlayTrigger> : ""}
                         </InputGroup>
                       </div>
@@ -657,7 +642,8 @@ const Test = () => {
                             placeholder='Enter Phone Number'
                             disabled={onVerified || savedDataLS}
                             country={'in'}
-                            value={formData.mobile}
+                            value={formData.mobile || ""}
+
                             inputProps={{ name: 'mobile' }}
                             inputStyle={{ width: '100%', borderRadius: '5px' }}
                           />
@@ -691,7 +677,8 @@ const Test = () => {
                             aria-label="Mobile No."
                             type="tel"
                             name="mobile"
-                            value={formData.mobile}
+                            value={formData.mobile || ""}
+                            readOnly
                             placeholder="Enter your Mobile No"
                           />
                           {error ? <OverlayTrigger
@@ -704,6 +691,43 @@ const Test = () => {
                     </Col>
                   </Row>
 
+
+                  <Row>
+                    <Col sm>
+                      <InputGroup className="mb-2">
+                        <InputGroup.Text id="basic-addon1" style={{ fontWeight: "bold" }}>Gender</InputGroup.Text>
+                        <Form.Control as="select" aria-label="Gender" name="gender"
+                          value={formData.gender} required
+                          onChange={handleChange}
+                        >
+                          <option value="">Select</option>
+                          <option value="Male">Male</option>
+                          <option value="Female">Female</option>
+                          <option value="Other">Other</option>
+
+                        </Form.Control>
+
+                      </InputGroup>
+                    </Col>
+
+                    <Col sm>
+                      <InputGroup className="mb-2">
+                        <InputGroup.Text id="basic-addon1" style={{ fontWeight: "bold" }}>Religion</InputGroup.Text>
+                        <Form.Control as="select" aria-label="Religion" name="religion"
+                          value={formData.religion} required
+                          onChange={handleChange}
+                        >
+                          <option value="">Select Religion</option>
+                          <option value="Hinduism">Hinduism</option>
+                          <option value="Christianity">Christianity</option>
+                          <option value="Islam">Islam</option>
+
+                        </Form.Control>
+
+                      </InputGroup>
+                    </Col>
+
+                  </Row>
                   <Row>
                     <Col sm>
                       <div className="position-relative mb-2">
@@ -720,47 +744,6 @@ const Test = () => {
                         )}
                       </div>
                     </Col>
-
-                    <Col sm> 
-                      <InputGroup className="mb-2">
-                        <InputGroup.Text id="basic-addon1" style={{ fontWeight: "bold" }}>Gender</InputGroup.Text>
-                        <Form.Control as="select" aria-label="Gender" name="gender" 
-                          value={formData.gender} required
-                          onChange={(e) => {
-                            handleChange(e);
-                            
-                          }}
-                        >
-                          <option value="">Select</option>
-                          <option value="Male">Male</option>
-                          <option value="Female">Female</option>
-                          <option value="Other">Other</option>
-                          
-                        </Form.Control>
-                        
-                      </InputGroup>
-                    </Col>
-
-                    <Col sm>
-                    <InputGroup className="mb-2">
-                        <InputGroup.Text id="basic-addon1" style={{ fontWeight: "bold" }}>Religion</InputGroup.Text>
-                        <Form.Control as="select" aria-label="Religion" name="religion" 
-                          value={formData.religion} required
-                          onChange={(e) => {
-                            handleChange(e);
-                            
-                          }}
-                        >
-                          <option value="">Select Religion</option>
-                          <option value="Hinduism">Hinduism</option>
-                          <option value="Christianity">Christianity</option>
-                          <option value="Islam">Islam</option>
-                          
-                        </Form.Control>
-                        
-                      </InputGroup>
-                    </Col>
-
                   </Row>
 
 
@@ -1225,9 +1208,13 @@ const Test = () => {
             <Modal.Title>Phone Number Verification</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            {/* Render the MobileVerification component inside the modal */}
-            <MobileVerification onPhoneVerified={handlePhoneNumber} />
+            <Card>
+              <h6 className='text-center herO fw-bold'>Enter Valid Phone Number!</h6>
+              {/* Render the MobileVerification component inside the modal */}
+              <MobileVerification onPhoneVerified={handlePhoneNumber} />
+            </Card>
           </Modal.Body>
+
           <Modal.Footer>
             <Button variant="secondary" onClick={handleCloseModal}>
               Close
@@ -1264,21 +1251,7 @@ const Test = () => {
         </Modal>
 
       </div>
-
-
-
-
-
-
-
-
     </>
-
-
-
-
-
-
   )
 }
 

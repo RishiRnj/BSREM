@@ -1,6 +1,6 @@
 // // App.js (client side)
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation  } from "react-router-dom";
 
 // Components
 import LandingPage from './LandingPage/LandingPage';
@@ -14,12 +14,12 @@ import ResetPasswordModal from './LandingPage/ForgotPassword/ResetPasswordModal'
 // Pages
 import Terms from "./Components/Terms";
 import Forum from "./Pages/Forum/Forum";
-import AboutUs from "./Pages/About";
+import AboutUs from "./Pages/AboutUs/About";
 //import JoinUs from "./Pages/JoinUs/JoinUs";
 import User from "./Pages/User/User";
 import Header from "./Components/Header/Header";
 import ContactUs from "./Pages/Contact/ContactUs";
-import FAQ from "./Pages/FAQ";
+import FAQ from "./Pages/FAQ/FAQ";
 import Donation from "./Pages/Donate/Donation";
 import UpdateProfile from "./Pages/UpdateProfile/UpdateProfile";
 import Admin from './Admin/Admin'
@@ -46,24 +46,38 @@ import YouthConference from "./Pages/YouthConference/YouthConference";
 import Conference from "./Admin/Conference";
 import RealTimeLocation from "./Components/RealTimeLocation";
 import JoinUSup from "./Pages/JoinUs/JoinUSup";
+import CarForCharity from "./Pages/Donate/CarForCharity/CarForCharity";
+import Sanatan from "./Pages/SanatanIsOnlyTruth/Sanatan";
+import UserProfile from "./Pages/User/UserPost/UserProfile"
+import UserSuggestions from "./Pages/Suggestions/UserSuggestions";
 
 
 
 
 const App = () => {
+  const location = useLocation();
+
+  // List of routes where you DON'T want to show the Header
+  const noHeaderRoutes = ['/all_Sanatani_Under_One_Umbrella'];
+
+  const showHeader = !noHeaderRoutes.includes(location.pathname);
 
 
   return (
     <>
 
       <AppProviders>
-        <Header />
+      {showHeader && <Header />}
+        {/* <Header /> */}
        
         <Routes>
+        
 
           
           {/* Location */}
           <Route path="/location" element={<RealTimeLocation/>}/>
+          <Route path="/all_Sanatani_Under_One_Umbrella" element={<Sanatan/>}/>
+
          
 
           {/* Default route redirects to /dashboard */}
@@ -88,6 +102,7 @@ const App = () => {
           <Route path="/donate" element={<ProtectedRoute> <Donate /> </ProtectedRoute> } />
           {/* <Route path="/needAssistance" element={ <ProtectedRoute> <Support /> </ProtectedRoute> } />  */}
           <Route path="/register/for_support" element={<ProtectedRoute> <RegisterforSupport/> </ProtectedRoute>}/>
+          <Route path="/car_for_charity" element={<CarForCharity/>}/>
 
           {/* <Route path="/joinUs" element={<JoinUs />} /> */}
           <Route path="/joinUs" element={<ProtectedRoute><JoinUSup/></ProtectedRoute>}/>
@@ -118,6 +133,12 @@ const App = () => {
           <Route path="/forum" element={<ProtectedRoute> <Forum /> </ProtectedRoute>} />
           {/* User Profile Page */}
           <Route path="/user/:id?/profile" element={<ProtectedRoute> <User /> </ProtectedRoute>} />
+          <Route path="/user/have-suggestions" element={ <UserSuggestions />}  />
+
+          <Route path="/profile/:userId" element={<UserProfile />} />
+          <Route path="/profile/:userId/post/:postId" element={<UserProfile />} /> 
+
+          
 
           {/* User Surver Response Page */}
           <Route path="/user/:id/surveyResponse" element={<ProtectedRoute> <SurveyResponse /> </ProtectedRoute>} />
@@ -136,7 +157,8 @@ const App = () => {
           <Route path="/user/Users-Suggestions-for/follow" element={<ProtectedRoute> <FollowCheckPage /> </ProtectedRoute>} />
         </Routes>
         {/* </Suspense> */}
-        <Footer />
+        {/* <Footer /> */}
+        {showHeader && <Footer />}
       </AppProviders>
 
     </>

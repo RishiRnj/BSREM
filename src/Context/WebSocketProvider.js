@@ -19,19 +19,19 @@ export const WebSocketProvider = ({ children }) => {
   const connectWebSocket = () => {
 
     const token = localStorage.getItem('token'); // Retrieve token from storage
-    // ws = new WebSocket(
-    //   process.env.NODE_ENV === "production"
-    //     ? `${process.env.REACT_APP_API_URL_P}?token=${token}`
-    //     : `${process.env.REACT_APP_API_URL}?token=${token}`
-    // );
+    ws = new WebSocket(
+      process.env.NODE_ENV === "production"
+        ? `${process.env.REACT_APP_API_URL_P}?token=${token}`
+        : `${process.env.REACT_APP_API_URL}?token=${token}`
+    );
 
-    const wsUrl =
-  process.env.NODE_ENV === "production"
-    ? process.env.REACT_APP_WS_URL_P // Should be wss:// in .env
-    : process.env.REACT_APP_WS_URL;  // Should be ws:// for local dev
+//     const wsUrl =
+//   process.env.NODE_ENV === "production"
+//     ? process.env.REACT_APP_WS_URL_P // Should be wss:// in .env
+//     : process.env.REACT_APP_WS_URL;  // Should be ws:// for local dev
 
-const ws = new WebSocket(`${wsUrl}?token=${token}`);
-console.log("WebSocket URL:", `${wsUrl}?token=${token}`);
+// const ws = new WebSocket(`${wsUrl}?token=${token}`);
+// console.log("WebSocket URL:", `${wsUrl}?token=${token}`);
 
 
 

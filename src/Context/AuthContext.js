@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { jwtDecode } from "jwt-decode";
 import { useNavigate, Navigate  } from "react-router-dom";
-import { handleError } from '../Components/Util';
+import { handleError, handleSuccess } from '../Components/Util';
 
 
 const AuthContext = createContext();
@@ -14,8 +14,36 @@ export const AuthProvider = ({ children }) => {
 
   
 
-  // Simulate login (replace with API call)
+  const mobileLogin = async (mobile) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/mobile-login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile, mobileVerified: true })  // 'mobileVerified' is optional but good for extra safety
+      });
   
+      const data = await response.json();
+  
+      if (response.ok) {
+        const { token } = data;
+        localStorage.setItem("token", token);
+        const decodedUser = jwtDecode(token);
+        setUser(decodedUser);
+        localStorage.setItem("user", JSON.stringify(decodedUser));
+        handleSuccess("Mobile login successful!");
+      } else {
+        handleError(data.message);
+      }
+    } catch (error) {
+      console.error("Mobile login failed", error);
+      handleError("Something went wrong.");
+    }
+  };
+  
+
+
+
+  // Simulate login (replace with API call)  
   const login = async (email, password) => {
     setLoading(true);
     try {
@@ -100,7 +128,7 @@ export const AuthProvider = ({ children }) => {
   
 
   return (
-    <AuthContext.Provider value={{ user, login, googleLogin, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, googleLogin, mobileLogin, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

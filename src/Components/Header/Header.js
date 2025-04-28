@@ -6,6 +6,13 @@ import { Navigate } from "react-router-dom";
 import "./Header.css";
 import { HouseFill } from "react-bootstrap-icons";
 import { useNavigate } from "react-router-dom";
+import { MdDashboardCustomize, MdForum, MdSpaceDashboard } from "react-icons/md";
+import { IoHome } from "react-icons/io5";
+import { FaBloggerB, FaCarSide, FaClipboardList,  FaHandsHelping, FaOm } from "react-icons/fa";
+import { BsClipboard2DataFill } from "react-icons/bs";
+import { HiClipboardDocumentList } from "react-icons/hi2";
+import { GrContact } from "react-icons/gr";
+import { FcConferenceCall, FcFaq } from "react-icons/fc";
 
 const Header = () => {
 
@@ -62,6 +69,7 @@ const Header = () => {
     // Handle logout
     const handleLogout = () => {
         logout();
+        navigate('/dashboard');
         setUserData(null);
     };
 
@@ -77,7 +85,7 @@ const Header = () => {
 
     const redirectToBlDonate = () => {
 
-        localStorage.setItem("redirectToSEC", "blood-donation"); // Set localStorage item
+        localStorage.setItem("redirectToSEC", "blankB-donation"); // Set localStorage item
         setShow(false)
         navigate('/donation', { replace: true }); // Navigate to the donation page
         window.location.reload(); // Reload the page after the navigation
@@ -85,6 +93,41 @@ const Header = () => {
 
     const redirectToMentorDonate = () => {
         localStorage.setItem("redirectToSEC", "blank-donation"); // Set localStorage item
+        setShow(false)
+        navigate('/donation', { replace: true }); // Navigate to the donation page
+        window.location.reload(); // Reload the page after the navigation
+    };
+
+    
+
+    const redirectToBookDonate = () => {
+        localStorage.setItem("redirectToSEC", "blankBk-donation"); // Set localStorage item
+        setShow(false)
+        navigate('/donation', { replace: true }); // Navigate to the donation page
+        window.location.reload(); // Reload the page after the navigation
+    };
+
+    const redirectToClothsDonate = () => {
+        localStorage.setItem("redirectToSEC", "blankC-donation"); // Set localStorage item
+        setShow(false)
+        navigate('/donation', { replace: true }); // Navigate to the donation page
+        window.location.reload(); // Reload the page after the navigation
+    };
+
+    const redirectToFoodDonate = () => {
+        localStorage.setItem("redirectToSEC", "blankF-donation"); // Set localStorage item
+        setShow(false)
+        navigate('/donation', { replace: true }); // Navigate to the donation page
+        window.location.reload(); // Reload the page after the navigation
+    };
+    const redirectToGadgetDonate = () => {
+        localStorage.setItem("redirectToSEC", "blankLG-donation"); // Set localStorage item
+        setShow(false)
+        navigate('/donation', { replace: true }); // Navigate to the donation page
+        window.location.reload(); // Reload the page after the navigation
+    };
+    const redirectToTOYDonate = () => {
+        localStorage.setItem("redirectToSEC", "toy-donation"); // Set localStorage item
         setShow(false)
         navigate('/donation', { replace: true }); // Navigate to the donation page
         window.location.reload(); // Reload the page after the navigation
@@ -111,8 +154,8 @@ const Header = () => {
                         BSREM
                     </Navbar.Brand>
                     <Nav className="ms-auto d-flex align-items-center">
-                        <Nav.Link href="/dashboard"><HouseFill /></Nav.Link>
-                        <Nav.Link href="/forum">Forum</Nav.Link>
+                        <Nav.Link href="/dashboard"><HouseFill className="mb-1"/></Nav.Link>
+                       
 
                         <NavDropdown title="Donate for Community" id="basic-nav-dropdown"
                             show={showDonateDropdown}
@@ -133,9 +176,44 @@ const Header = () => {
                                 onClick={redirectToMentorDonate}
                             // href="/donation"
                             >Donate Mentorship</NavDropdown.Item>
+
+                            <NavDropdown.Item id="itmSu" className="ps-4"
+                                onClick={redirectToBookDonate}
+                            // href="/donation"
+                            >Donate Old Books</NavDropdown.Item>
+
+                            <NavDropdown.Item id="itmSu" className="ps-4"
+                                onClick={redirectToClothsDonate}
+                            // href="/donation"
+                            >Donate Clothes</NavDropdown.Item>
+
+                            <NavDropdown.Item id="itmSu" className="ps-4"
+                                onClick={redirectToFoodDonate}
+                            // href="/donation"
+                            >Donate Foods</NavDropdown.Item>
+
+                            <NavDropdown.Item id="itmSu" className="ps-4"
+                                onClick={redirectToGadgetDonate}
+                            // href="/donation"
+                            >Donate Old Learning Gadgets</NavDropdown.Item>
+                            
+                            <NavDropdown.Item id="itmSu" className="ps-4"
+                                onClick={redirectToTOYDonate}
+                            // href="/donation"
+                            >Donate Old Toys</NavDropdown.Item>
+
+                            {/* commented for now */}
+                            {/* <NavDropdown.Item id="itms" className=""
+                                
+                            href="/car_for_charity"
+                            >Car for Charity</NavDropdown.Item> */}
+                            
+                            
                             
 
                         </NavDropdown>
+
+                        <Nav.Link href="/forum">Say <FaOm className="mb-1" /></Nav.Link>
 
                         {/* <Nav.Link href="/donation">Donate</Nav.Link> */}
                         <Nav.Link href="/aboutUs">About Us</Nav.Link>
@@ -151,9 +229,9 @@ const Header = () => {
 
                             <NavDropdown.Item id="itms" href="/register/for_support">Request for Support!</NavDropdown.Item>
 
-
                             <NavDropdown.Item id="itms" href="/user/survey">Perticipate in the Survey</NavDropdown.Item>
                             <NavDropdown.Item id="itmSu" className="ps-4" href="/survey-stats">View Survey Result</NavDropdown.Item>
+                            <NavDropdown.Item id="itmSu" className="ps-4" href="/user/have-suggestions">Have Suggestions?</NavDropdown.Item>
                             <NavDropdown.Item id="itms" href="/youth">Youth Conference</NavDropdown.Item>
                             <NavDropdown.Item id="itm" href="/contactUs">Contact Us</NavDropdown.Item>
                             <NavDropdown.Item id="itm" href="/blog">Blog</NavDropdown.Item>
@@ -223,16 +301,41 @@ const Header = () => {
                 <Offcanvas.Body>
                     <div>
                         <Nav className="flex-column">
+                           
+                            {isAuthenticated ? (
+                            <>
+
+                                <Nav.Link href={userId ? `/user/${userId}/profile` : "/"}>
+                                User Home <IoHome />
+                                </Nav.Link>
+
+                                <Nav.Link id="itm" href="/dashboard" onClick={handleClose} className="py-2">
+                            Dashboard <MdSpaceDashboard />
+                        </Nav.Link>
+                                
+                            </>
+                        ) : (
                             <Nav.Link id="itm" href="/dashboard" onClick={handleClose} className="py-2">
-                                Home
-                            </Nav.Link>
+                            Guest Home <IoHome />
+                        </Nav.Link>
+                            
+                        )}
+
                             <Nav.Link id="itm" href="/forum" onClick={handleClose} className="py-2">
-                                Forum
+                                Say <FaOm className="mb-1"/>
+                            </Nav.Link>    
+
+                            <Nav.Link id="itmso" href="/donate" onClick={handleClose} className="py-2 mt-1">
+                                Donor Beneficiary Dashboard <MdDashboardCustomize/>
                             </Nav.Link>
 
+                            <Nav.Link id="itmso" href="/register/for_support" onClick={handleClose} className="py-2 mb-1">
+                                Request for Support! <FaHandsHelping/>
+                            </Nav.Link>
+  
                             
                             {/* Donate Accordion */}
-                            <Accordion align="right" className="py-2 me-5">
+                            <Accordion align="right" className=" me-5">
                                 <Accordion.Item eventKey="0">
                                     <Accordion.Header>Make Donation, Earn Salvation</Accordion.Header>
                                     <Accordion.Body>
@@ -252,67 +355,81 @@ const Header = () => {
                                             <Nav.Link id="itmso" href="/donation" onClick={redirectToMentorDonate} className="py-2">
                                                 Donate Mentorship
                                             </Nav.Link>
+                                            <Nav.Link id="itmso" href="/donation" onClick={redirectToBookDonate} className="py-2">
+                                                Donate Old Books
+                                            </Nav.Link>
+                                            <Nav.Link id="itmso" href="/donation" onClick={redirectToClothsDonate} className="py-2">
+                                                Donate Clothes
+                                            </Nav.Link>
+                                            <Nav.Link id="itmso" href="/donation" onClick={redirectToFoodDonate} className="py-2">
+                                                Donate Foods
+                                            </Nav.Link>
+                                            <Nav.Link id="itmso" href="/donation" onClick={redirectToGadgetDonate} className="py-2">
+                                                Donate Old Learning Gadgets
+                                            </Nav.Link>
+                                            <Nav.Link id="itmso" href="/donation" onClick={redirectToTOYDonate} className="py-2">
+                                                Donate Old Toys
+                                            </Nav.Link>
                                         </Nav>
                                     </Accordion.Body>
                                 </Accordion.Item>
                             </Accordion>
 
-
-
-
-                            {/* */}
-
-                            <Nav.Link id="itmso" href="/donate" onClick={handleClose} className="py-2 mt-1">
-                                Donor Beneficiary Dashboard
-                            </Nav.Link>
-                            <Nav.Link id="itmso" href="/register/for_support" onClick={handleClose} className="py-2 mb-1">
-                                Request for Support!
-                            </Nav.Link>
-
+                            {/* commented for now */}
+                             {/* <Nav.Link id="itm" href="/car_for_charity" onClick={handleClose} className="py-2">
+                             Car for Charity <FaCarSide/>
+                            </Nav.Link>      */}
+ 
                           
                             {/* Survey Accordion */}
-                            <Accordion align="right" className="py-2 me-5">
+                            <Accordion align="right" className=" me-5">
                                 <Accordion.Item eventKey="0">
-                                    <Accordion.Header>Survey</Accordion.Header>
+                                    <Accordion.Header>Survey <HiClipboardDocumentList /> </Accordion.Header>
                                     <Accordion.Body>
                                         <Nav className="flex-column">
                                             <Nav.Link id="itmso" href="/user/survey" onClick={handleClose} className="py-2">
-                                                Participate in the Survey
+                                                Participate in the Survey <FaClipboardList/>
                                             </Nav.Link>
 
                                             <Nav.Link id="itmso" href="/survey-stats" onClick={handleClose} className="py-2">
-                                                View the Survey Result
+                                                View the Survey Result <BsClipboard2DataFill />
                                             </Nav.Link>
                                         </Nav>
                                     </Accordion.Body>
                                 </Accordion.Item>
-                            </Accordion>                           
+                            </Accordion>   
+
+                                                
 
 
-
+                            <Nav.Link id="itmso" href="/user/have-suggestions" onClick={handleClose} className="py-2 mt-1">
+                                Have Suggestions?
+                            </Nav.Link> 
 
                             <Nav.Link id="itmso" href="/youth" onClick={handleClose} className="py-2 mt-1">
-                                Register for Youth Conference
-                            </Nav.Link>
+                                Register for Youth Conference <FcConferenceCall/>
+                            </Nav.Link> 
 
                             <Nav.Link id="itm" href="/aboutUs" onClick={handleClose} className="py-2">
                                 About
                             </Nav.Link>
 
                             <Nav.Link id="itm" href="/joinUs" onClick={handleClose} className="py-2">
-                                Join Us
+                                Join Us 
                             </Nav.Link>
 
                             <Nav.Link id="itm" href="/contactUs" onClick={handleClose} className="py-2">
-                                Contact Us
+                                Contact Us <GrContact />
                             </Nav.Link>
 
+                            
+
                             <Nav.Link id="itm" href="/blog" onClick={handleClose} className="py-2">
-                                Blog
+                                Blog <FaBloggerB/>
                             </Nav.Link>
 
                             <Nav.Link id="itm" href="/faq" onClick={handleClose} className="py-2">
-                                FAQ
+                                FAQ <FcFaq />
                             </Nav.Link>
 
 
@@ -342,7 +459,7 @@ const Header = () => {
                                             }}
                                         />
 
-                                        <Form.Text style={{ fontStyle: "italic", color: "HighlightText" }}>{userData?.updateFullName || userData?.username || userData?.displayName}'s Profile</Form.Text>
+                                        <Form.Text style={{textAlign: 'center', fontStyle: "italic", color: "HighlightText",  wordWrap: 'break-word', overflowWrap: 'break-word',  width: '80px' }}>{userData?.updateFullName || userData?.username || userData?.displayName}'s Profile</Form.Text>
                                     </div>
                                 </Nav.Link>
                                 <Nav.Link className="text-white" style={{

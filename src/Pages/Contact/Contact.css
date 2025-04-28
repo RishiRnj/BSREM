@@ -3,7 +3,7 @@
     flex-direction: row;
     align-items: center; /* Vertically centers the form */
     justify-content: center; /* Horizontally centers the form */
-    height: calc(100vh - 65px); /* Full height minus header */
+    height: calc(100vh - 120px); /* Full height minus header */
     position: relative; /* Allows for child positioning */
     overflow: hidden; /* Prevents overflow due to growing content */
   }
@@ -17,13 +17,14 @@
   }
   
   .contact-form-card {
-    flex: 1;
-    max-width: 400px;
-    margin: 20px;
+    flex: 1;    
+    max-width: 400px;    
+    margin: auto;
+    /* margin-bottom: 80px; */
     z-index: 2;
     background: rgba(255, 255, 255, 0.9);
     border-radius: 8px;
-    padding: 20px;
+    padding: 10px;    
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     overflow-y: auto; /* Enables scrolling if content grows beyond height */
   }
@@ -46,6 +47,7 @@
   
     .contact-form-card {
       margin: auto;
+      
       z-index: 2;
       max-width: 90%;
       width: auto; /* Adjust width dynamically for smaller screens */

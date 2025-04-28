@@ -80,7 +80,7 @@ const NoticeBoard = ({ notices }) => {
             className="notice"
             onClick={() => {
               if (notice.link === "/donation#Blood") {
-                localStorage.setItem("redirectToSEC", "blood-donation");
+                localStorage.setItem("redirectToSEC", "blankB-donation");
               }
               if (notice.link === "/donation#MentorShip") {
                 localStorage.setItem("redirectToSEC", "blank-donation");

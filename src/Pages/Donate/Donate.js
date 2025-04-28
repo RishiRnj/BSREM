@@ -14,7 +14,7 @@ const Donate = () => {
   const [error, setError] = useState(null);
   const [approvedBeneficiaries, setApprovedBeneficiaries] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
-  const maxLength = 40; // Set the maximum length to display initially
+  const maxLength = 26; // Set the maximum length to display initially
   const [expandedCards, setExpandedCards] = useState({});
   const [showModal, setShowModal] = useState(false); // Modal state
   const [selectedCard, setSelectedCard] = useState(null); // Store the selected card details
@@ -131,16 +131,16 @@ const Donate = () => {
 
     return (
       <Carousel slide data-bs-theme="dark" indicators={false} controls={false}>
-        <Carousel.Item style={{ zIndex: 0 }}>          
-            <h6 className='text-center herO'>In Hinduism, Donating is a means of Earning Virtue,</h6>
+        <Carousel.Item style={{ zIndex: 0 }}>
+          <h6 className='text-center herO'>In Hinduism, Donating is a means of Earning Virtue,</h6>
         </Carousel.Item>
 
-        <Carousel.Item style={{ zIndex: 0 }}>          
-            <h6 className='text-center herO'>but is the Money or Goods you Donate actually used</h6>
+        <Carousel.Item style={{ zIndex: 0 }}>
+          <h6 className='text-center herO'>but is the Money or Goods you Donate actually used</h6>
         </Carousel.Item>
 
-        <Carousel.Item style={{ zIndex: 0 }}>          
-            <h6 className='text-center herO'>to Unite and Betterment for the Hindu Community?</h6>
+        <Carousel.Item style={{ zIndex: 0 }}>
+          <h6 className='text-center herO'>to Unite and Betterment for the Hindu Community?</h6>
         </Carousel.Item>
       </Carousel>
     );
@@ -156,7 +156,7 @@ const Donate = () => {
     < >
       <div className='text-center herO' style={{ fontSize: "25px" }}>Donate</div>
       <div style={{ maxHeight: "150px" }}>
-{CarouselExample()}
+        {CarouselExample()}
       </div>
 
 
@@ -198,7 +198,7 @@ const Donate = () => {
             const description = formatFieldName(b?.descriptionOfNeed);
             const remainingBloodUnits = (b?.bloodGroupUnitReceived);
 
-           
+
             //Render all needs
             const renderNeeds = () => {
               switch (b?.applyFor) {
@@ -366,13 +366,14 @@ const Donate = () => {
 
 
                     <div className='d-flex flex-row-reverse bd-highlight'>
-                      <Card.Subtitle title='Beneficiary' className="mb-2 bd-highlight description"> — {b?.updateFullName}</Card.Subtitle> </div>
+                      <Card.Subtitle title='Beneficiary' className=" bd-highlight description"> — {b?.updateFullName}</Card.Subtitle> </div>
 
-                    <Card.Subtitle title='Beneficiary Background Checking Authority' className="mb-1 text-muted">Verifier Response</Card.Subtitle>
+                    
                     <Card.Text className='description1' title='Verifier response about Beneficiary' >
-                      {textToDisplayy}
+                     <span title='Beneficiary Background Checking Authority' className='text-muted fw-bold'>Verifier Response : </span> <span className=''>{textToDisplayy} </span> 
                       {b?.noteByVerifier.length > maxLength && (
                         <Button
+                        className=''
                           variant="link"
                           // onClick={() => handleToggleExpand(b._id)}
                           onClick={() => handleShowModal(b)}
@@ -431,6 +432,11 @@ const Donate = () => {
           })}
 
         </div>
+        <div style={{height:"60px"}}>
+        <p className='text-light mb-5'>K</p>
+
+      </div>
+
       </div>
 
       {selectedBeneficiary && (
@@ -581,6 +587,7 @@ const Donate = () => {
         </Modal.Body>
 
       </Modal>
+      
 
     </>
   );

@@ -355,13 +355,14 @@ const Survey = () => {
                   </Modal.Header>
                   <Modal.Body>
                     <h4>{questions[currentQuestionIndex]?.text || "No question available"}</h4>
-                    <Form>
+                    <Form className="p-2">
                       <Form.Check
                         type="radio"
                         label="Yes"
                         value="Yes"
                         checked={userAnswer === "Yes"}
                         onChange={(e) => setUserAnswer(e.target.value)}
+                        className="mb-2"
                       />
                       <Form.Check
                         type="radio"

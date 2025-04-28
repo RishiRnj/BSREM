@@ -6,6 +6,7 @@ import ForumStat from "../Forum/ForumStatistics";
 import { Button, Card, Row, Spinner, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { FaClipboardList  } from "react-icons/fa";
 import CountUp from 'react-countup';
+import { IoIosLogIn } from "react-icons/io";
 
 
 
@@ -178,18 +179,7 @@ const Dashboard = () => {
                 <span></span>
                 <span></span>
                 <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
+               
             </div>
             <div className='das' style={{ zIndex: "1000" }}><img src='om.webp' width={150} height={150} /></div>
             <div className='d-flex justify-content-center text-white  text-center ddd ' style={{ minHeight: `calc(100vh - 165px)`, }}  >
@@ -288,6 +278,7 @@ const Dashboard = () => {
                                         <Button className='' variant="danger" onClick={redirectToBenrficiarySupport}>Need support! Click here to get Support.</Button>
                                     </OverlayTrigger>
                                 </div>
+                                <div className='d-flex justify-content-center'>
                                 <div style={{ padding: "5px", zIndex: 1100, }}>
                                     <OverlayTrigger
                                         placement="top"
@@ -296,6 +287,16 @@ const Dashboard = () => {
                                     >
                                         <Button className='' variant="dark" onClick={() => navigate('/youth')}>Register for Youth Conference <FaClipboardList /></Button>
                                     </OverlayTrigger>
+                                </div>
+                                <div style={{ padding: "5px", zIndex: 1100, }}>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        delay={{ show: 250, hide: 400 }}
+                                        overlay={props => renderTooltip(props, "Click to Login")}
+                                    >
+                                        <Button className='' variant="light" onClick={() => navigate('/login')}>LogIn <IoIosLogIn /></Button>
+                                    </OverlayTrigger>
+                                </div>
                                 </div>
 
                             </div>

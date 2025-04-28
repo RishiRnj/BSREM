@@ -8,22 +8,30 @@ import Carousel from 'react-bootstrap/Carousel';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Ensure this is imported
 import './Donation.css';
 import { Modal } from 'react-bootstrap';
-import { BloodModal, BookModal, ClothModal, DonationModal, FoodModal, LaptopModal, OwnHandModal, SkillModal } from './Modals';
+import { BloodModal, BookModal, ClothModal, DonationModal, FoodModal, LaptopModal, OwnHandModal, SkillModal, ToyModal } from './Modals';
 import { FaHeart, FaBook, FaTshirt, FaHandHolding, FaRupeeSign } from "react-icons/fa";
 import { GiLaptop } from "react-icons/gi";
 import { BiDonateBlood } from "react-icons/bi";
 import PaymentOption from './Payment';
-import PayOpt from './PayOption';
-import Blood from './Blood';
-import Mentor from './Mentor';
+import PayOpt from './SectionContent/PayOption';
+import Blood from './SectionContent/Blood';
+import Mentor from './SectionContent/Mentor';
 import { MdBloodtype } from 'react-icons/md';
+import { SiPcgamingwiki } from 'react-icons/si';
+import { FcSmartphoneTablet } from 'react-icons/fc';
+import ConfirmationModal from '../../Components/Common/ConfirmationModal';
+import Book from './SectionContent/Book';
+import Cloth from './SectionContent/Cloth';
+import Food from './SectionContent/Food';
+import LearningGadget from './SectionContent/LearningGadget';
+import Toy from './SectionContent/Toy';
 
 
 const Donation = () => {
   const { user } = useContext(AuthContext);
   const userId = user?.id;
   console.log("Donation", userId);
-  
+
   const isAuthenticated = !!user;
 
   const [bookModal, setBookModal] = useState(false);
@@ -34,12 +42,16 @@ const Donation = () => {
   const [skillModal, setSkillModal] = useState(false);
   const [computerModal, setComputerlModal] = useState(false);
   const [bloodModal, setBloodlModal] = useState(false);
+  const [toyModal, setToyModal] = useState(false);
+
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showLoginModal, setShowloginModal] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
 
 
-  
+
 
   // Check authentication status and fetch user data
   useEffect(() => {
@@ -64,25 +76,25 @@ const Donation = () => {
         // Clear the stored values after redirection
         localStorage.removeItem("redirectAfterUpdateSEC");
       }
-    } 
+    }
   }, [isAuthenticated, userId]);
 
   useEffect(() => {
     const redirectToSec = localStorage.getItem("redirectToSEC");
-      const section = redirectToSec;
-        if (section) {
-          console.log("Redirecting to section:", section);
+    const section = redirectToSec;
+    if (section) {
+      console.log("Redirecting to section:", section);
 
-          const element = document.getElementById(section);
-          if (element) {
-            window.scrollTo({
-              top: element.offsetTop,
-              behavior: 'smooth',
-            });
-          }
-        }
-        // Clear the stored values after redirection
-        localStorage.removeItem("redirectToSEC");
+      const element = document.getElementById(section);
+      if (element) {
+        window.scrollTo({
+          top: element.offsetTop,
+          behavior: 'smooth',
+        });
+      }
+    }
+    // Clear the stored values after redirection
+    localStorage.removeItem("redirectToSEC");
   }, []);
 
 
@@ -124,43 +136,61 @@ const Donation = () => {
   const openBloodModal = () => {
     setBloodlModal(true)
   }
+  const openToyModal = () => {
+    setToyModal(true)
+  }
+
+
+
+  // const handleScrollToSection = async (sectionId) => {
+
+  //   localStorage.setItem("redirectAfterUpdateSEC", sectionId);
+  //   if (!userId) {
+  //     // Ask user to log in
+  //     const userResponse = window.confirm(
+  //       "You have to login and update Profile data!"
+  //     );
+
+  //     if (userResponse) {
+  //       // Store the section to navigate after login & profile update
+  //       localStorage.setItem("redirectAfterUpdate", location.pathname);
+  //       localStorage.setItem("redirectAfterLogin", `/user/update-profile`);
+  //       navigate("/login"); 
+  //     }
+
+  //     return;
+  //   }
+
+  //   // Check if the profile is updated before proceeding
+  //   const isProfileUpdated = await checkUserProfile();
+
+  //   if (!isProfileUpdated) {
+  //     const userResponse = window.confirm(
+  //       "Your profile is not updated. Update your profile to proceed. Press OK to update your profile or Cancel to stay here."
+  //     );
+
+  //     if (userResponse) {
+  //       navigateToProfileUpdate();
+  //     }
+  //     return;
+  //   }
+
+  //   // If everything is fine, scroll to the section
+  //   const element = document.getElementById(sectionId);
+  //   if (element) {
+  //     window.scrollTo({
+  //       top: element.offsetTop,
+  //       behavior: "smooth",
+  //     });
+  //   }
+  // };
+
+  // Function to check if user profile is updated
 
 
 
   const handleScrollToSection = async (sectionId) => {
-    
-    localStorage.setItem("redirectAfterUpdateSEC", sectionId);
-    if (!userId) {
-      // Ask user to log in
-      const userResponse = window.confirm(
-        "You have to login and update Profile data!"
-      );
-  
-      if (userResponse) {
-        // Store the section to navigate after login & profile update
-        localStorage.setItem("redirectAfterUpdate", location.pathname);
-        localStorage.setItem("redirectAfterLogin", `/user/update-profile`);
-        navigate("/login"); 
-      }
-      
-      return;
-    }
-  
-    // Check if the profile is updated before proceeding
-    const isProfileUpdated = await checkUserProfile();
-  
-    if (!isProfileUpdated) {
-      const userResponse = window.confirm(
-        "Your profile is not updated. Update your profile to proceed. Press OK to update your profile or Cancel to stay here."
-      );
-  
-      if (userResponse) {
-        navigateToProfileUpdate();
-      }
-      return;
-    }
-  
-    // If everything is fine, scroll to the section
+    // Always scroll first
     const element = document.getElementById(sectionId);
     if (element) {
       window.scrollTo({
@@ -168,14 +198,52 @@ const Donation = () => {
         behavior: "smooth",
       });
     }
+
+    // Save intended section for later
+    localStorage.setItem("redirectAfterUpdateSEC", sectionId);
+
+    if (!userId) {
+      setShowloginModal(true);
+      // const userResponse = window.confirm(
+      //   "You have to login and update your profile data!"
+      // );
+
+      // if (userResponse) {
+      //   localStorage.setItem("redirectAfterUpdate", location.pathname);
+      //   localStorage.setItem("redirectAfterLogin", `/user/update-profile`);
+      //   navigate("/login");
+      // }
+
+
+      return; // Don't proceed to profile check if not logged in
+    }
+
+    // Check if user profile is updated
+    const isProfileUpdated = await checkUserProfile();
+
+    if (!isProfileUpdated) {
+      // const userResponse = window.confirm(
+      //   "Your profile is not updated. Update your profile to proceed. Press OK to update your profile or Cancel to stay here."
+      // );
+
+      // if (userResponse) {
+      //   navigateToProfileUpdate();
+      // }
+      setShowProfileModal(true);
+
+      return; // Don’t proceed further if profile isn't updated
+    }
+
+    // If all checks pass, user has already been scrolled
   };
-  
-  // Function to check if user profile is updated
+
+
+
   const checkUserProfile = async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No token found.");
-  
+
       const response = await fetch(`${process.env.REACT_APP_API_URL}/user/profile`, {
         method: "GET",
         credentials: "include", // Necessary for cookies/session handling
@@ -184,11 +252,11 @@ const Donation = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-  
+
       if (!response.ok) {
         throw new Error("Failed to fetch user profile.");
       }
-  
+
       const userData = await response.json();
       return userData.isProfileCompleted; // Ensure this key exists in API response
     } catch (error) {
@@ -197,15 +265,41 @@ const Donation = () => {
       return false; // Default to false if there's an error
     }
   };
-  
+
   // Function to navigate to profile update page
   const navigateToProfileUpdate = () => {
-    if (!userId) throw new Error("Missing user authentication details.");    
+    if (!userId) {
+      // Store where the user should go after updating the profile
+      localStorage.setItem("redirectAfterLogin", `/user/update-profile`);
+      localStorage.setItem("redirectAfterUpdate", location.pathname);
+      navigate(`/login`);
+
+    }
     // Store where the user should go after updating the profile
     localStorage.setItem("redirectAfterUpdate", location.pathname);
-    navigate(`/user/${userId}/update-profile`);
+    navigate(`/user/${user.id}/update-profile`, { replace: true });
+
   };
-  
+
+  // Function to navigate to profile update page
+  const navigateToLogin = () => {
+    if (!userId) {
+      // Store where the user should go after updating the profile
+      localStorage.setItem("redirectAfterLogin", `/user/update-profile`);
+      localStorage.setItem("redirectAfterUpdate", location.pathname);
+      navigate(`/login`);
+    }
+  };
+
+
+  const handleProfileUpdateConfirm = () => {
+    setShowProfileModal(false);
+    navigateToProfileUpdate();
+  };
+  const handleLogInConfirm = () => {
+    setShowloginModal(false);
+    navigateToLogin();
+  };
 
 
 
@@ -225,7 +319,7 @@ const Donation = () => {
           <>
             <Carousel slide className='donate'>
 
-            <Carousel.Item>
+              <Carousel.Item>
                 <Card className='donate-card' style={{ width: '28rem' }}>
                   <Card.Header className='hdr4'> <h2 className='text-center'> Donate Us </h2></Card.Header>
                   <Card.Img variant="top" src="/doco.webp" />
@@ -285,9 +379,9 @@ const Donation = () => {
                         </Button>
                       </div>
                     </Card.Text>
-                    <div className="d-flex justify-content-center ">
-                      <Button className='me-2' variant="primary" onClick={() => handleScrollToSection('blood-donation')}>Donate <BiDonateBlood /> with <FaHeart /> </Button>
-                      <Button variant="primary" onClick={() => navigate("/donate")}>Find those, who need Blood </Button>
+                    <div className="d-flex flex-column gap-2">
+                      <Button className=' mx-auto' active variant="primary" onClick={() => handleScrollToSection('blood-donation')}>Donate <BiDonateBlood /> with <FaHeart /> </Button>
+                      <Button className=' mx-auto' variant="outline-secondary" onClick={() => navigate("/donate")}>Find those, who need 🩸 Blood </Button>
                     </div>
 
                   </Card.Body>
@@ -322,12 +416,12 @@ const Donation = () => {
                           onClick={openSkillModal}
                         >
                           Read More
-                        </Button>                        
+                        </Button>
                       </div>
                     </Card.Text>
-                    <div className="d-flex justify-content-center">
-                      <Button variant="primary" onClick={() => handleScrollToSection('skill-donation')}>Donate <img src='/skill.webp' alt='Skill Donation' style={{ maxHeight: "25px", width: "20px" }} /> with <FaHeart /> </Button>
-                      <Button className='ms-2' variant="primary" onClick={() => navigate("/donate")}>Find those, who need Support </Button>
+                    <div className="d-flex flex-column gap-2">
+                      <Button className=' mx-auto' variant="primary" onClick={() => handleScrollToSection('skill-donation')}>Donate <img src='/skill.webp' alt='Skill Donation' style={{ maxHeight: "25px", width: "20px" }} /> with <FaHeart /> </Button>
+                      <Button className=' mx-auto' variant="outline-secondary" onClick={() => navigate("/donate")}>Find those, who need your 🧠 Support!</Button>
                     </div>
 
                   </Card.Body>
@@ -341,7 +435,7 @@ const Donation = () => {
                 />
               )}
 
-              
+
 
 
 
@@ -367,9 +461,9 @@ const Donation = () => {
                         </Button>
                       </div>
                     </Card.Text>
-                    <div className="d-flex justify-content-center">
-                      {/* <Button variant="primary" onClick={() => handleScrollToSection('book-donation')}>Donate <FaBook /> with <FaHeart /> </Button> */}
-                      <Button variant="primary" onClick={() => navigate("/donate")}>Donate <FaBook /> with <FaHeart /> </Button>
+                    <div className="d-flex flex-column gap-2">
+                      <Button className=' mx-auto' variant="primary" onClick={() => handleScrollToSection('book-donation')}>Donate <FaBook /> with <FaHeart /> </Button>
+                      <Button className=' mx-auto' variant="outline-secondary" onClick={() => navigate("/donate")}>Find those, who need Old 📚 Books!</Button>
                     </div>
 
                   </Card.Body>
@@ -404,9 +498,9 @@ const Donation = () => {
                         </Button>
                       </div>
                     </Card.Text>
-                    <div className="d-flex justify-content-center">
-                      {/* <Button variant="primary" onClick={() => handleScrollToSection('cloth-donation')}>Donate <FaTshirt /> with <FaHeart /></Button> */}
-                      <Button variant="primary" onClick={() => navigate("/donate")}>Donate <FaTshirt /> with <FaHeart /> </Button>
+                    <div className="d-flex flex-column gap-2">
+                      <Button className=' mx-auto' variant="primary" onClick={() => handleScrollToSection('cloth-donation')}>Donate <FaTshirt /> with <FaHeart /></Button>
+                      <Button className=' mx-auto' variant="outline-secondary" onClick={() => navigate("/donate")}>Find those, who need 👕👗🧣 Clothes!</Button>
                     </div>
                   </Card.Body>
                 </Card>
@@ -440,9 +534,9 @@ const Donation = () => {
                         </Button>
                       </div>
                     </Card.Text>
-                    <div className="d-flex justify-content-center">
-                      {/* <Button variant="primary" onClick={() => handleScrollToSection('food-donation')}>Donate <img src='/healthi.png' alt='Nutritious Food' style={{ maxHeight: "25px", width: "20px" }} /> with <FaHeart /></Button> */}
-                      <Button variant="primary" onClick={() => navigate("/donate")}>Donate <img src='/healthi.png' alt='Nutritious Food' style={{ maxHeight: "25px", width: "20px" }} /> with <FaHeart /> </Button>
+                    <div className="d-flex flex-column gap-2">
+                      <Button className=' mx-auto' variant="primary" onClick={() => handleScrollToSection('food-donation')}>Donate <img src='/healthi.png' alt='Nutritious Food' style={{ maxHeight: "25px", width: "20px" }} /> with <FaHeart /></Button>
+                      <Button className=' mx-auto' variant="outline-secondary" onClick={() => navigate("/donate")}>Find those, who need <img src='/healthi.png' alt='Nutritious Food' style={{ maxHeight: "25px", width: "20px" }} /> Foods </Button>
                     </div>
                   </Card.Body>
                 </Card>
@@ -476,9 +570,9 @@ const Donation = () => {
                         </Button>
                       </div>
                     </Card.Text>
-                    <div className="d-flex justify-content-center">
-                      {/* <Button variant="primary" onClick={() => handleScrollToSection('laptop-donation')}>Donate <GiLaptop /> with <FaHeart /></Button> */}
-                      <Button variant="primary" onClick={() => navigate("/donate")}>Donate <GiLaptop /> with <FaHeart /> </Button>
+                    <div className="d-flex flex-column gap-2">
+                      <Button className=' mx-auto' variant="primary" onClick={() => handleScrollToSection('laptop-donation')}>Donate Old Gadgets <SiPcgamingwiki /> <FcSmartphoneTablet /> <GiLaptop /> with <FaHeart /></Button>
+                      <Button className=' mx-auto' variant="outline-secondary" onClick={() => navigate("/donate")}>Find those, who need  Old Gadgets <SiPcgamingwiki /> <FcSmartphoneTablet /> <GiLaptop /> </Button>
                     </div>
                   </Card.Body>
                 </Card>
@@ -488,6 +582,42 @@ const Donation = () => {
                 <LaptopModal
                   show={computerModal}
                   onHide={() => setComputerlModal(false)}
+                />
+              )}
+
+
+              {/* donate Toys */}
+              <Carousel.Item>
+                <Card className='donate-card' style={{ width: '28rem' }}>
+                  <Card.Header className='hdr6'> <h2 className='text-center'> Donate Toys </h2></Card.Header>
+                  <Card.Img variant="top" src="/toys.webp" />
+                  <Card.Body>
+                    <Card.Title>Give a Toy, Share the Joy</Card.Title>
+                    <Card.Text>
+                    Every toy has a story—and yours can begin a new chapter in a child’s life...
+                      <div className='text-end me-5' id='rM'>
+                        {/* <a className='bt' style={{ cursor: "pointer" }} href="#" onClick={openComputerModal}>Read More</a> */}
+                        <Button
+                          className="bt"
+                          variant='link'
+                          style={{ cursor: "pointer" }}
+                          onClick={openToyModal}
+                        >
+                          Read More
+                        </Button>
+                      </div>
+                    </Card.Text>
+                    <div className="d-flex flex-column gap-2">
+                      <Button className=' mx-auto' variant="primary" onClick={() => handleScrollToSection('toy-donation')}>🎁 One Toy at a Time.</Button>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Carousel.Item>
+
+              {toyModal && (
+                <ToyModal
+                  show={toyModal}
+                  onHide={() => setToyModal(false)}
                 />
               )}
 
@@ -531,7 +661,7 @@ const Donation = () => {
 
 
 
-              
+
 
 
             </Carousel>
@@ -553,49 +683,69 @@ const Donation = () => {
             </div>
             <div style={{ textAlign: 'center', marginTop: "10px" }}>
               {/* <PaymentOption /> */}
-            <PayOpt/>
+              <PayOpt />
 
             </div>
           </Card>
         </div>
 
-        {/* Blank Donation Section */}
+        {/* Blank Donation Section for skill */}
         <div
           className="container mt-2"
           id="blank-donation"
-          style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center',   }}
+          style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', }}
         >
-          
 
-            <div className='contibute' style={{ textAlign: 'center' }}>
-              {/* <h2 className='pt-3'>Donate Skill & Knowledge to Build "United Hindu Community"</h2> */}
-            </div>
-            <div style={{ textAlign: 'center', marginTop: "10px" }}>
-              
 
-            </div>
-          
+          <div className='contibute' style={{ textAlign: 'center' }}>
+            {/* <h2 className='pt-3'>Donate Skill & Knowledge to Build "United Hindu Community"</h2> */}
+          </div>
+          <div style={{ textAlign: 'center', marginTop: "10px" }}>
+
+
+          </div>
+
         </div>
 
 
-         {/* Slikk Donation Section */}
-         <div className='skl' id="skill">
+        {/* Slikk Donation Section */}
+        <div className='skl' id="skill">
+          <div
+            className="container mt-2"
+            id="skill-donation"
+            style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '100vh', paddingTop: '60px', paddingBottom: "60px" }}
+          >
+            <Card className='shadow ' style={{ minHeight: `calc(100vh - 140px)` }}>
+
+              <div className='contibute' style={{ textAlign: 'center' }}>
+                <h2 className='pt-3'>Donate Skill & Knowledge to Build "United Hindu Community"</h2>
+              </div>
+              <div style={{ textAlign: 'center', marginTop: "10px" }}>
+                <Mentor />
+
+              </div>
+            </Card>
+          </div>
+        </div>
+
+
+
+        {/* Blank Donation Section for blood */}
         <div
           className="container mt-2"
-          id="skill-donation"
-          style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '100vh', paddingTop: '60px', paddingBottom: "60px" }}
+          id="blankB-donation"
+          style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', }}
         >
-          <Card className='shadow ' style={{ minHeight: `calc(100vh - 140px)` }}>
 
-            <div className='contibute' style={{ textAlign: 'center' }}>
-              <h2 className='pt-3'>Donate Skill & Knowledge to Build "United Hindu Community"</h2>
-            </div>
-            <div style={{ textAlign: 'center', marginTop: "10px" }}>
-              <Mentor />
 
-            </div>
-          </Card>
-        </div>
+          <div className='contibute' style={{ textAlign: 'center' }}>
+            {/* <h2 className='pt-3'>Donate Skill & Knowledge to Build "United Hindu Community"</h2> */}
+          </div>
+          <div style={{ textAlign: 'center', marginTop: "10px" }}>
+
+
+          </div>
+
         </div>
 
 
@@ -603,7 +753,7 @@ const Donation = () => {
         <div
           className="container mt-3"
           id="blood-donation"
-          style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center',  minHeight: `calc(100vh - 150px)`, paddingTop: '70px', paddingBottom: "70px" }}
+          style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: `calc(100vh - 150px)`, paddingTop: '70px', paddingBottom: "70px" }}
         >
           <Card className='shadow ' style={{ minHeight: `calc(100vh - 140px)` }}>
 
@@ -612,21 +762,37 @@ const Donation = () => {
             </div>
             <div style={{ textAlign: 'center', marginTop: "10px" }}>
               <Blood />
-              
+
 
             </div>
-            </Card>
-          
+          </Card>
+
         </div>
 
 
 
+        {/* Blank Donation Section for book */}
+        <div
+          className="container mt-2"
+          id="blankBk-donation"
+          style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', }}
+        >
 
-       
+
+          <div className='contibute' style={{ textAlign: 'center' }}>
+            {/* <h2 className='pt-3'>Donate Skill & Knowledge to Build "United Hindu Community"</h2> */}
+          </div>
+          <div style={{ textAlign: 'center', marginTop: "10px" }}>
+
+
+          </div>
+
+        </div>
+
 
 
         {/* Book Donation Section */}
-        {/* <div
+        <div
           className="container mt-2"
           id="book-donation"
           style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '100vh', paddingTop: '60px', paddingBottom: "60px" }}
@@ -634,52 +800,200 @@ const Donation = () => {
           <Card className='shadow ' style={{ minHeight: `calc(100vh - 140px)` }}>
 
             <div className='contibute' style={{ textAlign: 'center' }}>
-              <h2 className='pt-3'>Donate Book & share Knowledge</h2>
+              <h1 className='pt-3 mt-3 herO'>Donate Old Books</h1>
+              <h4 className=''>for "Quality Education for the Community" Initiative.</h4>
+              <hr/>
             </div>
             <div style={{ textAlign: 'center', marginTop: "10px" }}>
-              
+              {/* main content */}
+              <Book/>
+
+
 
             </div>
           </Card>
-        </div>       */}
+        </div>
 
 
 
-        {/* Food Donation Section */}
-        {/* <div
+        {/* Blank Donation Section for cloth */}
+        <div
           className="container mt-2"
-          id="food-donation"
-          style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '100vh', paddingTop: '60px', paddingBottom: "60px" }}
+          id="blankC-donation"
+          style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', }}
         >
-          <div style={{ textAlign: 'center' }}>
-            <p>Food Donation</p>
+
+
+          <div className='contibute' style={{ textAlign: 'center' }}>
+            {/* <h2 className='pt-3'>Donate Skill & Knowledge to Build "United Hindu Community"</h2> */}
           </div>
-        </div> */}
+          <div style={{ textAlign: 'center', marginTop: "10px" }}>
+
+
+          </div>
+
+        </div>
+
+
+
+
 
 
         {/* Cloth Donation Section */}
-        {/* <div
+        <div
           className="container mt-2"
           id="cloth-donation"
           style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '100vh', paddingTop: '60px', paddingBottom: "60px" }}
         >
-          <div style={{ textAlign: 'center' }}>
-            <p>Cloth Donation</p>
+          <Card className='shadow ' style={{ minHeight: `calc(100vh - 140px)` }}>
+
+            <div className='contibute' style={{ textAlign: 'center' }}>
+              <h1 className='pt-3 mt-3 herO'>Donate Clothes</h1>
+              <h4 className=''>for "Wardrobe for Every Soul" Initiative.</h4>
+              <hr/>
+            </div>
+            <div style={{ textAlign: 'center', marginTop: "10px" }}>              
+              {/* main content */}
+              <Cloth/>
+
+
+            </div>
+          </Card>
+        </div>
+
+
+
+        {/* Blank Donation Section for Food */}
+        <div
+          className="container mt-2"
+          id="blankF-donation"
+          style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', }}
+        >
+
+
+          <div className='contibute' style={{ textAlign: 'center' }}>
+            {/* <h2 className='pt-3'>Donate Skill & Knowledge to Build "United Hindu Community"</h2> */}
           </div>
-        </div> */}
+          <div style={{ textAlign: 'center', marginTop: "10px" }}>
+
+
+          </div>
+
+        </div>
+
+
+
+        {/* Food Donation Section */}
+        <div
+          className="container mt-2"
+          id="food-donation"
+          style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '100vh', paddingTop: '60px', paddingBottom: "60px" }}
+        >
+          <Card className='shadow ' style={{ minHeight: `calc(100vh - 140px)` }}>
+
+            <div className='contibute' style={{ textAlign: 'center' }}>
+              <h2 className='pt-3 mt-3 mx-2 herO'>Donate Foods</h2>
+              <h6 className='px-3  mx-2'>Contributes to improved Health and well-being &</h6>
+              <h6 className='px-3  mx-2 herO'>Participate in "Hunger free Community" Initiative.</h6>
+              <hr/>
+            </div>
+            <div style={{ textAlign: 'center', marginTop: "10px" }}>
+              {/* main content */}
+              <Food/>
+
+
+            </div>
+          </Card>
+        </div>
+
+        {/* Blank Donation Section for Laptop */}
+        <div
+          className="container mt-2"
+          id="blankLG-donation"
+          style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', }}
+        >
+
+
+          <div className='contibute' style={{ textAlign: 'center' }}>
+            {/* <h2 className='pt-3'>Donate Skill & Knowledge to Build "United Hindu Community"</h2> */}
+          </div>
+          <div style={{ textAlign: 'center', marginTop: "10px" }}>
+
+
+          </div>
+
+        </div>
 
 
         {/* Laptop Donation Section */}
-        {/* <div
+        <div
           className="container mt-2"
           id="laptop-donation"
           style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '100vh', paddingTop: '60px', paddingBottom: "60px" }}
         >
-          <div style={{ textAlign: 'center' }}>
-            <p>Laptop Donation</p>
-          </div>
-        </div> */}
+          <Card className='shadow ' style={{ minHeight: `calc(100vh - 140px)` }}>
+
+            <div className='contibute' style={{ textAlign: 'center' }}>
+              <h2 className='pt-3 mt-3 herO'>Donate Old Learning Gadgets</h2>
+              <h4 className='m-1 text-muted'>for <span>  <em>"Devices for Dreams"</em> </span>Initiative</h4>
+              <hr/>
+            </div>
+            <div style={{ textAlign: 'center', marginTop: "10px" }}>
+              {/* main content */}
+              <LearningGadget/>
+
+
+            </div>
+          </Card>
+        </div>
+
+
+        {/* Toy Donation Section */}
+        <div
+          className="container mt-2"
+          id="toy-donation"
+          style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '100vh', paddingTop: '60px', paddingBottom: "60px" }}
+        >
+          <Card className='shadow ' style={{ minHeight: `calc(100vh - 140px)` }}>
+
+            <div className='contibute' style={{ textAlign: 'center' }}>
+              <h2 className='pt-3 mt-3 herO'>Donate used Toys</h2>
+              <h5 className='mx-3'>"Give a Toy, Share the Joy"</h5>
+              <h6 className='mx-3 text-muted'>by Supporting this Initiative you can help bring  <em> Happiness to Children </em> in need.</h6>
+              <hr/>
+            </div>
+            <div style={{ textAlign: 'center', marginTop: "10px" }}>
+              {/* main content */}
+              <Toy/>
+
+
+            </div>
+          </Card>
+        </div>
+
+
       </>
+      <ConfirmationModal
+        isOpen={showProfileModal}
+        onClose={() => setShowProfileModal(false)}
+
+        onConfirm={handleProfileUpdateConfirm}
+        title="Profile Update Required"
+        message="Your profile is not updated. Please update your profile to proceed."
+        confirmText="Update Profile"
+        cancelText="Go to Desired Section"
+      />
+
+      <ConfirmationModal
+        isOpen={showLoginModal}
+        onClose={() => setShowloginModal(false)}
+
+        onConfirm={handleLogInConfirm}
+        title="Login Required"
+        message="You have to login and update your profile data!."
+        confirmText="Log in"
+        cancelText="Go to Desired Section"
+      />
     </>
 
 

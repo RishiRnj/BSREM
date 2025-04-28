@@ -1,0 +1,38 @@
+.heroF {
+    background-color: #3d67bb79;
+    
+    position: absolute;
+    width: 100%;
+    min-height: calc(100vh - 135px); 
+    max-height: 100%;
+    /* Full height minus header */
+    overflow: hidden;
+    font-family: 'Montserrat', sans-serif;
+    z-index: -1; /* Push the hero behind the content */
+    
+}
+
+
+
+/* #faqB{
+    padding-top: 10px;
+} */
+
+
+
+/* .faq{
+    padding-bottom: 35px;
+    margin-top: 30px;
+}
+.faq #faqB {
+    padding-bottom: 30px;
+}*/
+
+/* @media (max-width: 668px) {
+    
+    .faqB {
+        width: 80%;
+        height: auto;
+    }
+    
+}  */

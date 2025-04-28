@@ -1,0 +1,182 @@
+.hero1 {
+    
+    width: 100%;
+    /* min-height: calc(100vh - 135px); */
+    height: 100%; 
+    /* Full height minus header */
+    overflow: hidden;
+    font-family: 'Montserrat', sans-serif;
+    z-index: -1; /* Push the hero behind the content */
+    
+}
+
+.hero .hero__title {
+    /* height: calc(100vh - 75px); */
+    /* Full height minus header */
+    /* align-content: center; */
+    color: #ffffff;
+    font-size: 30px;
+    z-index: 1;
+}
+
+
+
+
+
+.cube1 {
+    position: absolute;
+    bottom: 200vh;
+    right: 50vw;
+    /* background-image: url('/public/om.webp');
+    background-size: cover; */
+    width: 10px;
+    height: 10px;
+    border: solid 1px rgb(110, 110, 238);
+    transform-origin: top right;
+    transform: scale(0) rotate(0deg) translate(-50%, -50%);
+    animation: cube 12s ease-in forwards infinite;
+    opacity: 1;
+    
+
+
+
+    &:nth-child(2n) {
+        border-color:  rgb(149, 149, 228);
+    }
+
+    &:nth-child(2) {
+        animation-delay: 2s;
+        left: 15vw;
+        top: 140vh;
+    }
+
+    &:nth-child(3) {
+        animation-delay: 4s;
+        right: 15vw;
+        top: 150vh;
+    }
+
+    &:nth-child(4) {
+        animation-delay: 6s;
+        right: 10vw;
+        top: 210vh;
+    }
+
+    &:nth-child(5) {
+        animation-delay: 8s;
+        left: 10vw;
+        top: 219vh;
+    }
+
+    &:nth-child(6) {
+        animation-delay: 10s;
+        left: 30vw;
+        top: 210vh;
+    }
+    &:nth-child(7) {
+        animation-delay: 10s;
+        right: 30vw;
+        top: 150vh;
+    }
+    &:nth-child(8) {
+        animation-delay: 13s;
+        right: 10vw;
+        top: 180vh;
+    }
+    &:nth-child(9) {
+        animation-delay: 15s;
+        left: 10vw;
+        top: 160vh;
+    }
+}
+
+
+
+@keyframes cube1 {
+    from {
+        transform: scale(0) rotate(0deg) translate(-50%, -50%);
+        opacity: 1;
+    }
+
+    to {
+        transform: scale(20) rotate(960deg) translate(-50%, -50%);
+        opacity: 0;
+    }
+}
+
+@media (max-width: 764px) {
+    .cube1 {
+        position: absolute;
+        top: 200vh;
+        left: 25vw;
+        /* background-image: url('/public/om.webp');
+        background-size: cover; */
+        width: 10px;
+        height: 10px;
+        border: solid 1px rgb(110, 110, 238);
+        transform-origin: top right;
+        transform: scale(0) rotate(0deg) translate(-50%, -50%);
+        animation: cube 12s ease-in forwards infinite;
+        opacity: 1;
+        
+    
+    
+    
+        &:nth-child(2n) {
+            border-color:  rgb(149, 149, 228);
+        }
+    
+        &:nth-child(2) {
+            animation-delay: 2s;
+            left: 15vw;
+            top: 240vh;
+        }
+    
+        &:nth-child(3) {
+            animation-delay: 4s;
+            right: 15vw;
+            top: 250vh;
+        }
+    
+        &:nth-child(4) {
+            animation-delay: 6s;
+            right: 10vw;
+            top: 210vh;
+        }
+    
+        &:nth-child(5) {
+            animation-delay: 8s;
+            left: 10vw;
+            top: 285vh;
+        }
+    
+        &:nth-child(6) {
+            animation-delay: 10s;
+            left: 30vw;
+            top: 210vh;
+        }
+        &:nth-child(7) {
+            animation-delay: 10s;
+            right: 30vw;
+            top: 250vh;
+        }
+        &:nth-child(8) {
+            animation-delay: 13s;
+            right: 10vw;
+            top: 230vh;
+        }
+        &:nth-child(9) {
+            animation-delay: 15s;
+            left: 10vw;
+            top: 260vh;
+        }
+    }
+ }
+
+
+ .donate-card{
+    transition: transform 0.3s ease;
+ }
+ .donate-card:hover{
+    transform: scale(1.1); /* Scales the element 20% bigger on hover */
+ }

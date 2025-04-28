@@ -4,8 +4,8 @@
 import { useEffect, useState } from "react";
 
 const RealTimeLocation = () => {
-  const [location, setLocation] = useState({ lat: null, lon: null });
-  const [address, setAddress] = useState("");
+  const [realTimeLocation, setRealTimeLocation] = useState({ lat: null, lon: null });
+  const [realTimeAddress, setRealTimeAddress] = useState("");
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -20,13 +20,13 @@ const RealTimeLocation = () => {
         console.log(data);
         
         if (data.display_name) {
-          setAddress(data.display_name);
+          setRealTimeAddress(data.display_name);
         } else {
-          setAddress("Address not found");
+          setRealTimeAddress("Address not found");
         }
       } catch (err) {
-        console.error("Error fetching address:", err);
-        setAddress("Error fetching address");
+        console.error("Error fetching realTimeAddress:", err);
+        setRealTimeAddress("Error fetching realTimeAddress");
       }
     };
 
@@ -34,10 +34,10 @@ const RealTimeLocation = () => {
       const lat = position.coords.latitude;
       const lon = position.coords.longitude;
 
-      setLocation({ lat, lon });
+      setRealTimeLocation({ lat, lon });
       console.log("Location:", lat, lon);
 
-      fetchAddress(lat, lon); // Get address
+      fetchAddress(lat, lon); // Get realTimeAddress
     };
 
     const errorCallback = (err) => {
@@ -64,9 +64,9 @@ const RealTimeLocation = () => {
         <p>Error: {error}</p>
       ) : (
         <p>
-          Latitude: {location.lat} <br />
-          Longitude: {location.lon} <br />
-          Address: {address}
+          Latitude: {realTimeLocation.lat} <br />
+          Longitude: {realTimeLocation.lon} <br />
+          Address: {realTimeAddress}
         </p>
       )}
     </div>

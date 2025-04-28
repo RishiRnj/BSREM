@@ -178,7 +178,7 @@ const Conference = () => {
           </div>
         )}
       </div>
-      {selectedConference && <ParticipantList conferenceId={selectedConference._id} venue={selectedConference.venue} />}
+      {selectedConference && <ParticipantList conferenceId={selectedConference._id} venue={selectedConference.venue} place={selectedConference.place} />}
 
       <div style={{ height: "20px" }}></div>
     </div>

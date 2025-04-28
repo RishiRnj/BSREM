@@ -1,12 +1,14 @@
 
 import React, { useEffect, useState, useContext, } from 'react';
-import {  useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import NoticeBoard from '../../Components/Notice/NoticeBorad';
 import AuthContext from "../../Context/AuthContext";
 import ForumStat from "./ForumStatistics";
-import { Modal, Spinner } from "react-bootstrap";
+import { Modal, Spinner, Nav } from "react-bootstrap";
 import PostCreator from './PostCreator';
 import { useWebSocket } from "../../Context/WebSocketProvider";
+import { IoIosSearch } from "react-icons/io";
+
 
 
 import "./Forum.css"
@@ -20,11 +22,14 @@ import SpeedDialAction from '@mui/material/SpeedDialAction';
 import { RiSurveyLine } from "react-icons/ri";
 import { ToastContainer } from 'react-toastify';
 import { FaOm } from "react-icons/fa6";
+import LoadingSpinner from '../../Components/Common/LoadingSpinner';
+import ConfirmationModal from '../../Components/Common/ConfirmationModal';
+
 
 const actions = [
-    { icon: <FaOm />, name: 'New Post' },
-    { icon: <RiSurveyLine />, name: 'Perticipate In Survey' },
-    
+  { icon: <FaOm />, name: 'New Post' },
+  { icon: <RiSurveyLine />, name: 'Perticipate In Survey' },
+
 ];
 
 
@@ -38,13 +43,14 @@ const Forum = () => {
   const [loading, setLoading] = useState(false);
   const [notices, setNotices] = useState([]);
   const [surveyCompleted, setSurveyCompleted] = useState(false);
-  const [showModal, setShowModal] = useState();  
+  const [showModal, setShowModal] = useState();
   const [showPostModal, setShowPostModal] = useState(false); // State to control the modal  
   const { realTimeData, sendMessage, posts, setPosts } = useWebSocket();
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [error, setError] = useState(null);
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
 
   // on fab button click
@@ -133,7 +139,7 @@ const Forum = () => {
     } finally {
       setLoading(false);
     }
-  };  
+  };
 
   //fetch Notices
   const fetchNotices = async () => {
@@ -192,7 +198,7 @@ const Forum = () => {
 
 
   //Show post Modal
-  const handleNewPost = (newPost) => {    
+  const handleNewPost = (newPost) => {
     sendMessage("newPost", newPost);
     setShowPostModal(false) // Close the modal after posting
   };
@@ -206,13 +212,7 @@ const Forum = () => {
       const isProfileUpdated = await checkUserProfile(); // Ensure `checkUserProfile` is async
 
       if (!isProfileUpdated) {
-        const userResponse = window.confirm(
-          "Your profile is not updated. Update your profile to post. Press OK to update your profile or Cancel to stay here."
-        );
-
-        if (userResponse) {
-          navigateToProfileUpdate();
-        }
+        setShowProfileModal(true);
         return; // Stop further execution if the profile isn't updated
       }
       localStorage.removeItem("redirectAfterUpdate"); // Clear after use
@@ -255,7 +255,7 @@ const Forum = () => {
       if (response.ok) {
         const { followedCount } = await response.json(); // Destructure followedCount
         console.log("Followed Users Count:", followedCount);
-        return followedCount >= 4; // Check if the count is >= 4 // Assume `followedCount` is the number of users the current user has followed
+        return followedCount >= 5; // Check if the count is >= 4 // Assume `followedCount` is the number of users the current user has followed
       } else {
         throw new Error("Failed to fetch follow status.");
       }
@@ -270,7 +270,7 @@ const Forum = () => {
   const navigateToProfileUpdate = () => {
     // Use React Router for navigation
     if (!userId) throw new Error("Missing user authentication details.");
-    localStorage.setItem("redirectAfterUpdate", location.pathname);    
+    localStorage.setItem("redirectAfterUpdate", location.pathname);
     navigate(`/user/${userId}/update-profile`);
 
   };
@@ -300,10 +300,22 @@ const Forum = () => {
       }
     } catch (error) {
       console.error("Error in checkUserProfile:", error);
-      navigate("/forum"); // Redirect to a fallback route if needed
+      navigate("/donation"); // Redirect to a fallback route if needed
       return false; // Default to false if there's an error
     }
   };
+
+
+  const handleProfileUpdateConfirm = () => {
+    setShowProfileModal(false);
+    navigateToProfileUpdate();
+};
+
+const handleProfileUpdateCancel = () => {
+    setShowProfileModal(false);
+    // Optionally add any cancel logic here
+    // setIsUserUpdated(false); // Reset the state if needed
+};
 
 
 
@@ -311,24 +323,7 @@ const Forum = () => {
 
   if (loading) {
     return (
-      <div className="loading-container"
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100vw",
-          height: "100vh",
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          zIndex: 1050,
-        }}
-      >
-        <Spinner animation="border" role="status" >
-          <span className="visually-hidden">Loading...</span>
-        </Spinner>
-      </div>
+      <LoadingSpinner />
     );
   }
 
@@ -396,42 +391,49 @@ const Forum = () => {
                 }
             `}</style>
         </div>
+
+        <ConfirmationModal
+                isOpen={showProfileModal}
+                onClose={handleProfileUpdateCancel}
+                onConfirm={handleProfileUpdateConfirm}
+                title="Profile Update Required"
+                message="Your profile is not updated. Please update your profile to proceed."
+                confirmText="Update Profile"
+                cancelText="Stay Here"
+            />
+
+
+
+
       </>
       <>
+        <Nav justify variant="tabs" defaultActiveKey="" className="sticky-nav">
+          <Nav.Item>
+            <Nav.Link href="/donate">Dashboard</Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link href="/user/Users-Suggestions-for/follow"><IoIosSearch className='mb-1' /> Find User</Nav.Link>           
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link href={`/user/${userId}/profile`}>My Posts</Nav.Link>            
+          </Nav.Item>
+        </Nav>
 
-      {/* main Content */}
-      <div id='fPage'>      {/*615 */}
-          {/* Left Sidebar */}
-          <div id="" className="fPage-sidebar">   {/* 617 */}
-            {/* its proxy but needed */}
-          </div>
-          <div id="fPage-left" className="">
-            <div className='lt'>
-              <p>Main Item set Here for Left Pannel</p>          {/* 622 */}
-            </div>
-          </div>
-          {/* Right Sidebar */}
-          <div id="" className="fPage-sidebar">           {/* 626 */}
-            {/* its proxy but needed */}
-          </div>
-          <div id="fPage-right" className="">
-            <div className='rt'>            {/* 630 */}
-              <strong>Main Item set Here for Right Pannel</strong>
-            </div>
-          </div>
+        {/* main Content */}
+        
           {/* main Content Parent Div */}
           {/* Post by Users fetched from server */}
-          <div className="d-flex align-items-center justify-content-center post-container pt-3">
+          <div className="post-container-user p-3">
 
             {/* display post */}
 
             <Posts filterByUser={false} />
           </div>
-        </div>
+        
 
 
 
-       
+
 
         {/* Fetched Survey Stat only for Forum Page */}
         <div
@@ -446,23 +448,8 @@ const Forum = () => {
           <ForumStat />
         </div>
 
+          {/* fab button */}
         <div style={{ position: "relative", }}>
-          {/* Main Content */}
-          <div
-          // style={{
-          //   position: "fixed",
-          //   bottom: "100px", // Space for footer                  
-          //   right: "0",
-          //   paddingRight: "15px"
-          // }}
-          >
-
-            {/* <Fab color="primary" aria-label="add"  onClick={CheckUserProfileBeforeProcced}>
-              <FaPlus />
-            </Fab> */}
-
-
-
             <Box
               sx={{
                 position: 'fixed',
@@ -473,8 +460,8 @@ const Forum = () => {
             >
               <SpeedDial
                 ariaLabel="SpeedDial tooltip example"
-                sx={{ position: 'fixed', bottom: 100, right: 16, fontSize:"30px", zIndex: 9999 }}
-                icon={<SpeedDialIcon  />}
+                sx={{ position: 'fixed', bottom: 100, right: 16, fontSize: "30px", zIndex: 9999 }}
+                icon={<SpeedDialIcon />}
                 direction="left"
                 onClose={handleClose}
                 onOpen={handleOpen}
@@ -482,19 +469,17 @@ const Forum = () => {
               >
                 {actions.map((action) => (
                   <SpeedDialAction
-                  
+
                     key={action.name}
                     icon={action.icon}
                     sx={{ fontSize: '20px' }}
                     tooltipTitle={action.name}
-                   // tooltipOpen
+                    // tooltipOpen
                     onClick={() => handleActionClick(action.name)}
                   />
                 ))}
               </SpeedDial>
-            </Box>
-
-          </div>
+            </Box>         
         </div>
 
         {/* Modal for PostCreator */}
@@ -517,9 +502,9 @@ const Forum = () => {
 
           </Modal.Body>
         </Modal>
-        
+
       </>
-      <ToastContainer/>
+      <ToastContainer />
 
     </>
   );

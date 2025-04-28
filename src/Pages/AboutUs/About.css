@@ -1,0 +1,29 @@
+/* Hero.css */
+@import url('https://fonts.googleapis.com/css?family=Montserrat:500');
+
+.about_text_a{
+    text-align: justify;
+    font-size: 19.2px;
+}
+.about_text_b{
+    text-align: justify;
+    font-size: 19.4px;
+}
+.about_text_c{
+    text-align: justify;
+    font-size: 25.4px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+@media (max-width: 668px) {
+    .about_text_a{
+        font-size: 2.7vw; /* 4% of viewport width */
+    }
+    .about_text_b{
+        font-size: 2.6vw; /* 4% of viewport width */
+    }
+    .about_text_c{
+        font-size: 3vw; /* 4% of viewport width */
+    }
+
+}

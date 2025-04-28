@@ -67,90 +67,7 @@ const AdminDashboardToHandleBeneficiary = () => {
             [id]: value,
         }));
     };
-
-
-    // const handleAddVerifierNote = async (id, note) => {
-    //     if (!note || note === "") {
-    //         handleWarning("Note Must be Entered!")
-    //         return;
-    //     }
-    //     try {
-    //         const response = await fetch(`${process.env.REACT_APP_API_URL}/api/beneficiary/addNote/byVerifier/${id}`, {
-    //             method: "PUT",
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //             },
-    //             body: JSON.stringify({ noteByVerifier: note }),
-    //         });
-
-    //         const data = await response.json();
-    //         if (response.ok) {
-    //             alert(data.message); // Notify the user about the success
-    //             setNoteByVerifier(""); // Reset the input field after success
-    //             setIsButtonDisabled(true); // Disable the button on success
-    //         } else {
-    //             alert(data.error); // Show error message if something goes wrong
-    //         }
-    //     } catch (error) {
-    //         console.error("Error while adding verifier note:", error);
-    //         alert("Error adding note. Please try again.");
-    //     }
-    // };
-
-    // const handleAddVerifierNote = async (id, note) => {
-    //     if (!note || note === "") {
-    //         handleWarning("Note Must be Entered!");
-    //         return;
-    //     }
-    //     try {
-    //         const response = await fetch(`${process.env.REACT_APP_API_URL}/api/beneficiary/addNote/byVerifier/${id}`, {
-    //             method: "PUT",
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //             },
-    //             body: JSON.stringify({ noteByVerifier: note }),
-    //         });
-
-    //         const data = await response.json();
-    //         if (response.ok) {
-    //             alert(data.message); // Notify the user about the success
-    //             setNotes((prevNotes) => ({ ...prevNotes, [id]: "" }));  // Clear the note for this beneficiary
-    //             setIsButtonDisabled(true); // Disable the button on success
-    //         } else {
-    //             alert(data.error); // Show error message if something goes wrong
-    //         }
-    //     } catch (error) {
-    //         console.error("Error while adding verifier note:", error);
-    //         alert("Error adding note. Please try again.");
-    //     }
-    // };
-    // const handleAddExAmount = async (id, exAmount) => {
-    //     if (!exAmount || exAmount === "") {
-    //         handleWarning("Note Must be Entered!");
-    //         return;
-    //     }
-    //     try {
-    //         const response = await fetch(`${process.env.REACT_APP_API_URL}/api/beneficiary/addNote/byVerifier/${id}`, {
-    //             method: "PUT",
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //             },
-    //             body: JSON.stringify({ expectedAmountOfMoney: exAmount }),
-    //         });
-
-    //         const data = await response.json();
-    //         if (response.ok) {
-    //             alert(data.message); // Notify the user about the success
-    //             setExAmount((prevNotes) => ({ ...prevNotes, [id]: "" }));  // Clear the note for this beneficiary
-    //             setIsButtonDisabled(true); // Disable the button on success
-    //         } else {
-    //             alert(data.error); // Show error message if something goes wrong
-    //         }
-    //     } catch (error) {
-    //         console.error("Error while adding verifier note:", error);
-    //         alert("Error adding note. Please try again.");
-    //     }
-    // };
+   
 
     const handleAddField = async (id, field, value) => {
         if (!value || value === "") {
@@ -230,7 +147,7 @@ const AdminDashboardToHandleBeneficiary = () => {
     return (
         <>
 
-            <h1 className="text-center">Admin Dashboard</h1>
+            <h1 className="text-center">Beneficiaries Dashboard</h1>
 
             <>
 
@@ -256,28 +173,7 @@ const AdminDashboardToHandleBeneficiary = () => {
 
                             <Row className="border border-dark p-2">
                                 <Col>
-                                    {/* <InputGroup className="me-3">
-                                        <Form.Control
-                                            value={notes[b._id] || ""}  // Get the note for the specific beneficiary
-                                            disabled={b?.noteByVerifier || isButtonDisabled}
-                                            onChange={(e) => handleNoteChange(b._id, e.target.value)}  // Update note for this beneficiary
-                                            placeholder="Enter On-field Reference Note"
-                                            aria-label="Enter On-field Reference Note"
-                                            aria-describedby="basic-addon2"
-                                            isInvalid={!notes[b._id] && !isButtonDisabled}  // Conditionally apply invalid style for this beneficiary
-                                        />
-                                        <Button
-                                            disabled={b?.noteByVerifier || isButtonDisabled || !notes[b._id]}  // Disable if note is empty for this beneficiary
-                                            variant="outline-secondary"
-                                            id="button-addon2"
-                                            onClick={() => handleAddField(b._id, "noteByVerifier", notes[b._id])}  // Pass specific note to the function
-                                        >
-                                            Add Note
-                                        </Button>
-                                        <Form.Control.Feedback type="invalid">
-                                            Note must be entered!
-                                        </Form.Control.Feedback>
-                                    </InputGroup> */}
+                                   
 
                                     <NoteInput
                                         beneficiaryId={b._id}
@@ -289,28 +185,7 @@ const AdminDashboardToHandleBeneficiary = () => {
                                 </Col>
 
                                 <Col sm={4}>
-                                    {/* <InputGroup className="me-3">
-                                        <Form.Control
-                                            value={exAmount[b._id] || ""}  // Get the note for the specific beneficiary
-                                            disabled={b?.expectedAmountOfMoney || isButtonDisabled}
-                                            onChange={(e) => handleAmountChange(b._id, e.target.value)}  // Update expected amount for this beneficiary
-                                            placeholder="Enter Expected Amount"
-                                            aria-label="Enter Expected Amount"
-                                            aria-describedby="basic-addon2"
-                                            isInvalid={!exAmount[b._id] && !isButtonDisabled}  // Conditionally apply invalid style for this beneficiary
-                                        />
-                                        <Button
-                                            disabled={b?.expectedAmountOfMoney || isButtonDisabled || !exAmount[b._id]}  // Disable if amount is empty for this beneficiary
-                                            variant="outline-primary"
-                                            id="button-addon2"
-                                            onClick={() => handleAddField(b._id, "expectedAmountOfMoney", exAmount[b._id])}  // Pass specific amount to the function
-                                        >
-                                            Add Expected Amount
-                                        </Button>
-                                        <Form.Control.Feedback type="invalid">
-                                            Expected Amount must be entered!
-                                        </Form.Control.Feedback>
-                                    </InputGroup> */}
+                                   
                                     <AmountInput
                                         beneficiaryId={b._id}
                                         amount={exAmount[b._id]}
@@ -338,38 +213,7 @@ const AdminDashboardToHandleBeneficiary = () => {
                             </Row>
                         </div>
 
-                        {/* <div className="mt-4 pt-3">
-                            {/* <div className="d-flex justify-content-center pt-2"> *
-                            
-
-
-                            <InputGroup className="me-3">
-                                <Form.Control
-                                    value={notes[b._id] || ""}  // Get the note for the specific beneficiary
-                                    disabled={b?.noteByVerifier || isButtonDisabled}
-                                    onChange={(e) => handleNoteChange(b._id, e.target.value)}  // Update note for this beneficiary
-                                    placeholder="Enter On-field Reference Note"
-                                    aria-label="Enter On-field Reference Note"
-                                    aria-describedby="basic-addon2"
-                                    isInvalid={!notes[b._id] && !isButtonDisabled}  // Conditionally apply invalid style for this beneficiary
-                                />
-                                <Button
-                                    disabled={b?.noteByVerifier || isButtonDisabled || !notes[b._id]}  // Disable if note is empty for this beneficiary
-                                    variant="outline-secondary"
-                                    id="button-addon2"
-                                    onClick={() => handleAddVerifierNote(b._id, notes[b._id])}  // Pass specific note to the function
-                                >
-                                    Add Note
-                                </Button>
-                                <Form.Control.Feedback type="invalid">
-                                    Note must be entered!
-                                </Form.Control.Feedback>
-                            </InputGroup>
-
-
-                            <Button size="sm" className="me-2" onClick={() => handleVerify(b._id, "approved")}>Approve</Button>
-                            <Button size="sm" className="ms-2" onClick={() => handleVerify(b._id, "rejected")}>Reject</Button>
-                        </div> */}
+                        
                     </Row>
                 ))}
 
@@ -429,7 +273,7 @@ const AdminDashboardToHandleBeneficiary = () => {
                 ))}
 
                 {/* Download Button */}
-                <div className="text-center mt-3">
+                <div className="text-center mt-3 mb-5">
                     <Button onClick={downloadXLS} variant="success">
                         Download XLS
                     </Button>

@@ -16,6 +16,38 @@
       height: 250px; /* Smaller height on mobile */
     }
   }
+
+
+  .sticky-navA {
+    position: sticky;
+    top: 120px; /* Offset by the height of the top navbar */
+    z-index: 1000; /* Ensure it's above content but below modal/dialog layers */
+    background-color: rgb(255, 255, 255); /* Important if your page has a scrollable background */
+  }
+  
+  .sticky-navAH {
+    position: sticky;
+    top: 60px; /* Offset by the height of the top navbar */
+    z-index: 1000; /* Ensure it's above content but below modal/dialog layers */
+    background-color: rgb(255, 255, 255); /* Important if your page has a scrollable background */
+  }
+  
+  .sticky-navA .nav-link:hover {
+    background-color: #e2c0c0; /* Light gray background on hover */
+    color: #0c55dd; /* Optional: change text color on hover */
+    transition: background-color 0.3s ease;
+  }
+
+  
+
+  .donation-dropdown .dropdown-item:hover {
+    background-color: #e2c0c0;
+  }
+
+  
+  
+
+
   
   
 

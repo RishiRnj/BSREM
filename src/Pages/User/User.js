@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useContext } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Modal, Button, Form, Spinner, ProgressBar, ListGroup, Nav } from "react-bootstrap";
+import {  useNavigate, useLocation } from "react-router-dom";
+import { Modal, Nav } from "react-bootstrap";
 import AuthContext from "../../Context/AuthContext";
 import { useWebSocket } from "../../Context/WebSocketProvider";
 import PostCreator from '../Forum/PostCreator';
@@ -12,11 +12,14 @@ import SpeedDial from '@mui/material/SpeedDial';
 import SpeedDialIcon from '@mui/material/SpeedDialIcon';
 import SpeedDialAction from '@mui/material/SpeedDialAction';
 
-import { BsMenuButtonFill, BsRepeat, BsFillSendFill, BsExclamationDiamondFill, BsExclamationTriangleFill, BsExclamationTriangle } from "react-icons/bs";
+
 import Posts from "../Forum/Posts";
 
 import { RiSurveyLine } from "react-icons/ri";
-import { FaOm, FaPlus } from "react-icons/fa6";
+import { FaOm } from "react-icons/fa6";
+import LoadingSpinner from "../../Components/Common/LoadingSpinner";
+import ConfirmationModal from '../../Components/Common/ConfirmationModal';
+
 
 const actions = [
     { icon: <FaOm />, name: 'New Post' },
@@ -32,7 +35,6 @@ const User = () => {
     const isAuthenticated = !!user;
     const currentUser = user;
     const userId = user?.id;
-    const [showFullData, setShowFullData] = useState(false); // Toggles between partial and full table view
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [responses, setResponses] = useState([]);
@@ -48,6 +50,7 @@ const User = () => {
     const { sendMessage, posts, setPosts } = useWebSocket();
     const [surveyCompleted, setSurveyCompleted] = useState(false);
     const [showModal, setShowModal] = useState();
+    const [showProfileModal, setShowProfileModal] = useState(false);
 
 
     const handleActionClick = (actionName) => {
@@ -76,13 +79,7 @@ const User = () => {
             const isProfileUpdated = await checkUserProfile(); // Ensure `checkUserProfile` is async
 
             if (!isProfileUpdated) {
-                const userResponse = window.confirm(
-                    "Your profile is not updated. Update your profile to post. Press OK to update your profile or Cancel to stay here."
-                );
-
-                if (userResponse) {
-                    navigateToProfileUpdate();
-                }
+                setShowProfileModal(true);
                 return; // Stop further execution if the profile isn't updated
             }
 
@@ -132,7 +129,7 @@ const User = () => {
             }
         } catch (error) {
             console.error("Error in checkUserProfile:", error);
-            navigate("/forum"); // Redirect to a fallback route if needed
+            navigate("/donation"); // Redirect to a fallback route if needed
             return false; // Default to false if there's an error
         }
     };
@@ -171,6 +168,7 @@ const User = () => {
         // Use React Router for navigation
         if (!userId) throw new Error("Missing user authentication details.");
         localStorage.setItem("redirectAfterUpdate", location.pathname);
+        localStorage.setItem("redirectAfterLogIn", location.pathname);
         navigate(`/user/${userId}/update-profile`);
 
     };
@@ -196,14 +194,7 @@ const User = () => {
             const isProfileUpdated = await checkUserProfile(); // Ensure `checkUserProfile` is async
 
             if (!isProfileUpdated) {
-                // Show confirmation alert
-                const userResponse = window.confirm(
-                    "Your profile is not updated. Update your profile to post. Press OK to update your profile or Cancel to stay here."
-                );
-
-                if (userResponse) {
-                    navigateToProfileUpdate();
-                }
+                setShowProfileModal(true);
                 return; // Stop further execution if the profile isn't updated
             }
 
@@ -260,7 +251,7 @@ const User = () => {
 
     useEffect(() => {
         if (isAuthenticated) {
-            localStorage.removeItem("redirectAfterLogin"); // Clear after use
+            localStorage.removeItem("redirectAfterLogIn"); // Clear after use
             localStorage.removeItem("redirectAfterUpdate"); // Clear after use
             const fetchUserData = async () => {
                 setLoading(true)
@@ -309,26 +300,20 @@ const User = () => {
         console.log("Click No");
     };
 
+    const handleProfileUpdateConfirm = () => {
+        setShowProfileModal(false);
+        navigateToProfileUpdate();
+    };
+    
+    const handleProfileUpdateCancel = () => {
+        setShowProfileModal(false);
+        // Optionally add any cancel logic here
+        // setIsUserUpdated(false); // Reset the state if needed
+    };
+
     if (loading) {
         return (
-            <div className="loading-container"
-                style={{
-                    position: "fixed",
-                    top: 0,
-                    left: 0,
-                    width: "100vw",
-                    height: "100vh",
-                    backgroundColor: "rgba(0, 0, 0, 0.5)",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    zIndex: 1050,
-                }}
-            >
-                <Spinner animation="border" role="status" >
-                    <span className="visually-hidden">Loading...</span>
-                </Spinner>
-            </div>
+            <LoadingSpinner />
         );
     }
 
@@ -381,194 +366,128 @@ const User = () => {
                 }
             `}</style>
                 </div>
+
+
+                <ConfirmationModal
+                isOpen={showProfileModal}
+                onClose={handleProfileUpdateCancel}
+                onConfirm={handleProfileUpdateConfirm}
+                title="Profile Update Required"
+                message="Your profile is not updated. Please update your profile to proceed."
+                confirmText="Update Profile"
+                cancelText="Stay Here"
+            />
             </>
 
 
             <>
-                <Nav justify variant="tabs" defaultActiveKey="">
+                <Nav justify variant="tabs" className="sticky-nav">
                     <Nav.Item>
-                        <Nav.Link href="">Active</Nav.Link>
+                        <Nav.Link href="/donate">Dashboard</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
-                        <Nav.Link href="">Becon</Nav.Link>
-                        {/* <Nav.Link eventKey="link-1">Loooonger NavLink</Nav.Link> */}
+                        <Nav.Link href=
+                         {`/user/${userId}/update-profile`}
+                        >Update Profile</Nav.Link>
+                        
                     </Nav.Item>
                     <Nav.Item>
-                        <Nav.Link href="">Brade</Nav.Link>
+                        <Nav.Link href="/forum"><FaOm className="mb-1"/> Dashboard</Nav.Link>
                         {/* <Nav.Link eventKey="link-2">Link</Nav.Link> */}
                     </Nav.Item>
                 </Nav>
-                <div className="user-container">
-                    {/* main Content */}
-                    <div id='fPage-user'>      {/*615 */}
-                        {/* Left Sidebar */}
-                        <div id="" className="fPage-sidebar-user">   {/* 617 */}
-                            {/* its proxy but needed */}
-                        </div>
-                        <div id="fPage-left-user" className="">
-                            <div className='lt-user'>
-                                <p>Main Item set Here for Left Pannel</p>          {/* 622 */}
-                            </div>
-                        </div>
-                        {/* Right Sidebar */}
-                        <div id="" className="fPage-sidebar-user">           {/* 626 */}
-                            {/* its proxy but needed */}
-                        </div>
-                        <div id="fPage-right-user" className="">
-                            <div className='rt-user'>            {/* 630 */}
-                                <strong>Main Item set Here for Right Pannel</strong>
-                            </div>
-                        </div>
-                        {/* main Content Parent Div */}
-                        {/* Post by Users fetched from server */}
-                        <div id="pst" className="d-flex align-items-center justify-content-center post-container">
 
-                            {/* display post */}
 
-                            <Posts filterByUser={true} />
 
-                        </div>
+
+                {/* Post by Users fetched from server//post-container */}
+                {/* <div className="d-flex align-items-center justify-content-center  ">  */}
+
+                    {/* display post */}
+                    <div className="post-container-user p-3 pb-5">
+                        <Posts filterByUser={true} />
                     </div>
 
+                    
+                {/* </div> */}
 
 
 
 
 
-                    {/* its also invisible */}
-                    <div style={{ display: "none" }}>
-                        <div className="d-flex align-items-center justify-content-center">
-                            <img
-                                className="userPic"
-                                src={userData?.userImage || "/user.png"}
-                                alt="User"
-                                title={userData?.updateFullName || userData?.displayName || "User"}
-                                style={{
-                                    marginRight: "10px",
-                                    width: "100px",
-                                    height: "100px",
-                                    borderRadius: "50%",
-                                    border: "1px solid #ccc",
-                                }}
-                                onError={(e) => {
-                                    e.target.src = "/user.png"; // Fallback in case of load error
-                                }}
-                            />
-                        </div>
-
-                        <div className="d-flex align-items-center justify-content-center">
-                            <h3>{userData?.updateFullName || userData?.displayName || "User"}</h3>
-                        </div>
-                    </div>
 
 
-                    <div style={{ position: "relative", }}>
-                        {/* Fab Button */}
-                        <div>
 
-                            <Box
-                                sx={{
-                                    position: 'fixed',
-                                    bottom: "70px", // Space for footer
-                                    right: '16px',
-                                    pointerEvents: 'auto',
-                                }}
-                            >
-                                <SpeedDial
-                                    ariaLabel="SpeedDial tooltip example"
-                                    sx={{ position: 'fixed', bottom: 70, right: 16, fontSize: "30px", zIndex: 9999 }}
-                                    icon={<SpeedDialIcon />}
-                                    direction="left"
-                                    onClose={handleClose}
-                                    onOpen={handleOpen}
-                                    open={open}
-                                >
-                                    {actions.map((action) => (
-                                        <SpeedDialAction
 
-                                            key={action.name}
-                                            icon={action.icon}
-                                            sx={{ fontSize: '20px' }}
-                                            tooltipTitle={action.name}
-                                            // tooltipOpen
-                                            onClick={() => handleActionClick(action.name)}
-                                        />
-                                    ))}
-                                </SpeedDial>
-                            </Box>
 
-                        </div>
 
-                        {/* Modal for PostCreator */}
-                        <Modal
-                            show={showPostModal}
-                            onHide={() => setShowPostModal(false)}
-                            centered
+
+
+                         {/* fab button */}
+                <div style={{ position: "relative", }}>
+                   
+
+                        <Box
+                            sx={{
+                                position: 'fixed',
+                                bottom: "70px", // Space for footer
+                                right: '16px',
+                                pointerEvents: 'auto',
+                            }}
                         >
-                            <Modal.Header closeButton> Create New Post </Modal.Header>
-                            <Modal.Body>
+                            <SpeedDial
+                                ariaLabel="SpeedDial tooltip example"
+                                sx={{ position: 'fixed', bottom: 70, right: 16, fontSize: "30px", zIndex: 9999 }}
+                                icon={<SpeedDialIcon />}
+                                direction="left"
+                                onClose={handleClose}
+                                onOpen={handleOpen}
+                                open={open}
+                            >
+                                {actions.map((action) => (
+                                    <SpeedDialAction
 
-                                <div style={{
-
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                }}>
-                                    <PostCreator onPostCreated={handleNewPost} />
-                                </div>
-
-                            </Modal.Body>
-                        </Modal>
-                    </div>
-
-
-
-
-
-                    {/* for now its invisible */}
-                    {/* User Data Table */}
-                    <div className="user-data" style={{ display: "none" }}>
-                        <table className="user-table" border="1" style={{ width: "80%", margin: "auto" }}>
-                            <thead>
-                                <tr>
-                                    {/* <th>Field</th>
-                                        <th>Value</th> */}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {/* Render partial data */}
-                                {(!showFullData ? userData?.partialFields : userData?.fullFields)?.map((field, index) => (
-                                    <tr key={index}>
-                                        <td><strong>{field.label}</strong></td>
-                                        <td>{field.value}</td>
-                                    </tr>
+                                        key={action.name}
+                                        icon={action.icon}
+                                        sx={{ fontSize: '20px' }}
+                                        tooltipTitle={action.name}
+                                        // tooltipOpen
+                                        onClick={() => handleActionClick(action.name)}
+                                    />
                                 ))}
-                            </tbody>
-                        </table>
+                            </SpeedDial>
+                        </Box>
 
-                        {/* Toggle Buttons */}
-                        {!showFullData ? (
-                            <div className="show-more-container text-center" style={{ marginTop: "20px" }}>
-                                <Button className="btn"
-                                    onClick={() => setShowFullData(true)}
-                                    variant="primary" size="lg">
-                                    Show More
-                                </Button>
+                        </div>
+
+                    {/* Modal for PostCreator */}
+                    <Modal
+                        show={showPostModal}
+                        onHide={() => setShowPostModal(false)}
+                        centered
+                    >
+                        <Modal.Header closeButton> Create New Post </Modal.Header>
+                        <Modal.Body>
+
+                            <div style={{
+
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                            }}>
+                                <PostCreator onPostCreated={handleNewPost} />
                             </div>
-                        ) : (
-                            <div className="show-less-container text-center" style={{ marginTop: "20px" }}>
-                                <Button variant="success" size="lg" className="btn"
-                                    onClick={() => setShowFullData(false)}>
-                                    Show Less
-                                </Button>
-                                <Button variant="warning" size="lg" className="btn ms-2"
-                                    onClick={() => alert("Edit Profile option not Available at this time.")}>
-                                    Edit
-                                </Button>
-                            </div>
-                        )}
-                    </div>
-                </div>
+
+                        </Modal.Body>
+                    </Modal>
+                
+
+
+
+
+
+
+
 
 
             </>

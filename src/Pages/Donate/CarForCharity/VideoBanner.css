@@ -1,0 +1,162 @@
+.video-container {
+    position: relative;
+    width: 100%;
+    height: 400px; /* Set visible height */
+    overflow: hidden;
+    
+  }
+  
+  .background-video {
+    position: absolute;
+    top: 50%; /* Center vertically */
+    left: 0;
+    width: 100%;
+    height: auto;
+    /* transform: translateY(-50%) scale(1.2); Crop top/bottom + zoom */
+    transform: translateY(-50%) ; 
+    object-fit: cover;
+    /* z-index: 1; */
+  }
+  
+
+  .cnc{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    margin-left: 40px;
+    color: antiquewhite;    
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);   
+    
+  }
+
+  .cnc-object img {
+    position: relative;
+    object-fit: cover;
+    margin-left: 0 !important;
+    width: 50%;
+    height: 100%;
+    
+  }
+
+  .video-footer-text {
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+    color: #fff;
+    
+    font-size: 1.2rem;
+    text-shadow: 0 0 10px rgba(0,0,0,0.7);
+    z-index: 5;
+  }
+
+  .video-footer-text {
+    animation: fadeIn 2s ease-in-out 1;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+ 
+  
+  
+  
+  
+
+  @media (max-width: 900px) {
+    .cnc-object img {
+      width: 58%;
+    }
+} 
+  @media (max-width: 730px) {
+    .cnc-object img {
+     display: none;
+    }
+    .cnc{
+      position: relative;
+      display: flex;
+    flex-direction: column;
+      justify-content: center;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .cnc h1{
+      margin-bottom: 50px;
+    }
+
+    .video-footer-text{
+      bottom: 0px;
+      font-size: 1rem;
+    }
+ 
+    .background-video{
+      height: 100%;
+      
+    }
+
+
+    .bbbb_ob{
+      transform:  scale(1.2);
+      margin-bottom: 50px;
+    }
+} 
+  
+  
+
+
+
+.show-msg {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.s_msg {
+  flex: 0 0 55%;
+  max-width: 58%;
+
+}
+
+.tow-Obj {
+  flex: 0 0 40%;
+  max-width: 40%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}  
+
+@media (max-width: 700px) {
+  .show-msg {
+    flex-flow: column;
+    justify-content: center;
+    align-items: center; /* helps center flex children like .tow-Obj */
+  }
+
+  .s_msg {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .tow-Obj {
+    flex: 0 0 auto;
+    max-width: 70%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .tow-cls {
+    display: block; /* key fix: makes it respect margin auto */
+    width: 100%;
+    height: auto;
+    margin: 0 auto; /* centers it */
+  }
+}
+
+  
+    

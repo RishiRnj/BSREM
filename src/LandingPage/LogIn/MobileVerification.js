@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Button, Form, InputGroup,  } from 'react-bootstrap';
+import { Button, Form, InputGroup, } from 'react-bootstrap';
 import { auth, RecaptchaVerifier, signInWithPhoneNumber } from "./firebase";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
@@ -26,7 +26,7 @@ const MobileVerification = ({ onPhoneVerified }) => {
   const [isDisabled, setIsDisabled] = useState(false);
   const [verified, setVerified] = useState(false);
   const [onVerified, setOnVerified] = useState(false);
-  
+
 
 
   useEffect(() => {
@@ -41,63 +41,35 @@ const MobileVerification = ({ onPhoneVerified }) => {
   }, []); // Empty array ensures this runs only once when the component mounts
 
 
- 
 
-  // const validatePhoneNumber = (phone, countryCode) => {
-  //   console.log('Validating phone:', phone, 'Country code:', countryCode);
 
-  //   // Ensure phone number starts with '+' (for E.164 format)
-  //   if (!phone.startsWith('+')) {
-  //     phone = `+${phone}`;
-  //   }
 
-  //   const phoneNumber = parsePhoneNumberFromString(phone, countryCode);
-  //   console.log('Parsed phone number:', phoneNumber);
 
-  //   return phoneNumber?.isValid() || false;
-  // };
 
-  // const handleChange = (e, value = null, countryCode = null, isPhoneInput = false) => {
-  //   if (isPhoneInput) {
-  //     const isValid = validatePhoneNumber(value, countryCode); // Validate using dynamic country code
-  //     if (isValid) {
-  //       console.log('Phone number is valid:', value);
-  //       setFormData((prevData) => ({ ...prevData, mobile: value }));
-  //       setVerified(true)
-  //       setFormError((prevError) => ({ ...prevError, mobile: '' })); // Clear error
-  //     } else {
-  //       console.error('Invalid phone number:', value);
-  //       setFormError((prevError) => ({ ...prevError, mobile: 'Invalid phone number' })); // Set error
-  //     }
-  //   }
-  // }
+  const validatePhoneNumber = (phone, countryCode) => {
+    console.log('Validating phone:', phone, 'Country code:', countryCode);
 
-  
+    // Ensure phone number starts with '+'
+    if (!phone.startsWith('+')) {
+      phone = `+${phone}`;
+    }
 
-const validatePhoneNumber = (phone, countryCode) => {
-  console.log('Validating phone:', phone, 'Country code:', countryCode);
+    // Parse the phone number with country code as region (e.g., "IN" for India)
+    const phoneNumber = parsePhoneNumberFromString(phone);
 
-  // Ensure phone number starts with '+'
-  if (!phone.startsWith('+')) {
-    phone = `+${phone}`;
-  }
+    console.log('Parsed phone number:', phoneNumber);
 
-  // Parse the phone number with country code as region (e.g., "IN" for India)
-  const phoneNumber = parsePhoneNumberFromString(phone);
+    // Ensure the number is valid and has the correct length
+    return phoneNumber?.isValid() && phoneNumber?.nationalNumber.length >= 10;
+  };
 
-  console.log('Parsed phone number:', phoneNumber);
 
-  // Ensure the number is valid and has the correct length
-  return phoneNumber?.isValid() && phoneNumber?.nationalNumber.length >= 10;
-};
 
-  
-  
   const handleChange = (e, value = null, countryCode = null, isPhoneInput = false) => {
     if (isPhoneInput) {
       // Only validate when input is complete (onBlur or when country changes)
       const isValid = validatePhoneNumber(value, countryCode);
-      
+
       if (isValid) {
         console.log('Phone number is valid:', value);
         setFormData(prev => ({ ...prev, mobile: value }));
@@ -188,69 +160,180 @@ const validatePhoneNumber = (phone, countryCode) => {
 
   return (
 
+    // <>
+    //   <div>
+
+
+    //     <div className="position-relative bg-light ">
+    //       <PhoneInput
+    //         name="mobile"
+    //         placeholder='Enter Phone Number'
+    //         disabled={onVerified}
+    //         country={'in'}
+    //         value={formData.mobile || ''}
+    //         onChange={(value, data) => handleChange(null, value, data.countryCode, true)}
+    //         inputProps={{ name: 'mobile' }}
+    //         inputStyle={{ width: '100%', borderRadius: '5px', position: 'relative', }}
+    //       />
+    //       {onVerified && (
+    //         <GoVerified
+    //           className="position-absolute"
+    //           style={{ right: 10, top: "50%", transform: "translateY(-50%)", color: "green" }}
+    //         />
+    //       )}
+    //     </div>
+
+
+
+
+    //   </div>
+    //   {verified && (
+    //     <div className='d-flex justify-content-end'>
+    //       <Button variant="outline-secondary" size='sm' className="mb-3" onClick={handleSendOTP} disabled={isDisabled}>
+    //         {isOtpSent ? `Resend OTP  (${timer}s)` : 'Send OTP'}
+    //       </Button>
+    //     </div>
+
+    //   )}
+
+    //   {formError.mobile && <div className="text-danger">{formError.mobile}</div>}
+
+
+    //   {showOtpField && ( // Conditional rendering of OTP input
+    //     <div>
+    //       <InputGroup className="mb-3">
+    //         <Form.Control
+    //           type="text"
+    //           placeholder="Enter OTP"
+    //           value={otp}
+    //           onChange={(e) => setOtp(e.target.value)}
+    //           aria-label="Enter OTP"
+    //         />
+    //         <Button
+    //           variant="outline-primary"
+    //           id="button-addon2"
+    //           onClick={handleVerifyOTP}
+    //         >
+    //           Verify OTP
+    //         </Button>
+    //       </InputGroup>
+    //     </div>
+
+    //   )}
+
+    //   <div id="recaptcha-container"></div>
+    // </>
+
     <>
-      <div>
+  <div className="container py-4">
 
+    <div className="position-relative bg-light rounded p-3 shadow-sm">
+      <PhoneInput
+        name="mobile"
+        placeholder='Enter Phone Number'
+        disabled={onVerified}
+        country={'in'}
+        value={formData.mobile || ''}
+        onChange={(value, data) => handleChange(null, value, data.countryCode, true)}
+        inputProps={{ name: 'mobile' }}
+        inputStyle={{
+          width: '100%',
+          borderRadius: '5px',
+          position: 'relative',
+          border: '1px solid #ced4da',
+          padding: '10px',
+          fontSize: '16px',
+        }}
+      />
+      {onVerified && (
+        <GoVerified
+          className="position-absolute"
+          style={{
+            right: 10,
+            top: "50%",
+            transform: "translateY(-50%)",
+            color: "green",
+            fontSize: "24px",
+          }}
+        />
+      )}
+    </div>
 
-        <div className="position-relative bg-light ">
-          <PhoneInput 
-            name="mobile"
-            placeholder='Enter Phone Number'
-            disabled={onVerified}
-            country={'in'}
-            value={formData.mobile || ''}
-            onChange={(value, data) => handleChange(null, value, data.countryCode, true)}
-            inputProps={{ name: 'mobile' }}
-            inputStyle={{ width: '100%', borderRadius: '5px', position: 'relative',}}            
-          />
-          {onVerified && (
-            <GoVerified
-              className="position-absolute"
-              style={{ right: 10, top: "50%", transform: "translateY(-50%)", color: "green" }}
-            />
-          )}
-        </div>
-
-
-
-
+    {verified && (
+      <div className='d-flex justify-content-end mt-3'>
+        <Button
+          variant="outline-secondary"
+          size="lg"
+          className="mb-3 px-4 py-2 font-weight-bold custom-btn"
+          onClick={handleSendOTP}
+          disabled={isDisabled}
+        >
+          {isOtpSent ? `Resend OTP  (${timer}s)` : 'Send OTP'}
+        </Button>
       </div>
-      {verified && (
-        <div className='d-flex justify-content-end'>
-          <Button variant="outline-secondary" size='sm' className="mb-3" onClick={handleSendOTP} disabled={isDisabled}>
-            {isOtpSent ? `Resend OTP  (${timer}s)` : 'Send OTP'}
+    )}
+
+    {formError.mobile && <div className="text-danger mt-2">{formError.mobile}</div>}
+
+    {showOtpField && ( // Conditional rendering of OTP input
+      <div>
+        <InputGroup className="mb-3">
+          <Form.Control
+            type="text"
+            placeholder="Enter OTP"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+            aria-label="Enter OTP"
+            className="otp-input"
+          />
+          <Button
+            variant="primary"
+            id="button-addon2"
+            onClick={handleVerifyOTP}
+            className="custom-btn"
+          >
+            Verify OTP
           </Button>
-        </div>
+        </InputGroup>
+      </div>
+    )}
 
-      )}
+    <div id="recaptcha-container"></div>
+  </div>
 
-{formError.mobile && <div className="text-danger">{formError.mobile}</div>}
+  <style jsx>{`
+    .custom-btn {
+      border-radius: 25px;
+      padding: 10px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
 
+    .custom-btn:hover {
+      background-color: #007bff;
+      color: white;
+    }
 
-      {showOtpField && ( // Conditional rendering of OTP input
-        <div>
-          <InputGroup className="mb-3">
-            <Form.Control
-              type="text"
-              placeholder="Enter OTP"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              aria-label="Enter OTP"
-            />
-            <Button
-              variant="outline-primary"
-              id="button-addon2"
-              onClick={handleVerifyOTP}
-            >
-              Verify OTP
-            </Button>
-          </InputGroup>
-        </div>
+    .otp-input {
+      border-radius: 25px;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ced4da;
+      transition: border-color 0.3s ease;
+    }
 
-      )}
+    .otp-input:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 0 0.25rem rgba(38, 143, 255, 0.25);
+    }
 
-      <div id="recaptcha-container"></div>
-    </>
+   
+
+    
+  `}</style>
+</>
+
 
 
   )

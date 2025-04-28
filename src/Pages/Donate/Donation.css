@@ -342,10 +342,40 @@
 #blank-donation{
   min-height: 1vh;
 }
+#blankB-donation{
+  min-height: 1vh;
+}
+#blankBk-donation{
+  min-height: 1vh;
+}
+#blankC-donation{
+  min-height: 1vh;
+}
+#blankF-donation{
+  min-height: 1vh;
+}
+#blankLG-donation{
+  min-height: 1vh;
+}
 
 
 @media (max-width: 764px) {
    #blank-donation{
+    min-height: 25vh;
+  }
+   #blankB-donation{
+    min-height: 25vh;
+  }
+   #blankBk-donation{
+    min-height: 25vh;
+  }
+   #blankC-donation{
+    min-height: 25vh;
+  }
+   #blankF-donation{
+    min-height: 25vh;
+  }
+   #blankLG-donation{
     min-height: 25vh;
   }
 }

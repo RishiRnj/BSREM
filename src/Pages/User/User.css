@@ -31,104 +31,18 @@
   
 
 
-   /* Hide sidebars on smaller screens */
-@media (max-width: 768px) {
-  
- 
-  .user-container #fPage-right-user{
-    display: none;
-  }
-  .user-container #fPage-left-user{
-    display: none;
-  }
+
+.sticky-nav {
+  position: sticky;
+  top: 67px; /* Offset by the height of the top navbar */
+  z-index: 1000; /* Ensure it's above content but below modal/dialog layers */
+  background-color: rgb(255, 255, 255); /* Important if your page has a scrollable background */
 }
 
-#pst{
-  padding-top: 0 !important;
-  padding: 15px;
-  margin-bottom: 15px;
-  
+.sticky-nav .nav-link:hover {
+  background-color: #e2c0c0; /* Light gray background on hover */
+  color: #063285; /* Optional: change text color on hover */
+  transition: background-color 0.3s ease;
 }
 
 
-
-
-
-/* user page */
-
- /* Main fPage Layout */
- #fPage-user {
-  display: flex;
- justify-content: space-between; /* Add space between left, main, and right */
- align-items: flex-start; /* Align top */
-  min-height: calc(100vh - 170px);   /* Ensure it fills the viewport height */
-  margin: 0;  
-  top: 0;
-  padding: 20px;
-  padding-top: 5px;
- /* gap: 20px; */
- box-sizing: border-box;
- z-index: 900;
- /*overflow: hidden; /* Prevent scrolling on the body */
-
-}
-
-/* Left and Right Sidebars */
-#fPage-left-user {
- display: flex;
- justify-content: flex-start; /* Add space between left, main, and right */ 
- position: fixed;
- align-items: flex-start; /* Align top */
- max-width: 400px; /* Set max width for sidebars */
- background-color: rgba(0, 0, 255, 0.1); /* Light background */
- min-height: calc(100vh - 165px);   /* Ensure it fills the viewport height */ 
- padding: 10px;
- margin-top: 15px;
- border-radius: 8px;
- box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
- filter: blur(70%);
-}
-.lt-user{
- width: 350px;
- display: flex;
- justify-content: flex-start; /* Add space between left, main, and right */
- align-items: flex-start; /* Align top */
- max-width: 400px; /* Set max width for sidebars */
- background-color: rgba(0, 0, 255, 0.356); /* Light background */
- padding: 15px;
- margin-top: 15px;
- border-radius: 8px;
- box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-#fPage-right-user {
- display: flex;
- right: 0;
- margin-right: 15px; 
- padding-right: 15px;
- justify-content: flex-start; /* Add space between left, main, and right */ 
- position: fixed;
- align-items: flex-start; /* Align top */
- max-width: 400px; /* Set max width for sidebars */
- background-color: rgba(0, 0, 255, 0.1); /* Light background */
- min-height: calc(100vh - 165px);   /* Ensure it fills the viewport height */ 
- padding: 10px;
- margin-top: 15px;
- border-radius: 8px;
- box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
- 
-}
-
-.rt-user{
- width: 350px;
- display: flex;
- cursor: pointer;
- justify-content: flex-end; /* Add space between left, main, and right */ 
- max-width: 400px; /* Set max width for sidebars */
- background-color: rgba(0, 0, 255, 0.356); /* Light background */
- padding: 15px;  
- margin-top: 15px; 
- border-radius: 8px;
- box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
- 
-}

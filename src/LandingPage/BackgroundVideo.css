@@ -1,4 +1,4 @@
-.video-container {
+.video-container-land {
     position: fixed;
     top: 0;
     left: 0;
@@ -40,11 +40,14 @@
   
   .login-card {
     width: 100%;
-    max-width: 400px;
-    padding: 20px;
+    max-width: 500px;
+    padding: 5px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
   }
+  /* .sign-card{
+
+  } */
   .bd{
     padding: 24px;
   }
@@ -62,7 +65,7 @@
   
     .login-card {
       
-      max-width: 400px; /* Adjust width for smaller screens */
+      max-width: 450px; /* Adjust width for smaller screens */
       padding: 5px;
       overflow-y: auto;
     }

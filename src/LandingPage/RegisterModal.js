@@ -1,18 +1,31 @@
 import React, { useState } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import { Modal, Button, Form, Card } from 'react-bootstrap';
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { handleSuccess, handleError, handleWarning } from '../Components/Util';
 import EmailVerificationModal from './EmailVerificationModal';
 
-import { FaEyeSlash, FaEye  } from "react-icons/fa";
+import { FaEyeSlash, FaEye } from "react-icons/fa";
 import { ToastContainer } from 'react-toastify';
+import { GoVerified, } from "react-icons/go";
+import MobileVerification from './LogIn/MobileVerification';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
+import UsernameInput from '../Components/Common/UsernameInput ';
+
 
 function RegisterModal({ show, onClose }) {
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({ username: '', email: '', password: '' });
+  const [formData, setFormData] = useState({ username: '', email: '', password: '', mobile: '' });
   const [loading, setLoading] = useState(false);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
+
+  const [showModal, setShowModal] = useState(false);  // State to control modal visibility
+  const [onVerified, setOnVerified] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [showConfirmS, setShowConfirmS] = useState(false);
+
+
 
 
 
@@ -37,11 +50,55 @@ function RegisterModal({ show, onClose }) {
   console.log("formData ->", formData);
 
 
+  const handleConfirmYes = async () => {
+    setShowConfirm(false);
+    setShowConfirmS(true); // Optional: track confirmation
+
+    setLoading(true);
+    const { username, email, password, mobile } = formData;
+
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password, mobile }),
+      });
+
+      setLoading(false);
+
+      if (response.ok) {
+        const data = await response.json();
+        handleSuccess('Registration successful!');
+        setShowVerificationModal(true);
+        onClose();
+      } else {
+        const errorData = await response.json();
+        handleError(`Registration failed: ${errorData.message || 'Please try again.'}`);
+      }
+    } catch (error) {
+      setLoading(false);
+      handleError('An error occurred. Please try again later.');
+    }
+  };
+
+
+
+  const handleConfirmNo = () => {
+    setShowConfirm(false);
+
+  };
+
   const handleRegister = async (event) => {
     event.preventDefault();
-    const { username, email, password, agreed } = formData;
+    const { username, email, password, mobile, agreed } = formData;
     if (username.length < 3) {
       return handleError("Use at least 3 characters for Name.");
+    }
+
+    // Validate email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return handleError("Please enter a valid email address.");
     }
 
     if (password.length < 6) {
@@ -54,10 +111,10 @@ function RegisterModal({ show, onClose }) {
       return handleError("Password At least one special character.");
     }
 
-    // Validate email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return handleError("Please enter a valid email address.");
+    // Validate Mobile Number (empty or not verified)
+    if (!mobile || !onVerified) {
+      handleWarning("Mobile number is required and must be verified");
+      return;
     }
 
     // Check if terms are agreed
@@ -65,59 +122,50 @@ function RegisterModal({ show, onClose }) {
       return handleError("You must agree to the terms and conditions.");
     }
 
-
-    setLoading(true);
-
-    try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, email, password }),
-      });
-
-      setLoading(false);
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data);
-
-        handleSuccess('Registration successful!');
-        setShowVerificationModal(true); // Show email verification modal
-        onClose(); // Close registration modal
-
-      } else {
-        const errorData = await response.json();
-        handleError(`Registration failed: ${errorData.message || 'Please try again.'}`);
-      }
-    } catch (error) {
-      setLoading(false);
-      handleError('An error occurred. Please try again later.');
-    }
+    // Show confirmation modal instead of submitting
+    setShowConfirm(true);
   };
+
+
+  // Open modal
+  const handleInputFocus = () => {
+    setShowModal(true);
+  };
+
+  // Close modal manually (can be done from inside MobileVerification if needed)
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
+  const handlePhoneNumber = (phoneNumber) => {
+    setFormData((prevData) => ({ ...prevData, mobile: phoneNumber }));
+    setOnVerified(true);
+    handleCloseModal();  // Close modal after phone verification
+  };
+
 
   return (
 
     <>
-      <Modal show={show} onHide={onClose} centered>
+      <Modal show={show} onHide={onClose} centered className='sign-card p-4'>
         <Modal.Header closeButton>
           <Modal.Title className="w-100 text-center">Register</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={handleRegister}>
-            <Form.Group controlId="username" className="mb-3">
-              <Form.Label>User Name</Form.Label>
-              <Form.Control
-                type="text"
-                name="username"
-                placeholder="Enter your username"
-                value={formData.username}
-                required
-                onChange={handleChange} autoFocus
-              />
+        <Modal.Body className='m-4'>
+          <Form onSubmit={handleRegister}
+          >
+            <Form.Group controlId="username" className="mb-2">
+              
+              <UsernameInput
+                        value={formData.username}
+                        onChange={handleChange}
+                        disabled={formData.fullName}
+                        readOnly={formData.fullName}
+                      />
             </Form.Group>
-            <Form.Group controlId="email" className="mb-3">
+
+
+            <Form.Group controlId="email" className="mb-2">
               <Form.Label>Email</Form.Label>
               <Form.Control
                 type="email"
@@ -128,7 +176,8 @@ function RegisterModal({ show, onClose }) {
                 onChange={handleChange}
               />
             </Form.Group>
-            <Form.Group controlId="password" className="mb-3">
+
+            <Form.Group controlId="password" className="mb-2">
               <Form.Label>Password</Form.Label>
               <div className="d-flex align-items-center border border-primary rounded">
                 <Form.Control
@@ -148,7 +197,55 @@ function RegisterModal({ show, onClose }) {
                 </span>
               </div>
             </Form.Group>
-            <div className="form-check mb-3 d-flex justify-content-center align-items-center">
+
+
+            {formData?.mobile ? (
+              // If mobile exists, render the Mobile number with Verification mark
+              <div className="position-relative mb-2">
+                <Form.Group controlId="mobile" className="mb-2">
+                  <Form.Label>Mobile</Form.Label>
+                  <PhoneInput
+                    name="mobile"
+                    placeholder='Enter Phone Number'
+                    disabled={onVerified}
+                    country={'in'}
+                    value={formData.mobile}
+                    inputProps={{ name: 'mobile' }}
+                    inputStyle={{ width: '100%', borderRadius: '5px' }}
+                  />
+                  {(onVerified) && (
+                    <GoVerified
+                      className="position-absolute"
+                      style={{
+                        right: 10,
+                        top: "70%",
+                        transform: "translateY(-50%)",
+                        color: "green",
+                      }}
+                    />
+                  )}
+                </Form.Group>
+
+
+              </div>
+
+            ) : (
+              <Form.Group controlId="mobile" className="mb-2" onClick={handleInputFocus}>
+                <Form.Label>Mobile</Form.Label>
+
+                <PhoneInput
+                  name="mobile"
+                  placeholder='Enter Phone Number'
+                  disabled={onVerified}
+                  country={'in'}
+                  value={formData.mobile}
+                  inputProps={{ name: 'mobile' }}
+                  inputStyle={{ width: '100%', borderRadius: '5px' }}
+                />
+              </Form.Group>
+            )}
+
+            <div className="form-check mb-2 d-flex justify-content-center align-items-center">
               <input
                 type="checkbox"
                 className="form-check-input me-2"
@@ -164,7 +261,7 @@ function RegisterModal({ show, onClose }) {
 
 
             <Button variant="primary" type="submit" className="w-100 " disabled={loading}>
-              
+
               {loading ? (
                 <span>
                   <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
@@ -179,6 +276,7 @@ function RegisterModal({ show, onClose }) {
           </Form>
         </Modal.Body>
       </Modal>
+
       <ToastContainer /> {/* Toast Notifications */}
 
       <EmailVerificationModal
@@ -187,11 +285,39 @@ function RegisterModal({ show, onClose }) {
         userEmail={formData.email}
       />
 
+      {/* Custom Modal for Mobile Verification */}
+      <Modal show={showModal} onHide={handleCloseModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Phone Number Verification</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Card>
+                        <h6 className='text-center herO fw-bold'>Enter Valid Phone Number!</h6>
+          {/* Render the MobileVerification component inside the modal */}
+          <MobileVerification onPhoneVerified={handlePhoneNumber} />
+          </Card>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Custom Modal for Confirmation occupation details */}
+      <Modal show={showConfirm} onHide={handleConfirmNo} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Action</Modal.Title>
+        </Modal.Header>
+        <Modal.Body> Are you sure you want to register with this information?</Modal.Body>
+        <Modal.Footer>
+
+          <Button variant="primary" onClick={handleConfirmYes}>Yes</Button>
+          <Button variant="secondary" onClick={handleConfirmNo}>No</Button>
+        </Modal.Footer>
+      </Modal>
+
     </>
-
-
-
-
 
   );
 }

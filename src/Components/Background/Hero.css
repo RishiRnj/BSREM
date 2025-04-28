@@ -6,14 +6,13 @@
     
     position: absolute;
     width: 100%;
-    height: calc(100vh - 75px);
+    min-height: calc(100vh - 135px);
+    max-height: 100%;
     /* Full height minus header */
     overflow: hidden;
     font-family: 'Montserrat', sans-serif;
     z-index: -1; /* Push the hero behind the content */
-    /* display: flex; */
-  /* justify-content: center;
-  align-items: center; */
+    
 }
 
 .hero .hero__title {
@@ -21,7 +20,7 @@
     /* Full height minus header */
     /* align-content: center; */
     color: #ffffff;
-    font-size: 50px;
+    font-size: 30px;
     z-index: 1;
 }
 
