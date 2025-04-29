@@ -731,7 +731,7 @@ const PostCreator = ({ onPostCreated }) => {
         return;
       }
 
-      const MAX_SIZE_MB = 15;
+      const MAX_SIZE_MB = 100;
       const MAX_DURATION_SECONDS = 600; // 10 minutes
 
       // Check file size

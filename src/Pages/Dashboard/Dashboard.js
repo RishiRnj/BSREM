@@ -4,7 +4,7 @@ import NoticeBoard from '../../Components/Notice/NoticeBorad';
 import { useNavigate, useLocation } from "react-router-dom";
 import ForumStat from "../Forum/ForumStatistics";
 import { Button, Card, Row, Spinner, OverlayTrigger, Tooltip } from "react-bootstrap";
-import { FaClipboardList  } from "react-icons/fa";
+import { FaClipboardList, FaOm  } from "react-icons/fa";
 import CountUp from 'react-countup';
 import { IoIosLogIn } from "react-icons/io";
 
@@ -245,7 +245,7 @@ const Dashboard = () => {
                                         delay={{ show: 250, hide: 400 }}
                                         overlay={props => renderTooltip(props, "Share whatever is on your mind but make sure your post is beneficial to Hindus.")}
                                     >
-                                        <Button variant="primary" onClick={() => navigate('/forum')}>Forum</Button>
+                                        <Button variant="primary" onClick={() => navigate('/forum')}>Say <FaOm className='mb-1'/></Button>
                                     </OverlayTrigger>
                                 </div>
                                 <div className='me-2'>
@@ -254,7 +254,7 @@ const Dashboard = () => {
                                         delay={{ show: 250, hide: 400 }}
                                         overlay={props => renderTooltip(props, "The money or goods you donate will be used for the benefit of the Hindu religion or the Community.")}
                                     >
-                                        <Button variant="primary" onClick={redirectToDonate}>Make Donation</Button>
+                                        <Button variant="primary" onClick={redirectToDonate}>Donation</Button>
                                     </OverlayTrigger>
                                 </div>
                                 <div>
@@ -275,7 +275,7 @@ const Dashboard = () => {
                                         delay={{ show: 250, hide: 400 }}
                                         overlay={props => renderTooltip(props, "This is our effort to strengthen every Hindu. If you are weak, click here to remove your weakness.")}
                                     >
-                                        <Button className='' variant="danger" onClick={redirectToBenrficiarySupport}>Need support! Click here to get Support.</Button>
+                                        <Button className='' variant="danger" onClick={redirectToBenrficiarySupport}>Need support! Click here</Button>
                                     </OverlayTrigger>
                                 </div>
                                 <div className='d-flex justify-content-center'>
@@ -285,7 +285,7 @@ const Dashboard = () => {
                                         delay={{ show: 250, hide: 400 }}
                                         overlay={props => renderTooltip(props, "Click to find out where the upcoming youth conference is being held and to register yourself for the conference at that location.")}
                                     >
-                                        <Button className='' variant="dark" onClick={() => navigate('/youth')}>Register for Youth Conference <FaClipboardList /></Button>
+                                        <Button className='' variant="dark" onClick={() => navigate('/youth')}>Youth Conference <FaClipboardList /></Button>
                                     </OverlayTrigger>
                                 </div>
                                 <div style={{ padding: "5px", zIndex: 1100, }}>
