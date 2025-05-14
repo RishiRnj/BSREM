@@ -23,48 +23,8 @@ const JoinUSup = () => {
     const [isUserUpdated, setIsUserUpdated] = useState(false); // State to track if user is updated
     const [isStep1Completed, setIsStep1Completed] = useState(false);
     const [isStep2Completed, setIsStep2Completed] = useState(false);
+    const [showAlert, setShowAlert] = useState(false);
     const [isUserVolunteer, setIsUserVolunteer] = useState(""); // State to track if user is updated
-
-    // useEffect(() => {
-    //     const checkProfileAndRedirect = async () => {
-    //         try {
-    //             setIsCheckingProfile(true);
-    //             setError(null);
-
-    //             const isProfileUpdated = await checkUserProfile();
-
-    //             if (!isProfileUpdated) {
-    //                 setShowProfileModal(true);
-    //                 return;
-    //             }
-    //             setIsUserUpdated(true);
-
-    //             const isVolunteer = await checkUserProfile();
-    //             if (!isVolunteer) {
-    //                 setIsUserVolunteer(false);
-
-    //             }else {
-    //                 setIsUserVolunteer(true);
-    //                 navigate('/joinUs/volunteer', {
-    //                     state: { from: window.location.pathname },
-    //                 });
-    //             }
-
-
-
-    //             // Profile is updated - proceed with component's main functionality
-    //             // You can add that logic here
-
-    //         } catch (err) {
-    //             setError(err.message);
-    //             console.error("Profile check error:", err);
-    //         } finally {
-    //             setIsCheckingProfile(false);
-    //         }
-    //     };
-
-    //     checkProfileAndRedirect();
-    // }, [user]);
 
 
     useEffect(() => {
@@ -73,13 +33,20 @@ const JoinUSup = () => {
                 setIsCheckingProfile(true);
                 setError(null);
 
-                const { isProfileCompleted, isVolunteer } = await checkUserProfile(window.location);
+                const { isProfileCompleted, isVolunteer, religion } = await checkUserProfile(window.location);
+
+                
 
                 if (!isProfileCompleted) {
                     setShowProfileModal(true);
                     return;
                 }
                 setIsUserUpdated(true);
+
+                if (religion !== "Hinduism") {
+                    setShowAlert(true);                    
+                    return;
+                }
 
                 if (!isVolunteer) {
                     handleWarning("Welcome to our Family! Please update further details to proceed.");
@@ -141,7 +108,8 @@ const JoinUSup = () => {
             localStorage.setItem("volunteer", JSON.stringify(userData.user));
             return {
                 isProfileCompleted: userData.isProfileCompleted || false,
-                isVolunteer: userData.isVolunteer || false
+                isVolunteer: userData.isVolunteer || false,
+                religion: userData.religion || "",
             };
 
         } catch (error) {
@@ -249,6 +217,16 @@ const JoinUSup = () => {
                         />
 
                     )}
+
+                    <ConfirmationModal
+                    isOpen={showAlert}
+                    onClose={() => { setShowAlert(false); navigate('/') }}
+                    onConfirm={() => { setShowAlert(false); navigate('/open-survey/create-own-survey') }}
+                    title={"⚠️ Important Note"}
+                    message={"We will communicate later, when platform created for your Community. However, You only access our Campaign service, for creating Survey and Analysis."}
+                    confirmText='Go to Campaigner Dashboard'
+                    cancelText='Cencel'
+                    />
                 </div>
             </div>
         </>

@@ -50,6 +50,16 @@ import CarForCharity from "./Pages/Donate/CarForCharity/CarForCharity";
 import Sanatan from "./Pages/SanatanIsOnlyTruth/Sanatan";
 import UserProfile from "./Pages/User/UserPost/UserProfile"
 import UserSuggestions from "./Pages/Suggestions/UserSuggestions";
+import OpenSurvey from "./Admin/OpenSurvey";
+import GetCertified from "./Pages/GetCertified/GetCertified";
+import SurveyPreview from "./Pages/OpenServey/SurveyPreview";
+import EditSurveyPage from "./Pages/OpenServey/SurveyEdit";
+import SurveyResultsPage from "./Pages/OpenServey/SurveyResult";
+import QuestionResultsPage from "./Pages/OpenServey/QuestionResultsPage";
+import BecomeCampaigner from "./Pages/OpenServey/BecomeCampaigner";
+import CampaignerProfileUpdate from "./Pages/OpenServey/CampaignerProfileUpdate";
+import CampaignerDashboard from "./Pages/OpenServey/CampaignerDashboard";
+import CampaignerCreatedSurveyPage from "./Pages/OpenServey/CampaignerCreatedForPerticipation";
 
 
 
@@ -58,7 +68,7 @@ const App = () => {
   const location = useLocation();
 
   // List of routes where you DON'T want to show the Header
-  const noHeaderRoutes = ['/all_Sanatani_Under_One_Umbrella'];
+  const noHeaderRoutes = ['/all_Sanatani_Under_One_Umbrella', "/get-certificate"];
 
   const showHeader = !noHeaderRoutes.includes(location.pathname);
 
@@ -87,27 +97,63 @@ const App = () => {
           
           {/* Dashboard */}
           <Route path="/dashboard" element={<Dashboard/>}/>
+
+           {/* user suggestions */}
+           <Route path="/user/have-suggestions" element={ <UserSuggestions />}  />
+
+          {/* Open Survey */}
+          <Route path="/open-survey/byAdmin/:id?/:status?" element={ <OpenSurvey /> } />
+          <Route path="/open-survey/byCampaigner/:id/:status" element={ <CampaignerCreatedSurveyPage /> } />
+
+          <Route path="/open-survey/create-own-survey" element={ <ProtectedRoute><BecomeCampaigner /></ProtectedRoute>  } />
+          <Route path="/complete-campaigner-profile" element={ <ProtectedRoute><CampaignerProfileUpdate /></ProtectedRoute>  } />
+          <Route path="/campaigner-dashboard" element={ <ProtectedRoute><CampaignerDashboard /></ProtectedRoute>  } />
+          <Route path="/survey/:id?/preview" element={ <ProtectedRoute><SurveyPreview /></ProtectedRoute>  } />
+          <Route path="/survey/:id?/edit" element={<ProtectedRoute><EditSurveyPage /></ProtectedRoute>  } />
+          <Route path="/survey/:id?/results" element={<ProtectedRoute><SurveyResultsPage /></ProtectedRoute>  } />
+          <Route path="/survey/:id/results/question/:questionId" element={<ProtectedRoute><QuestionResultsPage /></ProtectedRoute> } />
+          
+          {/* Get Certified */}
+          <Route path="/get-certificate" element={ <GetCertified /> } />
+
+          
+
+
           {/* Public route for login/signup */}
-          <Route path="/login" element={<LandingPage />} />         
+          <Route path="/login" element={<LandingPage />} />
 
-
+          {/* reset password */}
           <Route path="/reset-password/:token" element={<ResetPasswordModal show={true} />} />
-          <Route path="/terms" element={<Terms />} />
+          {/* for google login proxy page */}
           <Route path="/auth/-proxy" element={<AuthProxy />} />
 
 
-          <Route path="/aboutUs" element={<AboutUs />} />
-          <Route path="/donation" element={<Donation />} />
+
+          <Route path="/terms" element={<Terms />} />
+
           
+
+        {/* about us page */}
+          <Route path="/aboutUs" element={<AboutUs />} />
+          {/* Donation page */}
+          <Route path="/donation" element={<Donation />} />
+          {/* donor dashboard */}
           <Route path="/donate" element={<ProtectedRoute> <Donate /> </ProtectedRoute> } />
-          {/* <Route path="/needAssistance" element={ <ProtectedRoute> <Support /> </ProtectedRoute> } />  */}
+
+
+          {/* registration page for get support */}
           <Route path="/register/for_support" element={<ProtectedRoute> <RegisterforSupport/> </ProtectedRoute>}/>
+
+
           <Route path="/car_for_charity" element={<CarForCharity/>}/>
 
-          {/* <Route path="/joinUs" element={<JoinUs />} /> */}
+         {/* join us */}
           <Route path="/joinUs" element={<ProtectedRoute><JoinUSup/></ProtectedRoute>}/>
+          
+          {/* download volunteer pass */}
           <Route path="/joinUs/volunteer" element={<ProtectedRoute><Voluntear /></ProtectedRoute>} />
 
+        {/* Contact Us / Blog / FAQ / Youth conferance registration */}
           <Route path="/contactUs" element={<ContactUs />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/faq" element={<FAQ />} />
@@ -116,45 +162,48 @@ const App = () => {
 
           {/* admin page */}
           <Route path="/admin" element={<AdminRoute> <Admin /> </AdminRoute>} />
-          {/* Create notice by admin */}
+
+          {/* Create notice by admin 
           <Route path="/admin/notices" element={<AdminRoute> <AdminNotices /> </AdminRoute>} />
           <Route path="/admin/conference" element={<AdminRoute> <Conference /> </AdminRoute>} />
           <Route path="/admin/handleBeneficiary" element={<AdminRoute> <AdminDashboardToHandleBeneficiary/> </AdminRoute>} />
           <Route path="/admin/donor" element={<AdminRoute> <Donor/> </AdminRoute>} />
-          <Route path="/beneficiary/:id" element={<AdminRoute> <BeneficiaryDetailPage/></AdminRoute>} />          
+          <Route path="/beneficiary/:id" element={<AdminRoute> <BeneficiaryDetailPage/></AdminRoute>} />           */}
+
           <Route path="/unauthorized" element={<Unauthorized />} />
 
 
 
 
           {/* Protected Routes */}
-          {/* main page */}
-         
+          {/* Forum page */}         
           <Route path="/forum" element={<ProtectedRoute> <Forum /> </ProtectedRoute>} />
-          {/* User Profile Page */}
-          <Route path="/user/:id?/profile" element={<ProtectedRoute> <User /> </ProtectedRoute>} />
-          <Route path="/user/have-suggestions" element={ <UserSuggestions />}  />
 
+          {/* showing Followers */}
+          <Route path="/user/Users-Suggestions-for/follow" element={<ProtectedRoute> <FollowCheckPage /> </ProtectedRoute>} />
+          
+          {/* user profile regurding post */}
           <Route path="/profile/:userId" element={<UserProfile />} />
           <Route path="/profile/:userId/post/:postId" element={<UserProfile />} /> 
 
-          
+
+          {/* User Profile Page */}
+          <Route path="/user/:id?/profile" element={<ProtectedRoute> <User /> </ProtectedRoute>} />
+
+          {/* Update User Profile Page */}
+          <Route path="/user/:id?/update-profile" element={<ProtectedRoute><UpdateProfile /></ProtectedRoute>} />
+
+          {/* Survey page */}
+          <Route path="/user/survey" element={<ProtectedRoute> <Survey /> </ProtectedRoute>} />
+
+          {/* showing Survey Statistics */}
+          <Route path="/survey-stats" element={<ProtectedRoute> <SurveyStats /> </ProtectedRoute>} />
 
           {/* User Surver Response Page */}
           <Route path="/user/:id/surveyResponse" element={<ProtectedRoute> <SurveyResponse /> </ProtectedRoute>} />
 
 
-          {/* Update User Profile Page */}
-          <Route path="/user/:id?/update-profile" element={<ProtectedRoute><UpdateProfile /></ProtectedRoute>} />
           
-          {/* Survey page */}
-          <Route path="/user/survey" element={<ProtectedRoute> <Survey /> </ProtectedRoute>} />
-
-          {/* showing Survey Statistics */}
-
-          <Route path="/survey-stats" element={<ProtectedRoute> <SurveyStats /> </ProtectedRoute>} />
-          {/* showing Followers */}
-          <Route path="/user/Users-Suggestions-for/follow" element={<ProtectedRoute> <FollowCheckPage /> </ProtectedRoute>} />
         </Routes>
         {/* </Suspense> */}
         {/* <Footer /> */}

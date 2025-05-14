@@ -1,6 +1,6 @@
 
 import React, { useContext, useState } from 'react';
-import { Card, Button, Form, InputGroup } from 'react-bootstrap';
+import { Card, Button, Form, Tabs, Tab } from 'react-bootstrap';
 import AuthContext from '../../Context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
@@ -115,8 +115,12 @@ function LoginCard({ onRegisterClick }) {
     <>
       <div className="d-flex align-items-center justify-content-center crd-log" style={{ minHeight: 'calc(100vh - 115px)' }}>
         <Card className="login-card">
+          <Tabs defaultActiveKey="login" className="mb-3 d-flex justify-content-center " >
+              <Tab eventKey="login" title={<span className='fs-3 fw-bold herO'>Login</span>} className="text-center">
           <Card.Body>
-            <h3 className="text-center">Log In with<br/> <span className='fs-4 herO'>{loginOption}</span>  </h3>
+            
+            <>
+            <h4 className="text-center">with<br/> <span className='fs-4 herO'>{loginOption}</span>  </h4>
             <Form className="bd" //onSubmit={handleLogin}
             >
               {step === 1 && (
@@ -128,15 +132,11 @@ function LoginCard({ onRegisterClick }) {
 
                   <GoogleLoginButton onClick={googleLogin} loading={loading} />
 
-                  <div className="d-flex align-items-center ">
-                    <hr className="flex-grow-1" />
-                    <span>OR</span>
-                    <hr className="flex-grow-1" />
-                  </div>
+                 
 
-                  <RegisterLink onClick={onRegisterClick} />
+                  
 
-                  <div className="d-flex align-items-center ">
+                  {/* <div className="d-flex align-items-center ">
                     <hr className="flex-grow-1" />
                     <span>OR</span>
                     <hr className="flex-grow-1" />
@@ -149,7 +149,7 @@ function LoginCard({ onRegisterClick }) {
                         Click to Verify email
                       </a>
                     </p>
-                  </div>
+                  </div> */}
                 </>
 
               )}
@@ -167,7 +167,7 @@ function LoginCard({ onRegisterClick }) {
                     {loading ? <><span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Logging...</> : 'Log In'}
                   </Button>
 
-
+                  
 
                   <ForgotPasswordLink onClick={() => setShowForgotPasswordModal(true)} />
 
@@ -203,9 +203,15 @@ function LoginCard({ onRegisterClick }) {
               {step === 3 && (
                 <>
                  <Card>
+                  <Card.Header className='fw-bold p-2 ps-2'>Enter a valid Phone Number!</Card.Header>
+                  
                                   
-                <h6 className='text-center fw-bold'>Enter a valid Phone Number!</h6>
+                
                   <MobileVerification onPhoneVerified={handlePhoneNumber} />
+
+                  <div className="text-center mt-1">
+                    <h5 className='herO'>Not Register with Mobile?</h5>
+                  <RegisterLink onClick={onRegisterClick} /></div>
                   </Card>
 
                   <div className='d-flex justify-content-end mt-3'>
@@ -218,7 +224,27 @@ function LoginCard({ onRegisterClick }) {
 
 
             </Form>
+            </>
+           
+            
+
           </Card.Body>
+          </Tab>
+
+          <Tab eventKey="register" title={<span className='fs-3 fw-bold herO'>Register</span>} className="text-center">
+            <Card.Body>
+              <h4 className="text-center mb-3 p-2">Not Registered?</h4>
+              <RegisterLink onClick={onRegisterClick} />
+              <div className="d-flex align-items-center ">
+                <hr className="flex-grow-1" />
+                <span>OR</span>
+                <hr className="flex-grow-1" />
+              </div>
+              <GoogleLoginButton onClick={googleLogin} loading={loading} />
+
+            </Card.Body>
+          </Tab>
+          </Tabs>
         </Card>
        
       </div>

@@ -1,0 +1,18 @@
+.custom-upload-labels {
+    cursor: pointer;
+    display: block;
+    width: fit-content;
+    margin-top: 5px;
+}
+
+.upload-previews {
+    max-height: 200px;
+    width: auto;
+    border: 2px dashed #ccc;
+    transition: 0.3s ease-in-out;
+}
+
+.custom-upload-labels:hover .upload-previews {
+    border-color: #007bff;
+    transform: scale(1.03);
+}

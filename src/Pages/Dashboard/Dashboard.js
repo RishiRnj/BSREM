@@ -3,15 +3,20 @@ import "./Dashboard.css"; // Include your custom styles here
 import NoticeBoard from '../../Components/Notice/NoticeBorad';
 import { useNavigate, useLocation } from "react-router-dom";
 import ForumStat from "../Forum/ForumStatistics";
-import { Button, Card, Row, Spinner, OverlayTrigger, Tooltip } from "react-bootstrap";
-import { FaClipboardList, FaOm  } from "react-icons/fa";
+import { Button, Card, Row, Spinner, OverlayTrigger, Tooltip, Stack } from "react-bootstrap";
+import { FaClipboardList, FaOm } from "react-icons/fa";
 import CountUp from 'react-countup';
 import { IoIosLogIn } from "react-icons/io";
+import AnimatedStatsSlider from './AnimatedStatsSlider';
+import { FcDonate } from "react-icons/fc";
+
+
 
 
 
 
 const Dashboard = () => {
+
     const [loading, setLoading] = useState(false);
     const [notices, setNotices] = useState([]);
 
@@ -21,6 +26,10 @@ const Dashboard = () => {
     const [totalUsers, setTotalUsers] = useState(null);
     const [totalBeneficiaries, setTotalBeneficiaries] = useState(null);
     const [totalSupportReceived, setTotalSupportReceived] = useState(null);
+    const [totalBloodDonors, setTotalBloodDonors] = useState(null);
+    const [totalConferences, setTotalConferences] = useState(null);
+    const [totalSurveyRespondents, setTotalSurveyRespondents] = useState(null);
+    const token = localStorage.getItem("token");
 
 
     //fetch Notices
@@ -66,8 +75,11 @@ const Dashboard = () => {
             const data = await response.json();
             setTimeout(() => {
                 setTotalUsers(data.totalUsers);
+                setTotalBloodDonors(data.totalBLDonors)
                 setTotalBeneficiaries(data.totalBeneficiaries);
                 setTotalSupportReceived(data.totalSupportReceived);
+                setTotalConferences(data.totalConferences);
+                setTotalSurveyRespondents(data.totalSurveyRespondents);
             }, 2000); // Simulate an API call delay
             console.log('Statistic', data);
 
@@ -78,7 +90,7 @@ const Dashboard = () => {
         }
     };
 
-    const redirectToBenrficiarySupport = () => {        
+    const redirectToBenrficiarySupport = () => {
         navigate('/register/for_support');
     };
 
@@ -86,7 +98,7 @@ const Dashboard = () => {
         localStorage.setItem("redirectToSEC", "money-donation");
         navigate('/donation');
     };
-   
+
 
     const redirectToBlDonate = () => {
         localStorage.setItem("redirectToSEC", "blood-donation");
@@ -179,129 +191,119 @@ const Dashboard = () => {
                 <span></span>
                 <span></span>
                 <span></span>
-               
+
             </div>
             <div className='das' style={{ zIndex: "1000" }}><img src='om.webp' width={150} height={150} /></div>
             <div className='d-flex justify-content-center text-white  text-center ddd ' style={{ minHeight: `calc(100vh - 165px)`, }}  >
                 <div className='hea' style={{ zIndex: "1000" }}>
 
                     <h1 className=''>Welcome to BSREM</h1>
-                    <p className='txp'>Hindu for Hindus Community. <br /> <span style={{ fontWeight: "bold" }}> Supprot || Strengthen || Unite </span> </p>
+                    <p className='txp'>Hindu for Global Community. <br /> <span style={{ fontWeight: "bold" }}> Supprot || Strengthen || Unite </span> </p>
                 </div>
 
                 <div className='px-5' style={{ zIndex: "1000" }}>
-                    <div className='ppp ' style={{ zIndex: "1000" }}>
-                        <Row xs={1} md={2} className="">
-                            <Card className='bg-transparent text-white border border-light'>
-                                <Card.Body className='p-0 pt-2'>
-                                    <Card.Title className='txp'>Total Registered User!</Card.Title>
-                                    <Card.Text className='nostyle'>
-                                        <CountUp
-                                            className='nos txp'
-                                            start={Math.floor(Math.random() * 1000)} // Start with a random number
-                                            end={totalUsers}
-                                            duration={2} // Duration of the animation (in seconds)
-                                            separator=","
-                                        />
-                                    </Card.Text>
-                                </Card.Body>
-                            </Card>
-                            <Card className='bg-transparent text-white border border-light'>
-                                <Card.Body className='p-0 pt-2'>
-                                    <Card.Title className='txp'>Users asked for support!</Card.Title>
-                                    <Card.Text className='nostyle'>
-                                        <CountUp
-                                            className='nos txp'
-                                            start={Math.floor(Math.random() * 1000)} // Start with a random number
-                                            end={totalBeneficiaries}
-                                            duration={2} // Duration of the animation (in seconds)
-                                            separator=","
-                                        />
-                                    </Card.Text>
-                                </Card.Body>
-                            </Card>
-                        </Row>
-                    </div>
-                    <div className='kkk' style={{ zIndex: "1000" }}>
-                        <Row xs={1} md={1} className="">
-                            <Card className='bg-transparent text-white border border-light'>
-                            <Card.Body className='p-0 pt-2'>
-                                    <Card.Title className='txp'>Users who received Support!</Card.Title>
-                                    <Card.Text className='nostyle'>
-                                        <CountUp
-                                            className='nos txp'
-                                            start={Math.floor(Math.random() * 1000)} // Start with a random number
-                                            end={totalSupportReceived}
-                                            duration={2} // Duration of the animation (in seconds)
-                                            separator=","
-                                        />
-                                    </Card.Text>
-                                </Card.Body>
-                            </Card>
-                            <div className='mt-2 d-flex justify-content-center align-items-center'>
-                                <div className='me-2'>
-                                    <OverlayTrigger
-                                        placement="top"
-                                        delay={{ show: 250, hide: 400 }}
-                                        overlay={props => renderTooltip(props, "Share whatever is on your mind but make sure your post is beneficial to Hindus.")}
-                                    >
-                                        <Button variant="primary" onClick={() => navigate('/forum')}>Say <FaOm className='mb-1'/></Button>
-                                    </OverlayTrigger>
-                                </div>
-                                <div className='me-2'>
-                                    <OverlayTrigger
-                                        placement="top"
-                                        delay={{ show: 250, hide: 400 }}
-                                        overlay={props => renderTooltip(props, "The money or goods you donate will be used for the benefit of the Hindu religion or the Community.")}
-                                    >
-                                        <Button variant="primary" onClick={redirectToDonate}>Donation</Button>
-                                    </OverlayTrigger>
-                                </div>
-                                <div>
-                                    <OverlayTrigger
-                                        placement="top"
-                                        delay={{ show: 250, hide: 400 }}
-                                        overlay={props => renderTooltip(props, "Your Participation in this Survey is not Required but Essential one.")}
-                                    >
-                                        <Button variant="primary" onClick={() => navigate('/user/survey')}> Start Survey</Button>
-                                    </OverlayTrigger>
-                                </div>
 
-                            </div>
-                            <div>
-                                <div style={{ padding: "5px", marginTop:"5px", zIndex: 1100, }}>
-                                    <OverlayTrigger
-                                        placement="top"
-                                        delay={{ show: 250, hide: 400 }}
-                                        overlay={props => renderTooltip(props, "This is our effort to strengthen every Hindu. If you are weak, click here to remove your weakness.")}
-                                    >
-                                        <Button className='' variant="danger" onClick={redirectToBenrficiarySupport}>Need support! Click here</Button>
-                                    </OverlayTrigger>
-                                </div>
-                                <div className='d-flex justify-content-center'>
-                                <div style={{ padding: "5px", zIndex: 1100, }}>
-                                    <OverlayTrigger
-                                        placement="top"
-                                        delay={{ show: 250, hide: 400 }}
-                                        overlay={props => renderTooltip(props, "Click to find out where the upcoming youth conference is being held and to register yourself for the conference at that location.")}
-                                    >
-                                        <Button className='' variant="dark" onClick={() => navigate('/youth')}>Youth Conference <FaClipboardList /></Button>
-                                    </OverlayTrigger>
-                                </div>
-                                <div style={{ padding: "5px", zIndex: 1100, }}>
-                                    <OverlayTrigger
-                                        placement="top"
-                                        delay={{ show: 250, hide: 400 }}
-                                        overlay={props => renderTooltip(props, "Click to Login")}
-                                    >
-                                        <Button className='' variant="light" onClick={() => navigate('/login')}>LogIn <IoIosLogIn /></Button>
-                                    </OverlayTrigger>
-                                </div>
-                                </div>
+                    <div style={{ height: "200px", marginBottom: "80px" }}>
+                        <AnimatedStatsSlider
+                            totalUsers={totalUsers}
+                            totalBeneficiaries={totalBeneficiaries}
+                            totalSupportReceived={totalSupportReceived}
+                            totalBloodDonors={totalBloodDonors}
+                            totalConferences={totalConferences}
+                            totalSurveyRespondents={totalSurveyRespondents}
+                        /></div>
 
-                            </div>
-                        </Row>
+
+                    <div className='kkk scrolling-content mt-5' style={{ zIndex: "1000", }}>
+                        <Stack direction="horizontal" gap={3} className="scrolling-stack">
+
+
+                            <OverlayTrigger
+                                placement="top"
+                                delay={{ show: 250, hide: 400 }}
+                                overlay={props => renderTooltip(props, "Share whatever is on your mind but make sure your post is beneficial to Hindus.")}
+                            >
+                                <Button variant="primary" style={{ textWrap: "nowrap" }} onClick={() => navigate('/forum')}>
+                                    Say <FaOm className='mb-1' />
+                                </Button>
+                            </OverlayTrigger>
+
+
+
+                            <OverlayTrigger
+                                placement="top"
+                                delay={{ show: 250, hide: 400 }}
+                                overlay={props => renderTooltip(props, "The money or goods you donate will be used for the benefit of the Hindu religion or the Community.")}
+                            >
+                                <Button variant="primary" style={{ textWrap: "nowrap" }} onClick={redirectToDonate}>
+                                    Donation <FcDonate /> for Good Cause
+                                </Button>
+                            </OverlayTrigger>
+
+                            <OverlayTrigger
+                                placement="top"
+                                delay={{ show: 250, hide: 400 }}
+                                overlay={props => renderTooltip(props, "Your Participation in this Survey is not Required but Essential one.")}
+                            >
+                                <Button variant="primary" style={{ textWrap: "nowrap" }} onClick={() => navigate('/open-survey/byAdmin')}>
+                                    Survey for all
+                                </Button>
+                            </OverlayTrigger>
+
+
+
+
+
+
+                            <OverlayTrigger
+                                placement="top"
+                                delay={{ show: 250, hide: 400 }}
+                                overlay={props => renderTooltip(props, "This is our effort to strengthen every Hindu. If you are weak, click here to remove your weakness.")}
+                            >
+                                <Button variant="danger" style={{ textWrap: "nowrap" }} onClick={redirectToBenrficiarySupport}>
+                                    Need support! Click here
+                                </Button>
+                            </OverlayTrigger>
+
+                            <OverlayTrigger
+                                placement="top"
+                                delay={{ show: 250, hide: 400 }}
+                                overlay={props => renderTooltip(props, "Be a Hindu, buy and sell BSREM certified products. If you haven't applied for the certificate yet, do it soon.")}
+                            >
+                                <Button className='fw-bold' variant="warning" style={{ textWrap: "nowrap" }} onClick={() => navigate('/get-certificate')}>
+                                    Get Certificate
+                                </Button>
+                            </OverlayTrigger>
+
+                            <OverlayTrigger
+                                placement="top"
+                                delay={{ show: 250, hide: 400 }}
+                                overlay={props => renderTooltip(props, "Click to find out where the upcoming youth conference is being held and to register yourself for the conference at that location.")}
+                            >
+                                <Button variant="dark" style={{ textWrap: "nowrap" }} onClick={() => navigate('/youth')}>
+                                    Youth Conference <FaClipboardList />
+                                </Button>
+                            </OverlayTrigger>
+
+
+                            {!token && (
+
+                                <OverlayTrigger
+                                    placement="top"
+                                    delay={{ show: 250, hide: 400 }}
+                                    overlay={props => renderTooltip(props, "Click to Login")}
+                                >
+                                    <Button variant="light" style={{ textWrap: "nowrap" }} onClick={() => navigate('/login')}>
+                                        LogIn <IoIosLogIn />
+                                    </Button>
+                                </OverlayTrigger>
+
+                            )}
+                        </Stack>
+
+
                     </div>
+
                 </div>
 
 
@@ -371,8 +373,6 @@ const Dashboard = () => {
                         <Button className='text-white' variant="outline-primary" onClick={() => navigate('/youth')}>Register for Youth Conference</Button>
                     </OverlayTrigger>
                 </div>
-
-
             </div>
 
 
@@ -381,7 +381,7 @@ const Dashboard = () => {
                 style={{
                     cursor: "pointer",
                     position: "relative", // Changed to relative to avoid affecting other elements   
-                    bottom: 10,         
+                    bottom: 10,
                     left: "0px",
                     display: "inline-block", // Restrict clickable area to content only
                     zIndex: 1000,

@@ -142,51 +142,6 @@ const Donation = () => {
 
 
 
-  // const handleScrollToSection = async (sectionId) => {
-
-  //   localStorage.setItem("redirectAfterUpdateSEC", sectionId);
-  //   if (!userId) {
-  //     // Ask user to log in
-  //     const userResponse = window.confirm(
-  //       "You have to login and update Profile data!"
-  //     );
-
-  //     if (userResponse) {
-  //       // Store the section to navigate after login & profile update
-  //       localStorage.setItem("redirectAfterUpdate", location.pathname);
-  //       localStorage.setItem("redirectAfterLogin", `/user/update-profile`);
-  //       navigate("/login"); 
-  //     }
-
-  //     return;
-  //   }
-
-  //   // Check if the profile is updated before proceeding
-  //   const isProfileUpdated = await checkUserProfile();
-
-  //   if (!isProfileUpdated) {
-  //     const userResponse = window.confirm(
-  //       "Your profile is not updated. Update your profile to proceed. Press OK to update your profile or Cancel to stay here."
-  //     );
-
-  //     if (userResponse) {
-  //       navigateToProfileUpdate();
-  //     }
-  //     return;
-  //   }
-
-  //   // If everything is fine, scroll to the section
-  //   const element = document.getElementById(sectionId);
-  //   if (element) {
-  //     window.scrollTo({
-  //       top: element.offsetTop,
-  //       behavior: "smooth",
-  //     });
-  //   }
-  // };
-
-  // Function to check if user profile is updated
-
 
 
   const handleScrollToSection = async (sectionId) => {
@@ -204,15 +159,7 @@ const Donation = () => {
 
     if (!userId) {
       setShowloginModal(true);
-      // const userResponse = window.confirm(
-      //   "You have to login and update your profile data!"
-      // );
-
-      // if (userResponse) {
-      //   localStorage.setItem("redirectAfterUpdate", location.pathname);
-      //   localStorage.setItem("redirectAfterLogin", `/user/update-profile`);
-      //   navigate("/login");
-      // }
+      
 
 
       return; // Don't proceed to profile check if not logged in
@@ -222,13 +169,7 @@ const Donation = () => {
     const isProfileUpdated = await checkUserProfile();
 
     if (!isProfileUpdated) {
-      // const userResponse = window.confirm(
-      //   "Your profile is not updated. Update your profile to proceed. Press OK to update your profile or Cancel to stay here."
-      // );
-
-      // if (userResponse) {
-      //   navigateToProfileUpdate();
-      // }
+     
       setShowProfileModal(true);
 
       return; // Don’t proceed further if profile isn't updated
@@ -316,7 +257,7 @@ const Donation = () => {
       <>
         {/* Header Section */}
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: `calc(100vh - 135px)` }}>
-          <>
+           <>
             <Carousel slide className='donate'>
 
               <Carousel.Item>
@@ -328,7 +269,6 @@ const Donation = () => {
                     <Card.Text>
                       Your generosity can create a lasting impact. By donating to us, you are directly contributing to ...
                       <div className='text-end me-5' id='rM'>
-                        {/* <a className='bt' style={{ cursor: "pointer" }} href="#" onClick={openDonationModal}>Read More</a> */}
                         <Button
                           className="bt"
                           variant='link'
@@ -357,7 +297,7 @@ const Donation = () => {
 
 
 
-              {/* Blood Donation */}
+              {/* /* Blood Donation */ }
               <Carousel.Item>
                 <Card className='donate-card' style={{ width: '28rem' }}>
                   <Card.Header className='hdr5'> <h2 className='text-center'> Donate Blood </h2></Card.Header>
@@ -368,7 +308,6 @@ const Donation = () => {
                     <Card.Text>
                       Blood donation is a simple, yet powerful way to make a life-saving...   <br />
                       <div className='text-end me-5' id='rM'>
-                        {/* <a className='bt' style={{ cursor: "pointer" }} href="#" onClick={openBloodModal}>Read More</a> */}
                         <Button
                           className="bt"
                           variant='link'
@@ -408,7 +347,6 @@ const Donation = () => {
                     <Card.Text>
                       Sharing your knowledge and skills with others is a powerful way to...   <br />
                       <div className='text-end me-5' id='rM'>
-                        {/* <a className='bt' style={{ cursor: "pointer" }} href="#" onClick={openSkillModal}>Read More</a> */}
                         <Button
                           className="bt"
                           variant='link'
@@ -450,7 +388,6 @@ const Donation = () => {
                     <Card.Text>
                       More or less all of you read books and often sell them after finishing. But what if...   <br />
                       <div className='text-end me-5' id='rM'>
-                        {/* <a className='bt' style={{ cursor: "pointer" }} href="#" onClick={openBookModal}>Read More</a> */}
                         <Button
                           className="bt"
                           variant='link'
@@ -487,7 +424,6 @@ const Donation = () => {
                     <Card.Text>
                       Your donation of clothing can truly change someone’s life. A simple dress can bring a smile...
                       <div className='text-end me-5' id='rM'>
-                        {/* <a className='bt' style={{ cursor: "pointer" }} href="#" onClick={openClothModal}>Read More</a> */}
                         <Button
                           className="bt"
                           variant='link'
@@ -523,7 +459,6 @@ const Donation = () => {
                     <Card.Text>
                       Your food donation can bring comfort to those struggling with hunger. A small act of kindness...
                       <div className='text-end me-5' id='rM'>
-                        {/* <a className='bt' style={{ cursor: "pointer" }} href="#" onClick={openFoodModal}>Read More</a> */}
                         <Button
                           className="bt"
                           variant='link'
@@ -559,7 +494,6 @@ const Donation = () => {
                     <Card.Text>
                       Your old gadgets could be a gateway to education for someone in need!...
                       <div className='text-end me-5' id='rM'>
-                        {/* <a className='bt' style={{ cursor: "pointer" }} href="#" onClick={openComputerModal}>Read More</a> */}
                         <Button
                           className="bt"
                           variant='link'
@@ -596,7 +530,6 @@ const Donation = () => {
                     <Card.Text>
                     Every toy has a story—and yours can begin a new chapter in a child’s life...
                       <div className='text-end me-5' id='rM'>
-                        {/* <a className='bt' style={{ cursor: "pointer" }} href="#" onClick={openComputerModal}>Read More</a> */}
                         <Button
                           className="bt"
                           variant='link'
@@ -632,7 +565,6 @@ const Donation = () => {
                     <Card.Text>
                       There’s something truly special about giving directly with your own hands. Your donation can ...
                       <div className='text-end me-5' id='rM'>
-                        {/* <a className='bt' style={{ cursor: "pointer" }} href="#" onClick={openOwnModal}>Read More</a> */}
                         <Button
                           className="bt"
                           variant='link'
@@ -665,7 +597,12 @@ const Donation = () => {
 
 
             </Carousel>
-          </>
+          </> 
+          
+
+
+
+
         </div>
 
         {/* Donation Sections */}
@@ -679,7 +616,8 @@ const Donation = () => {
           <Card className='shadow ' style={{ minHeight: `calc(100vh - 140px)` }}>
 
             <div className='contibute' style={{ textAlign: 'center' }}>
-              <h2 >Contribute to shape Hindu Community</h2>
+             
+              <h2 className='pt-3'>{user ? `Contribute to shape "United Hindu Community"` : 'Contribute to Shape & Build Nation'}</h2>
             </div>
             <div style={{ textAlign: 'center', marginTop: "10px" }}>
               {/* <PaymentOption /> */}
@@ -698,7 +636,7 @@ const Donation = () => {
 
 
           <div className='contibute' style={{ textAlign: 'center' }}>
-            {/* <h2 className='pt-3'>Donate Skill & Knowledge to Build "United Hindu Community"</h2> */}
+            
           </div>
           <div style={{ textAlign: 'center', marginTop: "10px" }}>
 
@@ -718,7 +656,7 @@ const Donation = () => {
             <Card className='shadow ' style={{ minHeight: `calc(100vh - 140px)` }}>
 
               <div className='contibute' style={{ textAlign: 'center' }}>
-                <h2 className='pt-3'>Donate Skill & Knowledge to Build "United Hindu Community"</h2>
+                <h2 className='pt-3'>{user ? `Donate Skill & Knowledge to Build "United Hindu Community"` : 'Donate Skill & Knowledge to Build Nation'}</h2>
               </div>
               <div style={{ textAlign: 'center', marginTop: "10px" }}>
                 <Mentor />
@@ -758,7 +696,7 @@ const Donation = () => {
           <Card className='shadow ' style={{ minHeight: `calc(100vh - 140px)` }}>
 
             <div className='contibute' style={{ textAlign: 'center' }}>
-              <h2 className='pt-3'>Hindu Bloods Only for Hindus</h2>
+              <h2 className='pt-3'>{user ? 'Hindu Blood only for Hindus' : 'Donate blood and be a Bloody Hero'}</h2>
             </div>
             <div style={{ textAlign: 'center', marginTop: "10px" }}>
               <Blood />

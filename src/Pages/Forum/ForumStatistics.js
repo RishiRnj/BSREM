@@ -87,10 +87,10 @@ const PartialStatistics = ({ maxResponses }) => {
                         <div className="scrolling-content">
                             <Stack direction="horizontal" gap={3} className="scrolling-stack">
                                 <div>
-                                    <strong>Survey Statistics:</strong>
+                                    <strong>User Survey Statistics:</strong>
                                 </div>
                                 <div className="p-2 text-center">
-                                    Total Users: <strong>{stats.totalUsers}</strong>
+                                    Total registered Users: <strong>{stats.totalUsers}</strong>
                                 </div>
                                 <div>||</div>
                                 <div className="p-2 ms-auto text-center">
@@ -116,10 +116,10 @@ const PartialStatistics = ({ maxResponses }) => {
                             <Stack direction="horizontal" gap={3} className="scrolling-stack">
                                 <div>||</div>
                                 <div>
-                                    <strong>Survey Statistics:</strong>
+                                    <strong>User Survey Statistics:</strong>
                                 </div>
                                 <div className="p-2 text-center">
-                                    Total Users: <strong>{stats.totalUsers}</strong>
+                                    Total registered Users: <strong>{stats.totalUsers}</strong>
                                 </div>
                                 <div>||</div>
                                 <div className="p-2 ms-auto text-center">

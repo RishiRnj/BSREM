@@ -55,7 +55,7 @@ const Test = () => {
   const [formData, setFormData] = useState({
     religion: "",
     email: "",
-    fullName: "",
+    
     username: "",
     updateFullName: "",
     mobile: "",
@@ -110,13 +110,14 @@ const Test = () => {
 
 
         // Merge username and displayName into a single name field
-        const fullName = parsedUser.username; // Prioritize username, fallback to displayName
+       if (parsedUser.username) {; // Prioritize username, fallback to displayName
         // Update formData with the retrieved user data
         setFormData((prevData) => ({
           ...prevData,
           ...parsedUser, // Merge parsed user data into formData
-          fullName, // Update fullName field
+          username: parsedUser.username, // Ensure explicit override of username
         }));
+      }
       }
 
     } catch (error) {
@@ -299,7 +300,7 @@ const Test = () => {
   const handleNext = (e) => {
     e.preventDefault(); // Prevent form submission
 
-    if (!formData.fullName && !formData.username ) {
+    if (!formData.username ) {
       handleWarning("User Name is required!.");
       return;
     }
@@ -603,8 +604,8 @@ const Test = () => {
                       <UsernameInput
                         value={formData.username}
                         onChange={handleChange}
-                        disabled={formData.fullName || formData.username}
-                        readOnly={formData.fullName }
+                        disabled={formData.username}
+                        readOnly={formData.username }
                       />
                     </Col>
                   </Row>

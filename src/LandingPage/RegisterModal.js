@@ -34,11 +34,7 @@ function RegisterModal({ show, onClose }) {
 
     const { name, value, type, checked } = e.target;
 
-    // Validation for fName and lName fields
-    if ((name === "username") && !/^[a-zA-Z\s]*$/.test(value)) {
-      handleError("Please enter a valid name (alphabets only).");
-      return; // Prevent updating the state with invalid input
-    }
+    
 
     if (type === "checkbox") {
       setFormData({ ...formData, [name]: checked });
@@ -159,8 +155,8 @@ function RegisterModal({ show, onClose }) {
               <UsernameInput
                         value={formData.username}
                         onChange={handleChange}
-                        disabled={formData.fullName}
-                        readOnly={formData.fullName}
+                        disabled={formData.username}
+                        
                       />
             </Form.Group>
 

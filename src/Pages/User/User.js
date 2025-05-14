@@ -19,6 +19,7 @@ import { RiSurveyLine } from "react-icons/ri";
 import { FaOm } from "react-icons/fa6";
 import LoadingSpinner from "../../Components/Common/LoadingSpinner";
 import ConfirmationModal from '../../Components/Common/ConfirmationModal';
+import PagaUnderConstruction from "../../Components/Common/PagaUnderConstruction";
 
 
 const actions = [
@@ -31,14 +32,9 @@ const actions = [
 
 
 const User = () => {
-    const { user } = useContext(AuthContext);
-    const isAuthenticated = !!user;
-    const currentUser = user;
-    const userId = user?.id;
-    const [userData, setUserData] = useState(null);
+    const { user } = useContext(AuthContext);    
+    const userId = user?.id;    
     const [loading, setLoading] = useState(true);
-    const [responses, setResponses] = useState([]);
-    const [showResponses, setShowResponses] = useState(false); // State to track button toggle
 
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
@@ -51,6 +47,44 @@ const User = () => {
     const [surveyCompleted, setSurveyCompleted] = useState(false);
     const [showModal, setShowModal] = useState();
     const [showProfileModal, setShowProfileModal] = useState(false);
+    const [others, setOthers] = useState(false);
+
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            console.error("No token found");
+            setLoading(false);
+            navigate('/');
+            return;
+        }
+
+       const checkProfileAndRedirect = async () => {
+        try {
+            const { religion } = await checkUserProfile();
+            console.log('relegion', religion);
+            
+            if (religion !== "Hinduism") {
+                setOthers(true);
+
+                return;
+            }
+        } catch (err) {
+            console.error("Profile check error:", err);
+        } finally {
+            setLoading(false); // ✅ Move it here so it's called after the async check
+        }
+    };
+
+    checkProfileAndRedirect();
+
+       
+
+    }, [user]);
+
+  
+
+
 
 
     const handleActionClick = (actionName) => {
@@ -76,12 +110,13 @@ const User = () => {
             setLoading(true); // Optional loading state for better UX
 
             // Step 1: Check if the user's profile is updated
-            const isProfileUpdated = await checkUserProfile(); // Ensure `checkUserProfile` is async
+            const {isProfileUpdated} = await checkUserProfile(); // Ensure `checkUserProfile` is async
 
             if (!isProfileUpdated) {
-                setShowProfileModal(true);
+                setShowProfileModal(true);               
                 return; // Stop further execution if the profile isn't updated
             }
+
 
             // Step 2: Check if the user has followed at least 5 users
             const hasFollowedMinimumUsers = await checkUserFollowStatus(); // Ensure `checkUserFollowStatus` is async
@@ -122,8 +157,13 @@ const User = () => {
 
             if (response.ok) {
                 const userData = await response.json();
+                console.log("data user", userData);
+                
 
-                return userData.isProfileCompleted; // Return the profile status
+                return {
+                isProfileCompleted: userData.isProfileCompleted || false,                
+                religion: userData.religion || "",
+            };
             } else {
                 throw new Error("Failed to fetch user profile.");
             }
@@ -131,6 +171,8 @@ const User = () => {
             console.error("Error in checkUserProfile:", error);
             navigate("/donation"); // Redirect to a fallback route if needed
             return false; // Default to false if there's an error
+        } finally {
+            setLoading(false)
         }
     };
 
@@ -195,6 +237,7 @@ const User = () => {
 
             if (!isProfileUpdated) {
                 setShowProfileModal(true);
+
                 return; // Stop further execution if the profile isn't updated
             }
 
@@ -249,49 +292,8 @@ const User = () => {
 
 
 
-    useEffect(() => {
-        if (isAuthenticated) {
-            localStorage.removeItem("redirectAfterLogIn"); // Clear after use
-            localStorage.removeItem("redirectAfterUpdate"); // Clear after use
-            const fetchUserData = async () => {
-                setLoading(true)
-                try {
-                    const token = localStorage.getItem("token");
-                    if (!token) {
-                        console.error("No token found");
-                        return;
-                    }
+    
 
-                    const response = await fetch(`${process.env.REACT_APP_API_URL}/user/profile/data`, {
-                        method: "GET",
-                        credentials: "include",
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            "Cache-Control": "no-cache",
-                        },
-                    });
-
-                    if (response.ok) {
-                        const data = await response.json();
-                        setUserData(data.user);
-                        console.log(data);
-
-
-                    } else {
-                        console.error("Failed to fetch user data");
-                    }
-                } catch (error) {
-                    console.error("Error fetching user data", error);
-
-                } finally {
-                    setLoading(false)
-
-                }
-            };
-
-            fetchUserData();
-        }
-    }, [isAuthenticated, userId]);
 
 
 
@@ -317,10 +319,7 @@ const User = () => {
         );
     }
 
-    console.log("Is loading:", loading);
-    if (!loading) {
-        console.log("Responses ready for rendering:", responses);
-    }
+    
 
 
     return (
@@ -381,6 +380,8 @@ const User = () => {
 
 
             <>
+            {!others ? (
+                <>
                 <Nav justify variant="tabs" className="sticky-nav">
                     <Nav.Item>
                         <Nav.Link href="/donate">Dashboard</Nav.Link>
@@ -480,6 +481,11 @@ const User = () => {
 
                         </Modal.Body>
                     </Modal>
+                    </>
+
+                    ):(
+                        <PagaUnderConstruction/>
+                    )}
                 
 
 

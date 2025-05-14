@@ -22,9 +22,9 @@ const Unauthorized = () => {
 
 
         <div className='mt-4 mb-4'>
-          <Button center onClick={() => navigate("/forum")} style={{
+          <Button center onClick={() => navigate("/dashboard")} style={{
             display: 'flex', alignItems: 'center', padding: '10px 20px',
-          }}> Go to Home
+          }}> Go Guest Dashboard
           </Button>
           </div>
       </div>

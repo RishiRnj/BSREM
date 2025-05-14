@@ -24,6 +24,7 @@ import { ToastContainer } from 'react-toastify';
 import { FaOm } from "react-icons/fa6";
 import LoadingSpinner from '../../Components/Common/LoadingSpinner';
 import ConfirmationModal from '../../Components/Common/ConfirmationModal';
+import PageUnderConstruction from '../../Components/Common/PagaUnderConstruction';
 
 
 const actions = [
@@ -51,6 +52,8 @@ const Forum = () => {
   const handleClose = () => setOpen(false);
   const [error, setError] = useState(null);
   const [showProfileModal, setShowProfileModal] = useState(false);
+      const [others, setOthers] = useState(false);
+  
 
 
   // on fab button click
@@ -177,6 +180,19 @@ const Forum = () => {
     localStorage.removeItem("redirectAfterLogin"); // Clear after use
 
     const fetchData = async () => {
+      try {
+            const { religion } = await checkUserProfile();
+            console.log('relegion', religion);
+            
+            if (religion !== "Hinduism") {
+                setOthers(true);
+                return;
+            }
+        } catch (err) {
+            console.error("Profile check error:", err);
+        } finally {
+            setLoading(false); // ✅ Move it here so it's called after the async check
+        }
       // Fetch notices and posts
       await fetchNotices();
 
@@ -294,7 +310,10 @@ const Forum = () => {
       if (response.ok) {
         const userData = await response.json();
 
-        return userData.isProfileCompleted; // Return the profile status
+       return {
+                isProfileCompleted: userData.isProfileCompleted || false,                
+                religion: userData.religion || "",
+            };
       } else {
         throw new Error("Failed to fetch user profile.");
       }
@@ -406,6 +425,7 @@ const handleProfileUpdateCancel = () => {
 
 
       </>
+      {!others ? (
       <>
         <Nav justify variant="tabs" defaultActiveKey="" className="sticky-nav">
           <Nav.Item>
@@ -504,6 +524,11 @@ const handleProfileUpdateCancel = () => {
         </Modal>
 
       </>
+      ):(
+        <>
+        
+        <PageUnderConstruction/></>
+      )}
       <ToastContainer />
 
     </>

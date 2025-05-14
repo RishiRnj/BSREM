@@ -6,19 +6,24 @@ import { Navigate } from "react-router-dom";
 import "./Header.css";
 import { HouseFill } from "react-bootstrap-icons";
 import { useNavigate } from "react-router-dom";
-import { MdDashboardCustomize, MdForum, MdSpaceDashboard } from "react-icons/md";
-import { IoHome } from "react-icons/io5";
+import { MdCampaign, MdDashboardCustomize, MdForum, MdSpaceDashboard } from "react-icons/md";
+import { IoCreate, IoHome } from "react-icons/io5";
 import { FaBloggerB, FaCarSide, FaClipboardList,  FaHandsHelping, FaOm } from "react-icons/fa";
 import { BsClipboard2DataFill } from "react-icons/bs";
 import { HiClipboardDocumentList } from "react-icons/hi2";
 import { GrContact } from "react-icons/gr";
 import { FcConferenceCall, FcFaq } from "react-icons/fc";
+import { LiaClipboardListSolid } from "react-icons/lia";
+
 
 const Header = () => {
 
     const { user, logout } = useContext(AuthContext);
+    console.log("user", user);
+    
     const isAuthenticated = !!user;
     const userId = user?.id;
+    console.log("user id", userId);
     const [show, setShow] = useState(false);
 
     const navigate = useNavigate();
@@ -46,10 +51,12 @@ const Header = () => {
                         method: 'GET',
                         headers: {
                             'Cache-Control': 'no-cache',
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         },
                     });
                     if (response.ok) {
                         const data = await response.json();
+                        console.log("Fetched data:", data); // <--- Add this
                         setUserData(data);  // Set the fetched user data
 
                     } else {
@@ -155,6 +162,9 @@ const Header = () => {
                     </Navbar.Brand>
                     <Nav className="ms-auto d-flex align-items-center">
                         <Nav.Link href="/dashboard"><HouseFill className="mb-1"/></Nav.Link>
+                        {user && user.isCampaigner === true && (
+                        <Nav.Link href="/campaigner-dashboard"><MdCampaign className="mb-1"/> Campaigner Home </Nav.Link>)}
+
                        
 
                         <NavDropdown title="Donate for Community" id="basic-nav-dropdown"
@@ -228,9 +238,20 @@ const Header = () => {
                             align="end">
 
                             <NavDropdown.Item id="itms" href="/register/for_support">Request for Support!</NavDropdown.Item>
-
-                            <NavDropdown.Item id="itms" href="/user/survey">Perticipate in the Survey</NavDropdown.Item>
-                            <NavDropdown.Item id="itmSu" className="ps-4" href="/survey-stats">View Survey Result</NavDropdown.Item>
+                            {userId && (
+                                                <>
+                                            <NavDropdown.Item id="itmso" href="/user/survey" onClick={handleClose} className="py-2">
+                                                Participate in User Survey <FaClipboardList/>
+                                            </NavDropdown.Item>
+                                            <NavDropdown.Item id="itmso" href="/survey-stats" onClick={handleClose} className="py-2">
+                                            View User Survey Result <BsClipboard2DataFill />
+                                        </NavDropdown.Item>
+                                        </>
+                                            )}
+                            
+                            <NavDropdown.Item id="itmSu" className="ps-4" href="/open-survey">Perticipate in Open Survey</NavDropdown.Item>
+                            {user?.isCampaigner !== true && (
+                            <NavDropdown.Item id="itmSu" className="ps-4" href="/open-survey/create-own-survey">Create own Survey Campaign</NavDropdown.Item>)}
                             <NavDropdown.Item id="itmSu" className="ps-4" href="/user/have-suggestions">Have Suggestions?</NavDropdown.Item>
                             <NavDropdown.Item id="itms" href="/youth">Youth Conference</NavDropdown.Item>
                             <NavDropdown.Item id="itm" href="/contactUs">Contact Us</NavDropdown.Item>
@@ -320,6 +341,8 @@ const Header = () => {
                         </Nav.Link>
                             
                         )}
+                        {user && user.isCampaigner === true && (
+                        <Nav.Link href="/campaigner-dashboard">Campaigner Home <MdCampaign className="mb-1"/></Nav.Link>)}
 
                             <Nav.Link id="itm" href="/forum" onClick={handleClose} className="py-2">
                                 Say <FaOm className="mb-1"/>
@@ -387,13 +410,24 @@ const Header = () => {
                                     <Accordion.Header>Survey <HiClipboardDocumentList /> </Accordion.Header>
                                     <Accordion.Body>
                                         <Nav className="flex-column">
+                                            {userId && (
+                                                <>
                                             <Nav.Link id="itmso" href="/user/survey" onClick={handleClose} className="py-2">
-                                                Participate in the Survey <FaClipboardList/>
+                                                Participate in User Survey <FaClipboardList/>
                                             </Nav.Link>
-
                                             <Nav.Link id="itmso" href="/survey-stats" onClick={handleClose} className="py-2">
-                                                View the Survey Result <BsClipboard2DataFill />
+                                            View User Survey Result <BsClipboard2DataFill />
+                                        </Nav.Link>
+                                        </>
+                                            )}
+                                            <Nav.Link id="itmso" href="/open-survey" onClick={handleClose} className="py-2">
+                                            Participate in Open Survey <LiaClipboardListSolid  />
                                             </Nav.Link>
+                                            
+                                            {user?.isCampaigner !== true && (
+                                            <Nav.Link id="itmso" href="/open-survey/create-own-survey" onClick={handleClose} className="py-2">
+                                                Create own Survey Campaign <IoCreate />
+                                            </Nav.Link>)}
                                         </Nav>
                                     </Accordion.Body>
                                 </Accordion.Item>

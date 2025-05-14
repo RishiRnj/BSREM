@@ -1,15 +1,19 @@
 
 
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Card, Button, CardGroup, Modal, Badge, Row, Carousel } from 'react-bootstrap';
 import DonationModal from './DonationModal';
 import './Donation.css';
 import { ToastContainer } from 'react-toastify';
 import { FaGooglePay, FaAmazonPay } from 'react-icons/fa';
 import { SiPhonepe } from 'react-icons/si';
+import AuthContext from '../../Context/AuthContext';
 
 const Donate = () => {
+  const { user } = useContext(AuthContext);   
+  
+   
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [approvedBeneficiaries, setApprovedBeneficiaries] = useState([]);
@@ -132,15 +136,15 @@ const Donate = () => {
     return (
       <Carousel slide data-bs-theme="dark" indicators={false} controls={false}>
         <Carousel.Item style={{ zIndex: 0 }}>
-          <h6 className='text-center herO'>In Hinduism, Donating is a means of Earning Virtue,</h6>
+          <h6 className='text-center herO fw-bold'>In Hinduism, Donating is a means of Earning Virtue,</h6>
         </Carousel.Item>
 
         <Carousel.Item style={{ zIndex: 0 }}>
-          <h6 className='text-center herO'>but is the Money or Goods you Donate actually used</h6>
+          <h6 className='text-center herO fw-bold'>but is the Money or Goods you Donate actually used</h6>
         </Carousel.Item>
 
         <Carousel.Item style={{ zIndex: 0 }}>
-          <h6 className='text-center herO'>to Unite and Betterment for the Hindu Community?</h6>
+          <h6 className='text-center herO fw-bold'>{user?.religion === "Hinduism" ? "to Unite and Betterment for the Hindu Community?" : "to Betterment for Your Community?"}</h6>
         </Carousel.Item>
       </Carousel>
     );
