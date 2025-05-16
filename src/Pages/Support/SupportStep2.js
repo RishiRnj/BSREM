@@ -657,7 +657,7 @@ const SupportStep2 = ({ onStepTwoCompleted }) => {
 
 
     return (
-        <div className='pt-2'  >
+        <div className='pt-2 pb-5'  >
 
             <Card className="px-2 m-2 shadow-sm" style={{ borderRadius: "10px" }}>
                 <Card.Body>
