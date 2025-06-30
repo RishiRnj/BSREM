@@ -60,6 +60,7 @@ import BecomeCampaigner from "./Pages/OpenServey/BecomeCampaigner";
 import CampaignerProfileUpdate from "./Pages/OpenServey/CampaignerProfileUpdate";
 import CampaignerDashboard from "./Pages/OpenServey/CampaignerDashboard";
 import CampaignerCreatedSurveyPage from "./Pages/OpenServey/CampaignerCreatedForPerticipation";
+import ProfileData from "./Pages/User/ProfileData";
 
 
 
@@ -189,6 +190,8 @@ const App = () => {
 
           {/* User Profile Page */}
           <Route path="/user/:id?/profile" element={<ProtectedRoute> <User /> </ProtectedRoute>} />
+          {/* User Profile data Page */}
+          <Route path="/user/:id?/profile-data" element={<ProtectedRoute> <ProfileData /> </ProtectedRoute>} />
 
           {/* Update User Profile Page */}
           <Route path="/user/:id?/update-profile" element={<ProtectedRoute><UpdateProfile /></ProtectedRoute>} />

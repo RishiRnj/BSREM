@@ -570,36 +570,7 @@ const Test = () => {
                     </Col>
 
                     <Col sm>
-                      {/* <InputGroup className="mb-2" >
-                        <InputGroup.Text style={{ fontWeight: "bold" }}>User Name</InputGroup.Text>
-                        <Form.Control aria-label="User Name"
-                        name='username'
-                          type="text" value={formData.username}
-                          // onClick={handleNameClick} // Show alert on first click
-                          disabled={formData.fullName}
-                          readOnly={formData.fullName}
-                          required={!formData.fullName}
-                          aria-describedby="basic-verify"
-                          onChange={handleChange}
-                        /> */}
 
-                      {/* <Button
-                          type="submit"
-                          variant='light'
-                          title='Update Name'
-                          id="basic-verify"
-                          onClick={handleNameClick} // Show alert on first click
-                          className="basic-verify"
-                          style={{
-                            border: 'none',
-                            // backgroundColor: 'transparent',
-                            color: loading ? 'green' : 'blue',
-                            cursor: loading ? 'not-allowed' : 'pointer',
-                            padding: '0px 10px',
-                          }} >
-                          <BsPencilSquare />
-                        </Button> */}
-                      {/* </InputGroup> */}
 
                       <UsernameInput
                         value={formData.username}
@@ -715,11 +686,15 @@ const Test = () => {
                       <InputGroup className="mb-2">
                         <InputGroup.Text id="basic-addon1" style={{ fontWeight: "bold" }}>Religion</InputGroup.Text>
                         <Form.Control as="select" aria-label="Religion" name="religion"
-                          value={formData.religion} required
+                          value={formData.religion} required disabled={!!formData.religion} // disables only if value exists
                           onChange={handleChange}
                         >
+                          
                           <option value="">Select Religion</option>
                           <option value="Hinduism">Hinduism</option>
+                          <option value="Jainism">Jainism</option>
+                          <option value="Sikhism">Sikhism</option>
+                          <option value="Buddhism">Buddhism</option>
                           <option value="Christianity">Christianity</option>
                           <option value="Islam">Islam</option>
 

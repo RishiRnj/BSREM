@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Button, Form, Card } from 'react-bootstrap';
+import { Modal, Button, Form, Card, InputGroup } from 'react-bootstrap';
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { handleSuccess, handleError, handleWarning } from '../Components/Util';
@@ -16,7 +16,7 @@ import UsernameInput from '../Components/Common/UsernameInput ';
 
 function RegisterModal({ show, onClose }) {
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({ username: '', email: '', password: '', mobile: '' });
+  const [formData, setFormData] = useState({ username: '', email: '', password: '', mobile: '', religion: '' });
   const [loading, setLoading] = useState(false);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
 
@@ -34,7 +34,7 @@ function RegisterModal({ show, onClose }) {
 
     const { name, value, type, checked } = e.target;
 
-    
+
 
     if (type === "checkbox") {
       setFormData({ ...formData, [name]: checked });
@@ -86,7 +86,7 @@ function RegisterModal({ show, onClose }) {
 
   const handleRegister = async (event) => {
     event.preventDefault();
-    const { username, email, password, mobile, agreed } = formData;
+    const { username, email, password, mobile, religion,  agreed } = formData;
     if (username.length < 3) {
       return handleError("Use at least 3 characters for Name.");
     }
@@ -113,6 +113,10 @@ function RegisterModal({ show, onClose }) {
       return;
     }
 
+    // Check if terms are agreed
+    if (!religion) {
+      return handleError("You must select your religion.");
+    }
     // Check if terms are agreed
     if (!agreed) {
       return handleError("You must agree to the terms and conditions.");
@@ -151,18 +155,19 @@ function RegisterModal({ show, onClose }) {
           <Form onSubmit={handleRegister}
           >
             <Form.Group controlId="username" className="mb-2">
-              
+
               <UsernameInput
-                        value={formData.username}
-                        onChange={handleChange}
-                        disabled={formData.username}
-                        
-                      />
+                value={formData?.username || ''}
+                onChange={handleChange}
+                disabled={formData.username }
+
+              />
             </Form.Group>
 
 
-            <Form.Group controlId="email" className="mb-2">
-              <Form.Label>Email</Form.Label>
+            <InputGroup className="mb-2 align-items-center">
+              <InputGroup.Text style={{ fontWeight: "bold" }}>Email</InputGroup.Text>
+
               <Form.Control
                 type="email"
                 name="email"
@@ -171,11 +176,14 @@ function RegisterModal({ show, onClose }) {
                 value={formData.email}
                 onChange={handleChange}
               />
-            </Form.Group>
+            </InputGroup>
 
-            <Form.Group controlId="password" className="mb-2">
-              <Form.Label>Password</Form.Label>
-              <div className="d-flex align-items-center border border-primary rounded">
+            
+
+            <InputGroup className="mb-2 align-items-center">
+              <div className="d-flex align-items-center border  rounded w-100">
+                <InputGroup.Text style={{ fontWeight: "bold" }}>Password</InputGroup.Text>
+
                 <Form.Control
                   type={showPassword ? "text" : "password"}
                   name="password"
@@ -192,20 +200,26 @@ function RegisterModal({ show, onClose }) {
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </span>
               </div>
-            </Form.Group>
+
+
+
+            </InputGroup>
+
+
 
 
             {formData?.mobile ? (
               // If mobile exists, render the Mobile number with Verification mark
-              <div className="position-relative mb-2">
-                <Form.Group controlId="mobile" className="mb-2">
-                  <Form.Label>Mobile</Form.Label>
+
+              <InputGroup className="mb-2">
+                <div className="d-flex align-items-center w-100">
+                  <InputGroup.Text>Mobile</InputGroup.Text>
                   <PhoneInput
                     name="mobile"
                     placeholder='Enter Phone Number'
                     disabled={onVerified}
                     country={'in'}
-                    value={formData.mobile}
+                    value={formData.mobile || ''}
                     inputProps={{ name: 'mobile' }}
                     inputStyle={{ width: '100%', borderRadius: '5px' }}
                   />
@@ -214,32 +228,63 @@ function RegisterModal({ show, onClose }) {
                       className="position-absolute"
                       style={{
                         right: 10,
-                        top: "70%",
+                        top: "50%",
                         transform: "translateY(-50%)",
                         color: "green",
                       }}
                     />
-                  )}
-                </Form.Group>
+                  )} </div>
+              </InputGroup>
 
 
-              </div>
+
 
             ) : (
-              <Form.Group controlId="mobile" className="mb-2" onClick={handleInputFocus}>
-                <Form.Label>Mobile</Form.Label>
 
-                <PhoneInput
-                  name="mobile"
-                  placeholder='Enter Phone Number'
-                  disabled={onVerified}
-                  country={'in'}
-                  value={formData.mobile}
-                  inputProps={{ name: 'mobile' }}
-                  inputStyle={{ width: '100%', borderRadius: '5px' }}
-                />
-              </Form.Group>
+              <InputGroup className="mb-2" onClick={handleInputFocus}>
+                <div className="d-flex align-items-center w-100">
+                  <InputGroup.Text>Mobile</InputGroup.Text>
+                  {/* <Form.Group controlId="mobile" className="mb-2" onClick={handleInputFocus}>
+                <Form.Label>Mobile</Form.Label> */}
+
+                  <PhoneInput
+                    name="mobile"
+                    placeholder='Enter Phone Number'
+                    disabled={onVerified}
+                    country={'in'}
+                    value={formData.mobile  || ''}
+                    inputProps={{ name: 'mobile' }}
+                    inputStyle={{ width: '100%', borderRadius: '5px' }}
+                  /></div>
+              </InputGroup>
             )}
+
+            <InputGroup className="mb-2 align-items-center">
+
+              <InputGroup.Text style={{ fontWeight: "bold" }}>Religion</InputGroup.Text>
+              <Form.Control
+                as="select"
+                name="religion"
+                placeholder="Enter your email"
+                required
+                value={formData.religion}
+                onChange={handleChange}
+              >
+
+
+                <option value="">Select Religion</option>
+                <option value="Hinduism">Hinduism</option>
+                <option value="Jainism">Jainism</option>
+                <option value="Sikhism">Sikhism</option>
+                <option value="Buddhism">Buddhism</option>
+                <option value="Christianity">Christianity</option>
+                <option value="Islam">Islam</option>
+              </Form.Control>
+
+            </InputGroup>
+
+
+
 
             <div className="form-check mb-2 d-flex justify-content-center align-items-center">
               <input
@@ -288,9 +333,9 @@ function RegisterModal({ show, onClose }) {
         </Modal.Header>
         <Modal.Body>
           <Card>
-                        <h6 className='text-center herO fw-bold'>Enter Valid Phone Number!</h6>
-          {/* Render the MobileVerification component inside the modal */}
-          <MobileVerification onPhoneVerified={handlePhoneNumber} />
+            <h6 className='text-center herO fw-bold'>Enter Valid Phone Number!</h6>
+            {/* Render the MobileVerification component inside the modal */}
+            <MobileVerification onPhoneVerified={handlePhoneNumber} />
           </Card>
         </Modal.Body>
         <Modal.Footer>

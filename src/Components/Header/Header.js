@@ -398,7 +398,7 @@ const Header = () => {
                                 </Accordion.Item>
                             </Accordion>
 
-                            {/* commented for now */}
+                            {/* commented for now  vehicle*/} 
                              {/* <Nav.Link id="itm" href="/car_for_charity" onClick={handleClose} className="py-2">
                              Car for Charity <FaCarSide/>
                             </Nav.Link>      */}

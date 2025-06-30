@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useContext } from "react";
-import {  useNavigate, useLocation } from "react-router-dom";
-import { Modal, Nav } from "react-bootstrap";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Modal, Nav, NavDropdown } from "react-bootstrap";
 import AuthContext from "../../Context/AuthContext";
 import { useWebSocket } from "../../Context/WebSocketProvider";
 import PostCreator from '../Forum/PostCreator';
@@ -17,14 +17,20 @@ import Posts from "../Forum/Posts";
 
 import { RiSurveyLine } from "react-icons/ri";
 import { FaOm } from "react-icons/fa6";
+import { GrUpdate } from "react-icons/gr";
+
 import LoadingSpinner from "../../Components/Common/LoadingSpinner";
 import ConfirmationModal from '../../Components/Common/ConfirmationModal';
 import PagaUnderConstruction from "../../Components/Common/PagaUnderConstruction";
+import { FaUserCheck, FaUserTimes } from "react-icons/fa";
+import { LuClipboardCopy } from "react-icons/lu";
+
 
 
 const actions = [
     { icon: <FaOm />, name: 'New Post' },
-    { icon: <RiSurveyLine />, name: 'Perticipate In Survey' },
+    { icon: <RiSurveyLine />, name: 'User Privet Survey' },
+    { icon: <LuClipboardCopy />, name: 'Perticipate Open Survey' },
 
 ];
 
@@ -32,8 +38,8 @@ const actions = [
 
 
 const User = () => {
-    const { user } = useContext(AuthContext);    
-    const userId = user?.id;    
+    const { user } = useContext(AuthContext);
+    const userId = user?.id;
     const [loading, setLoading] = useState(true);
 
     const [open, setOpen] = React.useState(false);
@@ -48,6 +54,7 @@ const User = () => {
     const [showModal, setShowModal] = useState();
     const [showProfileModal, setShowProfileModal] = useState(false);
     const [others, setOthers] = useState(false);
+    const [isUserUpdated, setIsUserUpdated] = useState(false); // State to track if the user is updated
 
 
     useEffect(() => {
@@ -59,30 +66,34 @@ const User = () => {
             return;
         }
 
-       const checkProfileAndRedirect = async () => {
-        try {
-            const { religion } = await checkUserProfile();
-            console.log('relegion', religion);
-            
-            if (religion !== "Hinduism") {
-                setOthers(true);
+        const checkProfileAndRedirect = async () => {
+            try {
+                const { religion, isProfileCompleted } = await checkUserProfile();
+                console.log('relegion', religion);
 
-                return;
+                if (religion !== "Hinduism") {
+                    setOthers(true);
+
+                    return;
+                }
+                if (isProfileCompleted) {
+                    setIsUserUpdated(true);
+                    return; // Profile is updated, no need to redirect
+                }
+            } catch (err) {
+                console.error("Profile check error:", err);
+            } finally {
+                setLoading(false); // ✅ Move it here so it's called after the async check
             }
-        } catch (err) {
-            console.error("Profile check error:", err);
-        } finally {
-            setLoading(false); // ✅ Move it here so it's called after the async check
-        }
-    };
+        };
 
-    checkProfileAndRedirect();
+        checkProfileAndRedirect();
 
-       
+
 
     }, [user]);
 
-  
+
 
 
 
@@ -94,9 +105,13 @@ const User = () => {
             CheckUserProfileBeforeProcced();
             //alert("New Post Initited");
 
-        } else if (actionName === "Perticipate In Survey") {
+        } else if (actionName === "User Privet Survey") {
             checkUserProgress();
             //alert("New Survey Initiated");
+        }
+
+        else if (actionName === "Perticipate Open Survey"){
+            navigate('/open-survey/byAdmin');
         }
         console.log(`${actionName} clicked`);
         // You can perform other actions, such as navigating or updating state
@@ -109,13 +124,13 @@ const User = () => {
         try {
             setLoading(true); // Optional loading state for better UX
 
-            // Step 1: Check if the user's profile is updated
-            const {isProfileUpdated} = await checkUserProfile(); // Ensure `checkUserProfile` is async
+            // // Step 1: Check if the user's profile is updated
+            // const {isProfileUpdated} = await checkUserProfile(); // Ensure `checkUserProfile` is async
 
-            if (!isProfileUpdated) {
-                setShowProfileModal(true);               
-                return; // Stop further execution if the profile isn't updated
-            }
+            // if (!isProfileUpdated) {
+            //     setShowProfileModal(true);               
+            //     return; // Stop further execution if the profile isn't updated
+            // }
 
 
             // Step 2: Check if the user has followed at least 5 users
@@ -158,12 +173,12 @@ const User = () => {
             if (response.ok) {
                 const userData = await response.json();
                 console.log("data user", userData);
-                
+
 
                 return {
-                isProfileCompleted: userData.isProfileCompleted || false,                
-                religion: userData.religion || "",
-            };
+                    isProfileCompleted: userData.isProfileCompleted || false,
+                    religion: userData.religion || "",
+                };
             } else {
                 throw new Error("Failed to fetch user profile.");
             }
@@ -233,7 +248,7 @@ const User = () => {
             if (!token || !userId) throw new Error("Missing user authentication details.");
 
             // Check if the user's profile is updated
-            const isProfileUpdated = await checkUserProfile(); // Ensure `checkUserProfile` is async
+            const { isProfileUpdated } = await checkUserProfile(); // Ensure `checkUserProfile` is async
 
             if (!isProfileUpdated) {
                 setShowProfileModal(true);
@@ -292,7 +307,7 @@ const User = () => {
 
 
 
-    
+
 
 
 
@@ -306,7 +321,7 @@ const User = () => {
         setShowProfileModal(false);
         navigateToProfileUpdate();
     };
-    
+
     const handleProfileUpdateCancel = () => {
         setShowProfileModal(false);
         // Optionally add any cancel logic here
@@ -319,7 +334,7 @@ const User = () => {
         );
     }
 
-    
+
 
 
     return (
@@ -368,51 +383,59 @@ const User = () => {
 
 
                 <ConfirmationModal
-                isOpen={showProfileModal}
-                onClose={handleProfileUpdateCancel}
-                onConfirm={handleProfileUpdateConfirm}
-                title="Profile Update Required"
-                message="Your profile is not updated. Please update your profile to proceed."
-                confirmText="Update Profile"
-                cancelText="Stay Here"
-            />
+                    isOpen={showProfileModal}
+                    onClose={handleProfileUpdateCancel}
+                    onConfirm={handleProfileUpdateConfirm}
+                    title="Profile Update Required"
+                    message="Your profile is not updated. Please update your profile to proceed."
+                    confirmText="Update Profile"
+                    cancelText="Stay Here"
+                />
             </>
 
 
             <>
-            {!others ? (
-                <>
-                <Nav justify variant="tabs" className="sticky-nav">
-                    <Nav.Item>
-                        <Nav.Link href="/donate">Dashboard</Nav.Link>
-                    </Nav.Item>
-                    <Nav.Item>
+                {!others ? (
+                    <>
+                        <Nav justify variant="tabs" className="sticky-nav">
+                            <Nav.Item>
+                                <Nav.Link href="/donate">Dashboard</Nav.Link>
+                            </Nav.Item>
+                            {/* <Nav.Item >
                         <Nav.Link href=
                          {`/user/${userId}/update-profile`}
                         >Update Profile</Nav.Link>
                         
-                    </Nav.Item>
-                    <Nav.Item>
-                        <Nav.Link href="/forum"><FaOm className="mb-1"/> Dashboard</Nav.Link>
-                        {/* <Nav.Link eventKey="link-2">Link</Nav.Link> */}
-                    </Nav.Item>
-                </Nav>
+                    </Nav.Item> */}
+
+                            <NavDropdown title="Profile" id="nav-dropdown-profile">
+                                <NavDropdown.Item href={`/user/${userId}/profile-data`}>
+                                    {isUserUpdated ? <FaUserCheck className="me-2" title="Profile Updated" /> : <FaUserTimes className="me-2" title="Profile not Updated" />}  User Profile
+                                </NavDropdown.Item>
+                                <NavDropdown.Item href={`/user/${userId}/update-profile`}>
+                                    <GrUpdate className="me-2" title="Update Profile" />  Update Profile
+                                </NavDropdown.Item>
+                            </NavDropdown>
+
+                            <Nav.Item>
+                                <Nav.Link href="/forum"><FaOm className="mb-1" /> Dashboard</Nav.Link>
+                                {/* <Nav.Link eventKey="link-2">Link</Nav.Link> */}
+                            </Nav.Item>
+                        </Nav>
 
 
 
 
-                {/* Post by Users fetched from server//post-container */}
-                {/* <div className="d-flex align-items-center justify-content-center  ">  */}
+                        {/* Post by Users fetched from server//post-container */}
+                        {/* <div className="d-flex align-items-center justify-content-center  ">  */}
 
-                    {/* display post */}
-                    <div className="post-container-user p-3 pb-5">
-                        <Posts filterByUser={true} />
-                    </div>
-
-                    
-                {/* </div> */}
+                        {/* display post */}
+                        <div className="post-container-user p-3 pb-5">
+                            <Posts filterByUser={true} />
+                        </div>
 
 
+                        {/* </div> */}
 
 
 
@@ -424,69 +447,71 @@ const User = () => {
 
 
 
-                         {/* fab button */}
-                <div style={{ position: "relative", }}>
-                   
 
-                        <Box
-                            sx={{
-                                position: 'fixed',
-                                bottom: "70px", // Space for footer
-                                right: '16px',
-                                pointerEvents: 'auto',
-                            }}
-                        >
-                            <SpeedDial
-                                ariaLabel="SpeedDial tooltip example"
-                                sx={{ position: 'fixed', bottom: 70, right: 16, fontSize: "30px", zIndex: 9999 }}
-                                icon={<SpeedDialIcon />}
-                                direction="left"
-                                onClose={handleClose}
-                                onOpen={handleOpen}
-                                open={open}
+
+                        {/* fab button */}
+                        <div style={{ position: "relative", }}>
+
+
+                            <Box
+                                sx={{
+                                    position: 'fixed',
+                                    bottom: "70px", // Space for footer
+                                    right: '16px',
+                                    pointerEvents: 'auto',
+                                }}
                             >
-                                {actions.map((action) => (
-                                    <SpeedDialAction
+                                <SpeedDial
+                                    ariaLabel="SpeedDial tooltip example"
+                                    sx={{ position: 'fixed', bottom: 70, right: 16, fontSize: "30px", zIndex: 9999 }}
+                                    icon={<SpeedDialIcon />}
+                                    direction="left"
+                                    onClose={handleClose}
+                                    onOpen={handleOpen}
+                                    open={open}
+                                >
+                                    {actions.map((action) => (
+                                        <SpeedDialAction
 
-                                        key={action.name}
-                                        icon={action.icon}
-                                        sx={{ fontSize: '20px' }}
-                                        tooltipTitle={action.name}
-                                        // tooltipOpen
-                                        onClick={() => handleActionClick(action.name)}
-                                    />
-                                ))}
-                            </SpeedDial>
-                        </Box>
+                                            key={action.name}
+                                            icon={action.icon}
+                                            sx={{ fontSize: '20px' }}
+                                            tooltipTitle={action.name}
+                                            // tooltipOpen
+                                            onClick={() => handleActionClick(action.name)}
+                                        />
+                                    ))}
+                                </SpeedDial>
+                            </Box>
 
                         </div>
 
-                    {/* Modal for PostCreator */}
-                    <Modal
-                        show={showPostModal}
-                        onHide={() => setShowPostModal(false)}
-                        centered
-                    >
-                        <Modal.Header closeButton> Create New Post </Modal.Header>
-                        <Modal.Body>
+                        {/* Modal for PostCreator */}
+                        <Modal
+                            show={showPostModal}
+                            onHide={() => setShowPostModal(false)}
+                            centered
+                        >
+                            <Modal.Header closeButton> Create New Post </Modal.Header>
+                            <Modal.Body>
 
-                            <div style={{
+                                <div style={{
 
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                            }}>
-                                <PostCreator onPostCreated={handleNewPost} />
-                            </div>
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                }}>
+                                    <PostCreator onPostCreated={handleNewPost} />
+                                </div>
 
-                        </Modal.Body>
-                    </Modal>
+                            </Modal.Body>
+                        </Modal>
                     </>
 
-                    ):(
-                        <PagaUnderConstruction/>
-                    )}
-                
+                ) : (
+                    <PagaUnderConstruction />
+                )}
+
 
 
 

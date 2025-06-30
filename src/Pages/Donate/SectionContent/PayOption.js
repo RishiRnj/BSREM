@@ -1,7 +1,7 @@
 import { React, useState, useContext, useEffect } from 'react';
 import AuthContext from "../../../Context/AuthContext";
 import '../Donation.css';
-import { Card, InputGroup, Carousel, Button, Form, Row, Spinner, Col, Image } from 'react-bootstrap';
+import { Card, InputGroup, Carousel, Button, Form, Row, Spinner, Col, Modal } from 'react-bootstrap';
 import { handleError, handleSuccess, handleWarning } from '../../../Components/Util';
 import { ToastContainer } from 'react-toastify';
 import Box from '@mui/material/Box';
@@ -12,6 +12,13 @@ import Select from '@mui/material/Select';
 import { FcLikePlaceholder } from "react-icons/fc";
 import { FaGooglePay, FaAmazonPay } from "react-icons/fa";
 import { SiPhonepe, SiPaytm } from "react-icons/si";
+
+import { GoVerified } from 'react-icons/go';
+import MobileVerification from '../../../LandingPage/LogIn/MobileVerification';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
+
+
 
 const PayOpt = () => {
     const { user } = useContext(AuthContext);
@@ -49,6 +56,22 @@ const PayOpt = () => {
 
     const [step, setStep] = useState(1); // State to track current step
     const [stepN, setStepN] = useState(1); // State to track current step
+    const [onVerified, setOnVerified] = useState(false);
+    const [showModal, setShowModal] = useState(false);  // State to control modal visibility
+
+
+
+    // Close modal manually (can be done from inside MobileVerification if needed)
+    const handleCloseModal = () => {
+        setShowModal(false);
+    };
+
+    const handlePhoneNumber = (phoneNumber) => {
+        // setFormData((prevData) => ({ ...prevData, mobile: phoneNumber }));
+        setMobile(phoneNumber)
+        setOnVerified(true);
+        handleCloseModal();  // Close modal after phone verification
+    };
 
 
 
@@ -593,7 +616,7 @@ const PayOpt = () => {
                         <Card className="d-block w-100">
                             <Card.Body>
                                 <Card.Text>
-                                    <strong> Many individuals in the Hindu community </strong>   face significant health challenges that hinder their ability to receive appropriate treatment and care. Due to financial constraints, it becomes difficult for families to afford the medical services they urgently need. We can make a difference by providing financial assistance that will enable them to receive the treatment they deserve.
+                                    <strong> Many individuals in the Your community </strong>   face significant health challenges that hinder their ability to receive appropriate treatment and care. Due to financial constraints, it becomes difficult for families to afford the medical services they urgently need. We can make a difference by providing financial assistance that will enable them to receive the treatment they deserve.
 
                                 </Card.Text>
                             </Card.Body>
@@ -610,7 +633,7 @@ const PayOpt = () => {
 
 
                                     <Card.Text style={{ fontSize: "14px" }}>
-                                        Many individuals in the Hindu community face significant health challenges that hinder their ability to receive appropriate treatment and care. Due to financial constraints, it becomes difficult for families to afford the medical services they urgently need. We can make a difference by providing financial assistance that will enable them to receive the treatment they deserve.
+                                        Many individuals in the Your community face significant health challenges that hinder their ability to receive appropriate treatment and care. Due to financial constraints, it becomes difficult for families to afford the medical services they urgently need. We can make a difference by providing financial assistance that will enable them to receive the treatment they deserve.
                                     </Card.Text>
 
 
@@ -998,17 +1021,78 @@ const PayOpt = () => {
                                                     </Row>
                                                     <Row className=''>
                                                         <Col className='cds_col_bld mx-auto'> {/* Full width on small screens, half width on large screens */}
-                                                            <Form>
-                                                                <Form.Group controlId="formGridMobile">
-                                                                    <Form.Label className="form-label ps-3">Mobile</Form.Label>
-                                                                    <Form.Control
-                                                                        type="tel"
-                                                                        placeholder="Mobile"
-                                                                        value={userData?.mobile ? `+${userData.mobile}` : mobile}
-                                                                        onChange={(e) => setMobile(e.target.value)}
-                                                                    />
-                                                                </Form.Group>
-                                                            </Form>
+                                                            {userData?.mobile ? (
+                                                                <div className="position-relative mb-2">
+                                                                    <Form>
+                                                                        <Form.Group controlId="formGridMobile">
+                                                                            <Form.Label className="form-label text-left ps-3">Mobile</Form.Label>
+                                                                            <PhoneInput
+                                                                                disabled={onVerified || userData?.mobile}
+                                                                                country={'in'}
+                                                                                value={userData.mobile}
+                                                                                inputProps={{ name: 'mobile' }}
+                                                                                inputStyle={{ width: '100%', borderRadius: '5px' }}
+                                                                            />
+                                                                            {(onVerified || userData?.mobile) && (
+                                                                                <GoVerified
+                                                                                    className="position-absolute"
+                                                                                    style={{
+                                                                                        right: 10,
+                                                                                        top: "75%",
+                                                                                        transform: "translateY(-50%)",
+                                                                                        color: "green",
+                                                                                    }}
+                                                                                />
+                                                                            )}
+                                                                        </Form.Group>
+                                                                    </Form>
+
+
+                                                                </div>
+
+                                                            ) : (
+                                                                mobile ? (
+                                                                    <div className="position-relative mb-2">
+                                                                        <Form>
+                                                                            <Form.Group controlId="formGridMobile">
+                                                                                <Form.Label className="form-label text-left ps-3">Mobile</Form.Label>
+                                                                                <PhoneInput
+                                                                                    disabled={onVerified}
+                                                                                    country={'in'}
+                                                                                    value={mobile}
+                                                                                    inputProps={{ name: 'mobile' }}
+                                                                                    inputStyle={{ width: '100%', borderRadius: '5px' }}
+                                                                                />
+                                                                                {onVerified && (
+                                                                                    <GoVerified
+                                                                                        className="position-absolute"
+                                                                                        style={{
+                                                                                            right: 10,
+                                                                                            top: "70%",
+                                                                                            transform: "translateY(-50%)",
+                                                                                            color: "green",
+                                                                                        }}
+                                                                                    />
+                                                                                )}
+                                                                            </Form.Group>
+                                                                        </Form>
+
+
+                                                                    </div>
+
+                                                                ) : (
+                                                                    <Form>
+                                                                        <Form.Group controlId="formGridMobile">
+                                                                            <Form.Label className="form-label ps-3 ms-auto">Mobile</Form.Label>
+                                                                            <Form.Control
+                                                                                type="tel"
+                                                                                placeholder="Mobile"
+
+                                                                                onClick={(e) => setShowModal(true)}
+                                                                            />
+                                                                        </Form.Group>
+                                                                    </Form>
+                                                                ))}
                                                         </Col>
                                                     </Row>
 
@@ -1043,13 +1127,13 @@ const PayOpt = () => {
                                         {step === 2 && (
                                             <>
                                                 <Card className='mx-auto crd-opt'>
-                                                    
+
                                                     <Row>
                                                         <Button disabled size='sm'> Full Current Address & PAN Details </Button>
 
                                                         <Col className='cds_col_bld'> {/* Full width on small screens, half width on large screens */}
                                                             <Form>
-                                                                
+
                                                                 <Form.Group controlId="formGridAddress">
                                                                     <Form.Label className="form-label ps-3">Locality</Form.Label>
                                                                     <Form.Control
@@ -1135,7 +1219,7 @@ const PayOpt = () => {
                                                     {/* PAN Number field when checked */}
                                                     {checked && (
                                                         <Row>
-                                                            <Form.Group  controlId="formGridPAN" >
+                                                            <Form.Group controlId="formGridPAN" >
                                                                 <Form.Label className="form-label">PAN Number</Form.Label>
                                                                 <Form.Control type="text" placeholder="Enter PAN Number" name="PAN" value={pan || ""}
                                                                     onChange={(e) => setPan(e.target.value)}
@@ -1319,10 +1403,10 @@ const PayOpt = () => {
                                         {stepN === 2 && (
                                             <>
                                                 <Card className='mx-auto crd-opt'>
-                                                   
+
                                                     <Row>
 
-                                                    <Button disabled size='sm'> Full Current Address & Passport Details </Button>
+                                                        <Button disabled size='sm'> Full Current Address & Passport Details </Button>
 
                                                         <Col className='cds_col_bld'> {/* Full width on small screens, half width on large screens */}
                                                             <Form>
@@ -1457,6 +1541,8 @@ const PayOpt = () => {
 
                             </div>
                         </div>
+
+
                     </>
 
                 )}
@@ -1465,6 +1551,22 @@ const PayOpt = () => {
 
 
             </div>
+
+            {/* Custom Modal for Mobile Verification */}
+            <Modal show={showModal} onHide={handleCloseModal} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Phone Number Verification</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {/* Render the MobileVerification component inside the modal */}
+                    <MobileVerification onPhoneVerified={handlePhoneNumber} />
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseModal}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     )
 }

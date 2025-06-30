@@ -12,7 +12,6 @@ import { BloodModal, BookModal, ClothModal, DonationModal, FoodModal, LaptopModa
 import { FaHeart, FaBook, FaTshirt, FaHandHolding, FaRupeeSign } from "react-icons/fa";
 import { GiLaptop } from "react-icons/gi";
 import { BiDonateBlood } from "react-icons/bi";
-import PaymentOption from './Payment';
 import PayOpt from './SectionContent/PayOption';
 import Blood from './SectionContent/Blood';
 import Mentor from './SectionContent/Mentor';
@@ -620,7 +619,7 @@ const Donation = () => {
               <h2 className='pt-3'>{user ? `Contribute to shape "United Hindu Community"` : 'Contribute to Shape & Build Nation'}</h2>
             </div>
             <div style={{ textAlign: 'center', marginTop: "10px" }}>
-              {/* <PaymentOption /> */}
+              
               <PayOpt />
 
             </div>

@@ -25,11 +25,13 @@ import { FaOm } from "react-icons/fa6";
 import LoadingSpinner from '../../Components/Common/LoadingSpinner';
 import ConfirmationModal from '../../Components/Common/ConfirmationModal';
 import PageUnderConstruction from '../../Components/Common/PagaUnderConstruction';
+import { LuClipboardCopy } from "react-icons/lu";
 
 
 const actions = [
-  { icon: <FaOm />, name: 'New Post' },
-  { icon: <RiSurveyLine />, name: 'Perticipate In Survey' },
+    { icon: <FaOm />, name: 'New Post' },
+    { icon: <RiSurveyLine />, name: 'User Privet Survey' },
+    { icon: <LuClipboardCopy />, name: 'Perticipate Open Survey' },
 
 ];
 
@@ -61,13 +63,17 @@ const Forum = () => {
     // Handle the click event, for example, logging the action name
     if (actionName === "New Post") {
 
-      CheckUserProfileBeforeProcced();
+       CheckUserProfileBeforeProcced();
       //alert("New Post Initited");
 
-    } else if (actionName === "Perticipate In Survey") {
-      checkUserProgress();
-      //alert("New Survey Initiated");
-    }
+    } else if (actionName === "User Privet Survey") {
+            checkUserProgress();
+            //alert("New Survey Initiated");
+        }
+
+        else if (actionName === "Perticipate Open Survey"){
+            navigate('/open-survey/byAdmin');
+        }
     console.log(`${actionName} clicked`);
     // You can perform other actions, such as navigating or updating state
     setOpen(false); // Optionally close the SpeedDial after action click
@@ -82,17 +88,18 @@ const Forum = () => {
       if (!token || !userId) throw new Error("Missing user authentication details.");
 
       // Check if the user's profile is updated
-      const isProfileUpdated = await checkUserProfile(); // Ensure `checkUserProfile` is async
+      const {isProfileUpdated} = await checkUserProfile(); // Ensure `checkUserProfile` is async
 
       if (!isProfileUpdated) {
         // Show confirmation alert
-        const userResponse = window.confirm(
-          "Your profile is not updated. Update your profile to post. Press OK to update your profile or Cancel to stay here."
-        );
+        // const userResponse = window.confirm(
+        //   "Your profile is not updated. Update your profile to post. Press OK to update your profile or Cancel to stay here."
+        // );
 
-        if (userResponse) {
-          navigateToProfileUpdate();
-        }
+        // if (userResponse) {
+        //   navigateToProfileUpdate();
+        // }
+        setShowProfileModal(true);
         return; // Stop further execution if the profile isn't updated
       }
       localStorage.removeItem("redirectAfterUpdate"); // Clear after use
@@ -181,7 +188,7 @@ const Forum = () => {
 
     const fetchData = async () => {
       try {
-            const { religion } = await checkUserProfile();
+            const { religion,  } = await checkUserProfile();
             console.log('relegion', religion);
             
             if (religion !== "Hinduism") {
@@ -224,14 +231,14 @@ const Forum = () => {
     try {
       setLoading(true); // Optional loading state for better UX
 
-      // Step 1: Check if the user's profile is updated
-      const isProfileUpdated = await checkUserProfile(); // Ensure `checkUserProfile` is async
+    //   // Step 1: Check if the user's profile is updated
+    // const {isProfileUpdated} = await checkUserProfile(); // Ensure `checkUserProfile` is async
 
-      if (!isProfileUpdated) {
-        setShowProfileModal(true);
-        return; // Stop further execution if the profile isn't updated
-      }
-      localStorage.removeItem("redirectAfterUpdate"); // Clear after use
+    //   if (!isProfileUpdated) {
+    //     setShowProfileModal(true);
+    //     return; // Stop further execution if the profile isn't updated
+    //   }
+    //   localStorage.removeItem("redirectAfterUpdate"); // Clear after use
 
       // Step 2: Check if the user has followed at least 5 users
       const hasFollowedMinimumUsers = await checkUserFollowStatus(); // Ensure `checkUserFollowStatus` is async
