@@ -61,6 +61,52 @@ const SurveyParticipationPage = () => {
     }));
   };
 
+  // const handleSubmit = (surveyId) => async (e) => {
+  //   e.preventDefault();
+  //   setSubmitting(true);
+  //   setError(null);
+
+  //   try {
+  //     // Prepare submission data
+  //     const submission = {
+  //       answers: responses,
+  //       ...(!localStorage.getItem('token') && {
+  //         anonymousId: localStorage.getItem('anonymousId') ||
+  //           `anon_${Math.random().toString(36).substr(2, 9)}`
+  //       })
+  //     };
+
+  //     // Store anonymous ID if needed
+  //     if (submission.anonymousId && !localStorage.getItem('anonymousId')) {
+  //       localStorage.setItem('anonymousId', submission.anonymousId);
+  //     }
+
+  //     const response = await fetch(`${process.env.REACT_APP_API_URL}/api/surveys/${surveyId}/respond`, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         ...(localStorage.getItem('token') && {
+  //           'Authorization': `Bearer ${localStorage.getItem('token')}`
+  //         })
+  //       },
+  //       body: JSON.stringify(submission)
+  //     });
+
+  //     if (!response.ok) {
+  //       const errorData = await response.json();
+  //       throw new Error(errorData.message || 'Submission failed');
+  //     }
+
+  //     setCompleted(true);
+      
+  //   } catch (err) {
+  //     setError(err.message);
+  //     console.error('Submission error:', err);
+  //   } finally {
+  //     setSubmitting(false);
+  //   }
+  // };
+
   const handleSubmit = (surveyId) => async (e) => {
     e.preventDefault();
     setSubmitting(true);
@@ -97,7 +143,34 @@ const SurveyParticipationPage = () => {
         throw new Error(errorData.message || 'Submission failed');
       }
 
+      // Mark survey as completed in localStorage (for anonymous users)
+      if (!localStorage.getItem('token')) {
+        try {
+          const completed = JSON.parse(localStorage.getItem('completedSurveys') || []);
+          if (!completed.includes(surveyId)) {
+            localStorage.setItem(
+              'completedSurveys', 
+              JSON.stringify([...completed, surveyId])
+            );
+          }
+        } catch (error) {
+          console.error('Error updating completed surveys:', error);
+          // Initialize if corrupted
+          localStorage.setItem('completedSurveys', JSON.stringify([surveyId]));
+        }
+      }
+
+      // Clear any dismissals for this survey
+      try {
+        const dismissed = JSON.parse(localStorage.getItem('dismissedSurveys') || []);
+        const updatedDismissals = dismissed.filter(id => id !== surveyId);
+        localStorage.setItem('dismissedSurveys', JSON.stringify(updatedDismissals));
+      } catch (error) {
+        console.error('Error cleaning dismissals:', error);
+      }
+
       setCompleted(true);
+
     } catch (err) {
       setError(err.message);
       console.error('Submission error:', err);
@@ -148,6 +221,7 @@ const SurveyParticipationPage = () => {
 
   return (
     <Container className="py-4">
+      <div className="d-flex justify-content-between align-items-center mb-4">
       <Button
         variant="outline-secondary"
         onClick={() => navigate('/')}
@@ -167,6 +241,7 @@ const SurveyParticipationPage = () => {
                 Back to Admin Pannel
                 </Button>
               )}
+              </div>
 
       <Card className="shadow-sm mb-4">
         <Card.Header className="bg-light">
@@ -305,6 +380,38 @@ const SurveyParticipationPage = () => {
                 <Form.Label className="fw-bold">
                   {currentQuestionIndex + 1}. {survey.questions[currentQuestionIndex].questionText}
                 </Form.Label>
+
+
+                      {/* Add this section to display question attachments */}
+      {survey.questions[currentQuestionIndex].attachment && (
+        <div className="mb-3 d-flex justify-content-center">
+          {survey.questions[currentQuestionIndex].attachment.includes('image') ? (
+            <img 
+              src={survey.questions[currentQuestionIndex].attachment} 
+              alt="Question reference"
+              className="img-fluid rounded border"
+              style={{ maxHeight: '200px' }}
+            />
+          ) : survey.questions[currentQuestionIndex].attachment.includes('video') ? (
+            <video 
+              key={survey.questions[currentQuestionIndex].attachment} // ensures re-render
+              controls
+              className="rounded border"
+              style={{ maxWidth: '100%', maxHeight: '200px' }}
+            >
+              <source 
+                src={survey.questions[currentQuestionIndex].attachment} 
+                type={
+                  survey.questions[currentQuestionIndex].attachment.includes('mp4') ? 'video/mp4' :
+                  survey.questions[currentQuestionIndex].attachment.includes('webm') ? 'video/webm' :
+                  'video/ogg'
+                }
+              />
+              Your browser does not support the video tag.
+            </video>
+          ) : null}
+        </div>
+      )}
 
                 {/* Render based on type */}
                 {survey.questions[currentQuestionIndex].questionType === 'text' && (

@@ -61,6 +61,9 @@ import CampaignerProfileUpdate from "./Pages/OpenServey/CampaignerProfileUpdate"
 import CampaignerDashboard from "./Pages/OpenServey/CampaignerDashboard";
 import CampaignerCreatedSurveyPage from "./Pages/OpenServey/CampaignerCreatedForPerticipation";
 import ProfileData from "./Pages/User/ProfileData";
+import NewDasboard from "./Pages/Dashboard/NewDasboard";
+import GlobalSurveyNotification from "./GlobalSurveyNotification";
+import GlobalBeneficiaryNotification from "./GlobalBeneficiaryNotification";
 
 
 
@@ -97,7 +100,8 @@ const App = () => {
 
           
           {/* Dashboard */}
-          <Route path="/dashboard" element={<Dashboard/>}/>
+          {/* <Route path="/dashboard" element={<Dashboard/>}/> */}
+          <Route path="/dashboard" element={<NewDasboard/>}/>
 
            {/* user suggestions */}
            <Route path="/user/have-suggestions" element={ <UserSuggestions />}  />
@@ -168,8 +172,8 @@ const App = () => {
           <Route path="/admin/notices" element={<AdminRoute> <AdminNotices /> </AdminRoute>} />
           <Route path="/admin/conference" element={<AdminRoute> <Conference /> </AdminRoute>} />
           <Route path="/admin/handleBeneficiary" element={<AdminRoute> <AdminDashboardToHandleBeneficiary/> </AdminRoute>} />
-          <Route path="/admin/donor" element={<AdminRoute> <Donor/> </AdminRoute>} />
-          <Route path="/beneficiary/:id" element={<AdminRoute> <BeneficiaryDetailPage/></AdminRoute>} />           */}
+          <Route path="/admin/donor" element={<AdminRoute> <Donor/> </AdminRoute>} />*/}
+          <Route path="/beneficiary/:id" element={<AdminRoute> <BeneficiaryDetailPage/></AdminRoute>} />           
 
           <Route path="/unauthorized" element={<Unauthorized />} />
 
@@ -208,6 +212,9 @@ const App = () => {
 
           
         </Routes>
+
+        <GlobalSurveyNotification/>
+        <GlobalBeneficiaryNotification/>
         {/* </Suspense> */}
         {/* <Footer /> */}
         {showHeader && <Footer />}

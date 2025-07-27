@@ -132,7 +132,7 @@ const AnimatedStatsSlider = ({ totalUsers, totalBeneficiaries, totalSupportRecei
             minHeight: '200px'
           }}
         >
-          <Card.Body className="d-flex flex-column justify-content-center align-items-center bg-dark bg-opacity-50 p-4 text-center">
+          <Card.Body className="d-flex flex-column justify-content-center align-items-center bg-dark bg-opacity-50 p-2 text-center">
             <Card.Title className="fs-4 fw-semibold">{stat.title}</Card.Title>
             <Card.Text className="fs-1 fw-bold">
               <CountUp
@@ -144,7 +144,7 @@ const AnimatedStatsSlider = ({ totalUsers, totalBeneficiaries, totalSupportRecei
             </Card.Text>
 
             {(!stat.guestOnly || !token) && stat.description && (
-              <p className="mb-2 mt-2 text-white-50">{stat.description}</p>
+              <p className="mb-1 mt-1 text-white-50">{stat.description}</p>
             )}
 
             {(!stat.guestOnly || !token) && stat.cta && (

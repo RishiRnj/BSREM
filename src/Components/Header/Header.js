@@ -249,7 +249,7 @@ const Header = () => {
                                         </>
                                             )}
                             
-                            <NavDropdown.Item id="itmSu" className="ps-4" href="/open-survey">Perticipate in Open Survey</NavDropdown.Item>
+                            <NavDropdown.Item id="itmSu" className="ps-4" href="/open-survey/byAdmin">Perticipate in Open Survey</NavDropdown.Item>
                             {user?.isCampaigner !== true && (
                             <NavDropdown.Item id="itmSu" className="ps-4" href="/open-survey/create-own-survey">Create own Survey Campaign</NavDropdown.Item>)}
                             <NavDropdown.Item id="itmSu" className="ps-4" href="/user/have-suggestions">Have Suggestions?</NavDropdown.Item>

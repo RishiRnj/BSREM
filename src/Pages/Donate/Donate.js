@@ -9,6 +9,7 @@ import { ToastContainer } from 'react-toastify';
 import { FaGooglePay, FaAmazonPay } from 'react-icons/fa';
 import { SiPhonepe } from 'react-icons/si';
 import AuthContext from '../../Context/AuthContext';
+import DonateTemplate from '../../Components/Common/DonateTemplate';
 
 const Donate = () => {
   const { user } = useContext(AuthContext);   
@@ -436,6 +437,9 @@ const Donate = () => {
           })}
 
         </div>
+        {filteredBeneficiaries.length === 0 && (
+          <DonateTemplate/>
+        )}
         <div style={{height:"60px"}}>
         <p className='text-light mb-5'>K</p>
 

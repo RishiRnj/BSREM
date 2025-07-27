@@ -368,7 +368,7 @@ function BeneficiaryDetailPage() {
                                           <p><strong>Donor Name:</strong></p>
                                         </Col>
                                         <Col>
-                                          <p>{donation.donor?.updateFullName} </p>
+                                          <p>{donation.donor?.updateFullName || donation.donor?.username} </p>
                                         </Col>
                                       </Row>
                                     </div>                         
@@ -422,7 +422,7 @@ function BeneficiaryDetailPage() {
                                         <p><strong>Donor Name:</strong></p>
                                       </Col>
                                       <Col>
-                                        <p>{donation.donor?.updateFullName} </p>
+                                        <p>{donation.donor?.updateFullName || donation.donor?.username}  </p>
                                       </Col>
                                     </Row>
                                     <Row className="mb-1">
@@ -430,7 +430,7 @@ function BeneficiaryDetailPage() {
                                         <p><strong>Donor Mobile:</strong></p>
                                       </Col>
                                       <Col>
-                                        <p> + {donation.donor?.mobile} </p>
+                                        <p> {donation.donor?.mobile} </p>
                                       </Col>
                                     </Row>
                                     <Row className="mb-1">

@@ -22,15 +22,15 @@ import { GrUpdate } from "react-icons/gr";
 import LoadingSpinner from "../../Components/Common/LoadingSpinner";
 import ConfirmationModal from '../../Components/Common/ConfirmationModal';
 import PagaUnderConstruction from "../../Components/Common/PagaUnderConstruction";
-import { FaUserCheck, FaUserTimes } from "react-icons/fa";
+import { FaUserCheck, FaUserTimes, FaHandsHelping  } from "react-icons/fa";
 import { LuClipboardCopy } from "react-icons/lu";
 
 
 
 const actions = [
     { icon: <FaOm />, name: 'New Post' },
-    { icon: <RiSurveyLine />, name: 'User Privet Survey' },
-    { icon: <LuClipboardCopy />, name: 'Perticipate Open Survey' },
+    { icon: <RiSurveyLine />, name: 'Start Open Survey' },
+    
 
 ];
 
@@ -105,12 +105,12 @@ const User = () => {
             CheckUserProfileBeforeProcced();
             //alert("New Post Initited");
 
-        } else if (actionName === "User Privet Survey") {
-            checkUserProgress();
-            //alert("New Survey Initiated");
+        // } else if (actionName === "User Privet Survey") {
+        //     checkUserProgress();
+        //     //alert("New Survey Initiated");
         }
 
-        else if (actionName === "Perticipate Open Survey"){
+        else if (actionName === "Start Open Survey"){
             navigate('/open-survey/byAdmin');
         }
         console.log(`${actionName} clicked`);
@@ -399,7 +399,7 @@ const User = () => {
                     <>
                         <Nav justify variant="tabs" className="sticky-nav">
                             <Nav.Item>
-                                <Nav.Link href="/donate">Dashboard</Nav.Link>
+                                <Nav.Link href="/donate"> <FaHandsHelping className="mb-1 me-1" />Dashboard</Nav.Link>
                             </Nav.Item>
                             {/* <Nav.Item >
                         <Nav.Link href=
@@ -410,10 +410,10 @@ const User = () => {
 
                             <NavDropdown title="Profile" id="nav-dropdown-profile">
                                 <NavDropdown.Item href={`/user/${userId}/profile-data`}>
-                                    {isUserUpdated ? <FaUserCheck className="me-2" title="Profile Updated" /> : <FaUserTimes className="me-2" title="Profile not Updated" />}  User Profile
+                                    {isUserUpdated ? <FaUserCheck className="me-2 mb-1" title="Profile Updated" /> : <FaUserTimes className="me-2" title="Profile not Updated" />}  User Profile
                                 </NavDropdown.Item>
                                 <NavDropdown.Item href={`/user/${userId}/update-profile`}>
-                                    <GrUpdate className="me-2" title="Update Profile" />  Update Profile
+                                    <GrUpdate className="me-2 mb-1" title="Update Profile" />  Update Profile
                                 </NavDropdown.Item>
                             </NavDropdown>
 

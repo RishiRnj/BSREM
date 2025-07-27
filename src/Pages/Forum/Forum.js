@@ -30,8 +30,8 @@ import { LuClipboardCopy } from "react-icons/lu";
 
 const actions = [
     { icon: <FaOm />, name: 'New Post' },
-    { icon: <RiSurveyLine />, name: 'User Privet Survey' },
-    { icon: <LuClipboardCopy />, name: 'Perticipate Open Survey' },
+    { icon: <RiSurveyLine />, name: 'Start Open Survey' },
+   
 
 ];
 
@@ -66,12 +66,12 @@ const Forum = () => {
        CheckUserProfileBeforeProcced();
       //alert("New Post Initited");
 
-    } else if (actionName === "User Privet Survey") {
-            checkUserProgress();
-            //alert("New Survey Initiated");
+    // } else if (actionName === "User Privet Survey") {
+    //         checkUserProgress();
+    //         //alert("New Survey Initiated");
         }
 
-        else if (actionName === "Perticipate Open Survey"){
+        else if (actionName === "Start Open Survey"){
             navigate('/open-survey/byAdmin');
         }
     console.log(`${actionName} clicked`);

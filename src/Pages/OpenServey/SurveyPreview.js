@@ -39,6 +39,7 @@ const SurveyPreview = () => {
           const response = await fetch(`${process.env.REACT_APP_API_URL}/api/surveys/${id}`);
           if (!response.ok) throw new Error('Survey not found');
           const data = await response.json();
+          console.log('Fetched survey:', data);
           setSurvey(data);
         } catch (err) {
           setError(err.message);
@@ -186,6 +187,29 @@ const SurveyPreview = () => {
                 <Form.Label>
                   {qIndex + 1}. {question.questionText}
                 </Form.Label>
+
+                {/* Add this section to display attachments */}
+    {question.attachment && (
+      <div className="mb-3">
+        {question.attachment.includes('image') ? (
+          <img 
+            src={question.attachment} 
+            alt="Question reference" 
+            className="img-fluid rounded border"
+            style={{ maxHeight: '300px' }}
+          />
+        ) : question.attachment.includes('video') ? (
+          <video 
+            controls 
+            className="rounded border" 
+            style={{ maxWidth: '100%', maxHeight: '300px' }}
+          >
+            <source src={question.attachment} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        ) : null}
+      </div>
+    )}
 
                 {question.questionType === 'text' && (
                   <Form.Control

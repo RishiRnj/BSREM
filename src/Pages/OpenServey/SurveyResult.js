@@ -23,6 +23,7 @@ import {
 import { ArrowLeft, Download, Clipboard, Share, Opencollective, BoxArrowInUpRight, ShareFill } from 'react-bootstrap-icons';
 import AuthContext from '../../Context/AuthContext';
 import ShareModal from '../../Components/Common/ShareSurveyModal';
+import UserDetailsModal from '../../Admin/UserDetailsModal'; // Import the modal component
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
@@ -43,6 +44,22 @@ const SurveyResultsPage = () => {
   const { user } = useContext(AuthContext);
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  const openUserDetailsModal = (userData) => {
+    setSelectedUser(userData);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedUser(null);
+  };
+
+  
+
+
 
 
 
@@ -380,7 +397,22 @@ const SurveyResultsPage = () => {
                         <td>{rIndex + 1}</td>
                         <td>
                           <td>
-                            {response.respondentName || (response.anonymousId ? 'Guest User' : 'Registered User')}
+                            {/* {response.respondentName || (response.anonymousId ? 'Guest User' : 'Registered User')} */}
+
+                            {user.role === 'admin' ? (
+                              <a
+                                href="#"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  openUserDetailsModal(response);
+                                }}
+                                style={{ textDecoration: 'none', color: 'inherit' }}
+                              >
+                                {response.respondentName || (response.anonymousId ? 'Guest User' : 'Registered User')}
+                              </a>
+                            ) : (
+                              response.respondentName || (response.anonymousId ? 'Guest User' : 'Registered User')
+                            )}
                           </td>
 
                         </td>
@@ -400,6 +432,10 @@ const SurveyResultsPage = () => {
               ) : (
                 <Alert variant="info">No responses yet</Alert>
               )}
+
+              {isModalOpen && (
+        <UserDetailsModal user={selectedUser} onClose={closeModal} />
+      )}
             </Card.Body>
           </Card>
         </Tab>

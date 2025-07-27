@@ -10,6 +10,7 @@ import { ToastContainer } from "react-toastify";
 import { FaEyeSlash, FaEye, FaCamera } from "react-icons/fa";
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
+import {jwtDecode} from 'jwt-decode';
 
 const Support = () => {
   const { user } = useContext(AuthContext);
@@ -469,7 +470,7 @@ const Support = () => {
         handleError('Medication for what? or Medicine name Required!');
         return;
       }
-      
+
       // Required images validation
       if (!imagePreviews["Doctor's prescription"]) {
         handleError("Please upload a Doctor's prescription.");
@@ -542,7 +543,26 @@ const Support = () => {
     if (!token) {
       console.error("No token found");
       return;
+    } else if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        const currentTime = Date.now() / 1000;
+
+        if (decoded.exp < currentTime) {
+          console.warn("Token has expired");
+          // Optionally remove the token and redirect to login
+          localStorage.removeItem("token");
+          window.location.href = "/login";
+          return;
+        }
+      } catch (err) {
+        console.error("Invalid token format");
+        return;
+      }
+
     }
+
+
 
     const formDataToSend = new FormData();
 
@@ -593,6 +613,11 @@ const Support = () => {
       } else {
         console.error("Failed to update data");
       }
+      if (response.status === 401) {
+  localStorage.removeItem("token");
+  window.location.href = "/login";
+  return;
+}
     } catch (error) {
       console.error("Error updating data:", error);
     } finally {
@@ -864,7 +889,7 @@ const Support = () => {
                               <p><strong>Donor Name:</strong></p>
                             </Col>
                             <Col>
-                              <p>{donation.donor?.updateFullName} </p>
+                              <p>{donation.donor?.updateFullName || donation.donor?.username} </p>
                             </Col>
                           </Row>
                         </div>      

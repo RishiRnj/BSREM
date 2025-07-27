@@ -31,6 +31,16 @@ const EditSurveyPage = () => {
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
 
+
+// Updated state initialization
+const [attachmentPreviews, setAttachmentPreviews] = useState({});
+const [newAttachments, setNewAttachments] = useState({});
+const [attachmentChanges, setAttachmentChanges] = useState({});
+
+
+
+
+
   // Fetch survey if not passed via state
   useEffect(() => {
     if (!survey) {
@@ -52,6 +62,81 @@ const EditSurveyPage = () => {
       fetchSurvey();
     }
   }, [id]);
+
+
+
+useEffect(() => {
+  return () => {
+    Object.values(attachmentPreviews).forEach(preview => {
+      if (preview && preview.startsWith('blob:')) {
+        URL.revokeObjectURL(preview);
+      }
+    });
+  };
+}, [attachmentPreviews]);
+
+
+
+// Improved initialization effect
+useEffect(() => {
+  if (survey) {
+    const initialPreviews = {};
+    const initialAttachments = {};
+    const initialChanges = {};
+    
+    survey.questions.forEach((q, idx) => {
+      if (q.attachment) {
+        initialPreviews[idx] = q.attachment;
+        initialAttachments[idx] = { file: null, type: q.attachment.includes('image') ? 'image' : 'video' };
+        initialChanges[idx] = { changed: false, removed: false };
+      }
+    });
+    
+    setAttachmentPreviews(initialPreviews);
+    setNewAttachments(initialAttachments);
+    setAttachmentChanges(initialChanges);
+  }
+}, [survey]);
+
+// Updated handleAttachmentChange
+const handleAttachmentChange = (qIndex, file) => {
+  if (!file) return;
+
+  const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'video/webm', 'video/ogg'];
+  if (!validTypes.includes(file.type)) {
+    setError('Please upload a valid image (JPEG, PNG, GIF) or video (MP4, WebM, Ogg)');
+    return;
+  }
+
+  const type = file.type.startsWith('image') ? 'image' : 'video';
+  
+  if (type === 'image') {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setAttachmentPreviews(prev => ({ ...prev, [qIndex]: reader.result }));
+      setNewAttachments(prev => ({ ...prev, [qIndex]: { file, type } }));
+      setAttachmentChanges(prev => ({ ...prev, [qIndex]: { changed: true, removed: false } }));
+    };
+    reader.readAsDataURL(file);
+  } else {
+    const previewUrl = URL.createObjectURL(file);
+    setAttachmentPreviews(prev => ({ ...prev, [qIndex]: previewUrl }));
+    setNewAttachments(prev => ({ ...prev, [qIndex]: { file, type } }));
+    setAttachmentChanges(prev => ({ ...prev, [qIndex]: { changed: true, removed: false } }));
+  }
+};
+
+// Updated removeAttachment
+const removeAttachment = (qIndex) => {
+  setAttachmentPreviews(prev => {
+    const newPreviews = { ...prev };
+    delete newPreviews[qIndex];
+    return newPreviews;
+  });
+  
+  setAttachmentChanges(prev => ({ ...prev, [qIndex]: { changed: true, removed: true } }));
+};
+
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -105,47 +190,110 @@ const EditSurveyPage = () => {
     setSurvey(prev => ({ ...prev, questions: updatedQuestions }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-    setError(null);
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setSaving(true);
+  //   setError(null);
 
-    try {
-      // Validate at least 2 options for choice questions
-      const invalidQuestion = survey.questions.find(q => 
-        ['single', 'multiple'].includes(q.questionType) && q.options.length < 2
-      );
+  //   try {
+  //     // Validate at least 2 options for choice questions
+  //     const invalidQuestion = survey.questions.find(q => 
+  //       ['single', 'multiple'].includes(q.questionType) && q.options.length < 2
+  //     );
       
-      if (invalidQuestion) {
-        throw new Error('Choice questions must have at least 2 options');
+  //     if (invalidQuestion) {
+  //       throw new Error('Choice questions must have at least 2 options');
+  //     }
+
+  //     const response = await fetch(`${process.env.REACT_APP_API_URL}/api/surveys/${id}`, {
+  //       method: 'PUT',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         'Authorization': `Bearer ${localStorage.getItem('token')}`
+  //       },
+  //       body: JSON.stringify(survey)
+  //     });
+
+  //     if (!response.ok) {
+  //       const errorData = await response.json();
+  //       throw new Error(errorData.message || 'Failed to update survey');
+  //     }
+
+  //     navigate(`/survey/${id}/preview`, {
+  //       state: { 
+  //         survey: await response.json(),
+  //         message: 'Survey updated successfully!' 
+  //       }
+  //     });
+  //   } catch (err) {
+  //     setError(err.message);
+  //   } finally {
+  //     setSaving(false);
+  //   }
+  // };
+
+// Modified handleSubmit
+// Updated handleSubmit
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setSaving(true);
+  setError(null);
+
+  try {
+    // Validation
+    const invalidQuestion = survey.questions.find(q => 
+      ['single', 'multiple'].includes(q.questionType) && q.options.length < 2
+    );
+    if (invalidQuestion) throw new Error('Choice questions must have at least 2 options');
+
+    const formData = new FormData();
+    
+    // Prepare questions with proper attachment flags
+    const questionsWithAttachmentFlags = survey.questions.map((q, idx) => ({
+      ...q,
+      hasNewAttachment: attachmentChanges[idx]?.changed && !attachmentChanges[idx]?.removed,
+      removeAttachment: attachmentChanges[idx]?.removed || false
+    }));
+
+    formData.append('survey', JSON.stringify({
+      ...survey,
+      questions: questionsWithAttachmentFlags
+    }));
+
+    // Add new attachments
+    Object.entries(newAttachments).forEach(([qIndex, attachmentData]) => {
+      if (attachmentChanges[qIndex]?.changed && 
+          !attachmentChanges[qIndex]?.removed && 
+          attachmentData.file) {
+        formData.append(`question_${qIndex}_attachment`, attachmentData.file);
       }
+    });
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/surveys/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(survey)
-      });
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/surveys/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      body: formData
+    });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to update survey');
-      }
-
-      navigate(`/survey/${id}/preview`, {
-        state: { 
-          survey: await response.json(),
-          message: 'Survey updated successfully!' 
-        }
-      });
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setSaving(false);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to update survey');
     }
-  };
+
+    navigate(`/survey/${id}/preview`, {
+      state: { 
+        survey: await response.json(),
+        message: 'Survey updated successfully!' 
+      }
+    });
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setSaving(false);
+  }
+};
 
   if (loading) return (
     <Container className="text-center py-5">
@@ -312,6 +460,53 @@ const EditSurveyPage = () => {
                       />
                     </Form.Group>
 
+
+                    {/* Add this attachment section */}
+<Form.Group className="mb-3">
+  <Form.Label>Reference Media (Optional)</Form.Label>
+  {attachmentPreviews[qIndex] ? (
+    <div className="mb-2">
+      {newAttachments[qIndex]?.type === 'image' || 
+       (survey.questions[qIndex].attachment && 
+        survey.questions[qIndex].attachment.includes('image')) ? (
+        <img 
+          src={attachmentPreviews[qIndex]} 
+          alt="Question reference" 
+          className="img-fluid rounded border"
+          style={{ maxHeight: '200px' }}
+          onError={() => setAttachmentPreviews(prev => ({ ...prev, [qIndex]: null }))}
+        />
+      ) : (
+        <video 
+          controls 
+          className="rounded border" 
+          style={{ maxWidth: '100%', maxHeight: '200px' }}
+          onError={() => setAttachmentPreviews(prev => ({ ...prev, [qIndex]: null }))}
+        >
+          <source src={attachmentPreviews[qIndex]} />
+          Your browser does not support this media.
+        </video>
+      )}
+      <Button
+        variant="danger"
+        size="sm"
+        className="ms-2"
+        onClick={() => removeAttachment(qIndex)}
+      >
+        <Trash size={14} />
+      </Button>
+    </div>
+  ) : (
+    <Form.Control
+      type="file"
+      accept="image/*,video/*"
+      onChange={(e) => handleAttachmentChange(qIndex, e.target.files[0])}
+    />
+  )}
+  <Form.Text className="text-muted">
+    Add an optional image or video reference
+  </Form.Text>
+</Form.Group>
                     <Form.Group className="mb-3">
                       <Form.Label>Answer Type</Form.Label>
                       <Form.Select

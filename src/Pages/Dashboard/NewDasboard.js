@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, } from 'react';
+import React, { useEffect, useState, } from 'react';
 import "./Dashboard.css"; // Include your custom styles here
 import NoticeBoard from '../../Components/Notice/NoticeBorad';
 import { useNavigate, useLocation } from "react-router-dom";
@@ -9,20 +9,12 @@ import CountUp from 'react-countup';
 import { IoIosLogIn } from "react-icons/io";
 import AnimatedStatsSlider from './AnimatedStatsSlider';
 import { FcDonate } from "react-icons/fc";
+import ButtonRow from './ButtonRow';
 
-
-
-
-
-
-const Dashboard = () => {
-
+const NewDasboard = () => {
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [notices, setNotices] = useState([]);
-
-
-    const navigate = useNavigate();
-    const location = useLocation();
     const [totalUsers, setTotalUsers] = useState(null);
     const [totalBeneficiaries, setTotalBeneficiaries] = useState(null);
     const [totalSupportReceived, setTotalSupportReceived] = useState(null);
@@ -57,7 +49,7 @@ const Dashboard = () => {
             setLoading(false);
         }
     };
-    //fetch Notices
+
     const fetchTotalUsers = async () => {
         setLoading(true);
         try {
@@ -99,7 +91,6 @@ const Dashboard = () => {
         navigate('/donation');
     };
 
-
     const redirectToBlDonate = () => {
         localStorage.setItem("redirectToSEC", "blood-donation");
         navigate('/donation');
@@ -108,8 +99,6 @@ const Dashboard = () => {
         localStorage.setItem("redirectToSEC", "blank-donation");
         navigate('/donation');
     };
-
-
 
 
     useEffect(() => {
@@ -128,6 +117,9 @@ const Dashboard = () => {
 
         fetchData();
     }, []);
+
+
+
 
     if (loading) {
         return (
@@ -159,16 +151,16 @@ const Dashboard = () => {
     );
 
 
-    return (
-       <>
 
-            {/* notice Board */}
+    return (
+        <div className='dashboard-page'>
             <div
 
                 style={{
                     cursor: "pointer",
-                    position: "fixed",
-                    top: "65px",
+                    position: "fixed", // Changed to relative to avoid affecting other elements
+                    top: "60px",
+                    width: "100vw",
                     left: "0px", // Move to bottom-left corner
                     zIndex: 1000,
                 }}>
@@ -182,26 +174,26 @@ const Dashboard = () => {
                 />
 
             </div>
-            <div className="background">
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
 
-            </div>
-            <div className='das' style={{ zIndex: "1000" }}><img src='om.webp' width={150} height={150} /></div>
-            <div className='d-flex justify-content-center text-white  text-center ddd ' style={{ minHeight: `calc(100vh - 165px)`, }}  >
-                <div className='hea' style={{ zIndex: "1000" }}>
+
+
+            <div className="dashboard-container pt-5 text-white" style={{
+                minHeight: `calc(100vh - 165px)`, overflow: 'hidden',
+                backgroundImage: `url('/Seq.webp')`,
+                backgroundSize: 'cover',        // Makes image cover the entire div
+                backgroundPosition: 'center',   // Centers the image
+                backgroundRepeat: 'no-repeat'   // Prevents image from repeating
+            }} >
+
+
+
+                <div className='hea text-center p-1' style={{ zIndex: "1000" }}>
 
                     <h1 className=''>Welcome to BSREM</h1>
                     <p className='txp'>Hindu for Global Community. <br /> <span style={{ fontWeight: "bold" }}> Supprot || Strengthen || Unite </span> </p>
                 </div>
 
-               <div className='px-5' style={{ zIndex: "1000", minHeight: "200px" }}>
+                <div className='px-4 mb-2' style={{ zIndex: "1000", minHeight: "200px" }}>
 
                     <div style={{ height: "200px", marginBottom: "80px" }}>
                         <AnimatedStatsSlider
@@ -215,15 +207,92 @@ const Dashboard = () => {
 
 
 
-
-
-
-
                 </div>
 
 
-                
+
+                {/* buttons */}
+                <div style={{
+                    cursor: "pointer",
+                    position: "fixed", // Changed to relative to avoid affecting other elements            
+                    right: "-85px",
+                    top: "210px",
+                    transform: "rotate(-90deg)", // Rotates the div by 45 degrees
+                    zIndex: 1100,
+                }}>
+                    <OverlayTrigger
+                        placement="left"
+                        delay={{ show: 250, hide: 400 }}
+                        overlay={props => renderTooltip(props, "Donors, where they can know details about the beneficiaries and help them accordingly. And Beneficiaries can find out here whether their application has been approved or not.")}
+                    >
+                        <Button className='text-white' variant="outline-primary" onClick={() => navigate('/donate')}>Donor Beneficiary Dashboard</Button>
+                    </OverlayTrigger>
+                </div>
+                <div style={{
+                    cursor: "pointer",
+                    position: "fixed", // Changed to relative to avoid affecting other elements            
+                    right: "-35px",
+                    top: "390px",
+                    transform: "rotate(-90deg)", // Rotates the div by 45 degrees
+                    zIndex: 1100,
+                }}>
+                    <OverlayTrigger
+                        placement="left"
+                        delay={{ show: 250, hide: 400 }}
+                        overlay={props => renderTooltip(props, "Donors, where they can know details about the beneficiaries and help them accordingly. And Beneficiaries can find out here whether their application has been approved or not.")}
+                    >
+                        <Button className='text-white' variant="outline-primary" onClick={redirectToBlDonate}>Donate Blood</Button>
+                    </OverlayTrigger>
+                </div>
+
+                <div style={{
+                    cursor: "pointer",
+                    position: "fixed", // Changed to relative to avoid affecting other elements            
+                    left: "-55px",
+                    top: "395px",
+                    transform: "rotate(90deg)", // Rotates the div by 45 degrees
+                    zIndex: 1000,
+                }}>
+                    <OverlayTrigger
+                        placement="right"
+                        delay={{ show: 250, hide: 400 }}
+                        overlay={props => renderTooltip(props, "Donors, where they can know details about the beneficiaries and help them accordingly. And Beneficiaries can find out here whether their application has been approved or not.")}
+                    >
+                        <Button className='text-white' variant="outline-primary" onClick={redirectToMentorDonate}>Donate Mentorship</Button>
+                    </OverlayTrigger>
+                </div>
+                <div style={{
+                    cursor: "pointer",
+                    position: "fixed", // Changed to relative to avoid affecting other elements            
+                    left: "-88px",
+                    top: "210px",
+                    transform: "rotate(90deg)", // Rotates the div by 45 degrees
+                    zIndex: 1000,
+                }}>
+                    <OverlayTrigger
+                        placement="right"
+                        delay={{ show: 250, hide: 400 }}
+                        overlay={props => renderTooltip(props, "Click to find out where the upcoming youth conference is being held and to register yourself for the conference at that location.")}
+                    >
+                        <Button className='text-white' variant="outline-primary" onClick={() => navigate('/youth')}>Register for Youth Conference</Button>
+                    </OverlayTrigger>
+                </div>
             </div>
+
+            <div
+                style={{
+                    cursor: "pointer",
+                    position: "relative", // Changed to relative to avoid affecting other elements   
+                    bottom: 10,
+                    left: "0px",
+                    display: "inline-block", // Restrict clickable area to content only
+                    zIndex: 1000,
+                }}
+
+            >
+                <ButtonRow />
+            </div>
+
 
 
             {/* Fetched Survey Stat only for Forum Page */}
@@ -242,12 +311,9 @@ const Dashboard = () => {
             </div>
 
 
-
-
-        </>
-
+        </div>
 
     )
 }
 
-export default Dashboard
+export default NewDasboard

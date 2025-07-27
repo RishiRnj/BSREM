@@ -38,6 +38,17 @@ const CampaignerCreatedSurveyPage = () => {
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  
+  
+
+  // Add this at the top of your main file
+const resizeObserverErrHandler = (err) => {
+  if (err.message.includes('ResizeObserver')) {
+    return;
+  }
+  // Handle other errors normally
+};
+window.addEventListener('error', resizeObserverErrHandler);
 
 
   useEffect(() => {
@@ -57,6 +68,18 @@ const CampaignerCreatedSurveyPage = () => {
     };
     fetchSurvey();
   }, [id]);
+
+  useEffect(() => {
+  return () => {
+    // Clean up any video elements when component unmounts
+    const videoElements = document.querySelectorAll('video');
+    videoElements.forEach(video => {
+      video.pause();
+      video.removeAttribute('src');
+      video.load();
+    });
+  };
+}, []);
 
   const handleResponseChange = (questionId, value) => {
     setResponses(prev => ({
@@ -153,7 +176,8 @@ const CampaignerCreatedSurveyPage = () => {
   return (
     <div>
       <Container className="py-4">
-        <Button
+        <div className='d-flex justify-content-between align-items-center'>
+           <Button
           variant="outline-secondary"
           onClick={() => navigate('/')}
           className="mb-4"
@@ -171,7 +195,11 @@ const CampaignerCreatedSurveyPage = () => {
           Back to Campaigner Pannel
           </Button>
         )}
-        {user?.role === "admin" && (
+
+          
+        </div>
+       
+        {/* {user?.role === "admin" && (
           <Button
           variant="outline-secondary"
           onClick={() => navigate('/admin')}
@@ -180,7 +208,7 @@ const CampaignerCreatedSurveyPage = () => {
           <ArrowLeft className="me-2" />
           Back to Admin Pannel
           </Button>
-        )}
+        )} */}
 
         <Card className="shadow-sm mb-4">
           <Card.Header className="bg-light">
@@ -312,6 +340,92 @@ const CampaignerCreatedSurveyPage = () => {
                   <Form.Label className="fw-bold">
                     {currentQuestionIndex + 1}. {survey.questions[currentQuestionIndex].questionText}
                   </Form.Label>
+
+
+                  {/* Add this section to display question attachments */}
+      {/* {survey.questions[currentQuestionIndex].attachment && (
+        <div className="mb-3">
+          {survey.questions[currentQuestionIndex].attachment.includes('image') ? (
+            <img 
+              src={survey.questions[currentQuestionIndex].attachment} 
+              alt="Question reference"
+              className="img-fluid rounded border"
+              style={{ maxHeight: '250px' }}
+            />
+          ) : survey.questions[currentQuestionIndex].attachment.includes('video') ? (
+            <video 
+              controls
+              className="rounded border"
+              style={{ maxWidth: '100%', maxHeight: '250px' }}
+            >
+              <source 
+                src={survey.questions[currentQuestionIndex].attachment} 
+                type={
+                  survey.questions[currentQuestionIndex].attachment.includes('mp4') ? 'video/mp4' :
+                  survey.questions[currentQuestionIndex].attachment.includes('webm') ? 'video/webm' :
+                  'video/ogg'
+                }
+              />
+              Your browser does not support the video tag.
+            </video>
+          ) : null}
+        </div>
+      )} */}
+
+
+      {/* Updated attachment preview section */}
+{survey.questions[currentQuestionIndex].attachment && (
+  <div className="mb-3 d-flex justify-content-center">
+    {(() => {
+      const attachment = survey.questions[currentQuestionIndex].attachment;
+      const isImage = attachment.includes('image') || 
+                     attachment.match(/\.(jpg|jpeg|png|gif|webp)$/i);
+      const isVideo = attachment.includes('video') || 
+                     attachment.match(/\.(mp4|webm|ogg)$/i);
+
+      if (isImage) {
+        return (
+          <img 
+            src={attachment} 
+            alt="Question reference"
+            className="img-fluid rounded border"
+            style={{ maxHeight: '220px' }}
+            onError={(e) => {
+              e.target.style.display = 'none';
+              console.error('Failed to load image:', attachment);
+            }}
+          />
+        );
+      } else if (isVideo) {
+        return (
+          
+            <video
+              key={survey.questions[currentQuestionIndex].attachment} // ensures re-render
+              controls
+              className="rounded border"
+              style={{ maxWidth: '100%', maxHeight: '220px' }}
+              onError={(e) => {
+                e.target.style.display = 'none';
+                console.error('Failed to load video:', attachment);
+              }}
+            >
+              <source 
+                src={attachment}
+                type={
+                  attachment.includes('mp4') ? 'video/mp4' :
+                  attachment.includes('webm') ? 'video/webm' :
+                  'video/ogg'
+                }
+              />
+              Your browser does not support the video tag.
+            </video>
+          
+        );
+      }
+      return null;
+    })()}
+  </div>
+)}
 
                   {/* Render based on type */}
                   {survey.questions[currentQuestionIndex].questionType === 'text' && (

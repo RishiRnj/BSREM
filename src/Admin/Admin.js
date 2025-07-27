@@ -229,11 +229,18 @@
 
 // export default Admin
 
-import React, { useState, useContext } from 'react';
-import { Container, Row, Col, Nav } from 'react-bootstrap';
+import React, { useState, useContext, useEffect } from 'react';
+import { 
+  Container, 
+  Row, 
+  Col, 
+  Nav, 
+  Offcanvas, 
+  Button 
+} from 'react-bootstrap';
 import {
-  FaUserFriends, FaClipboardList, FaBullhorn, FaBlog, FaHandsHelping, FaEnvelopeOpenText, FaChartPie,
-  FaOm
+  FaUserFriends, FaClipboardList, FaBullhorn, FaBlog, FaHandsHelping, 
+  FaEnvelopeOpenText, FaChartPie, FaOm, FaBars
 } from 'react-icons/fa';
 
 import Conference from './Conference';
@@ -251,6 +258,22 @@ const Admin = () => {
   const { user } = useContext(AuthContext);
   const userId = user?.id;
   const [activeSection, setActiveSection] = useState('dashboard');
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
+
+  const handleCloseMobileSidebar = () => setShowMobileSidebar(false);
+  const handleShowMobileSidebar = () => setShowMobileSidebar(true);
+
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+useEffect(() => {
+  const handleResize = () => {
+    setIsMobile(window.innerWidth < 768);
+  };
+
+  window.addEventListener('resize', handleResize);
+  return () => window.removeEventListener('resize', handleResize);
+}, []);
+
 
   const renderSection = () => {
     switch (activeSection) {
@@ -272,77 +295,207 @@ const Admin = () => {
     }
   };
 
+  const renderSidebar = () => (
+    <>
+      <h4 className="text-center fw-bold mb-4">Admin Panel</h4>
+      <Nav className="flex-column" variant="pills">
+        <Nav.Item>
+          <Nav.Link active={activeSection === 'beneficiaries'} onClick={() => {
+            setActiveSection('beneficiaries');
+            handleCloseMobileSidebar();
+          }}>
+            <FaUserFriends className="me-2" /> Beneficiaries
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link active={activeSection === 'donors'} onClick={() => {
+            setActiveSection('donors');
+            handleCloseMobileSidebar();
+          }}>
+            <FaHandsHelping className="me-2" /> Donors
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link active={activeSection === 'volunteers'} onClick={() => {
+            setActiveSection('volunteers');
+            handleCloseMobileSidebar();
+          }}>
+            <FaUserFriends className="me-2" /> Volunteers
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link active={activeSection === 'contact'} onClick={() => {
+            setActiveSection('contact');
+            handleCloseMobileSidebar();
+          }}>
+            <FaEnvelopeOpenText className="me-2" /> Contact Requests
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link active={activeSection === 'campaigners'} onClick={() => {
+            setActiveSection('campaigners');
+            handleCloseMobileSidebar();
+          }}>
+            <FaUserFriends className="me-2" /> Campaigner List
+          </Nav.Link>
+        </Nav.Item>
+
+        <hr />
+
+        <Nav.Item>
+          <Nav.Link active={activeSection === 'conference'} onClick={() => {
+            setActiveSection('conference');
+            handleCloseMobileSidebar();
+          }}>
+            <FaClipboardList className="me-2" /> Conference Links
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link active={activeSection === 'notices'} onClick={() => {
+            setActiveSection('notices');
+            handleCloseMobileSidebar();
+          }}>
+            <FaBullhorn className="me-2" /> Notices
+          </Nav.Link>
+        </Nav.Item>
+
+        <hr />
+
+        <Nav.Item>
+          <Nav.Link active={activeSection === 'createSurvey'} onClick={() => {
+            setActiveSection('createSurvey');
+            handleCloseMobileSidebar();
+          }}>
+            <FaClipboardList className="me-2" /> Create Survey
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link active={activeSection === 'showSurveys'} onClick={() => {
+            setActiveSection('showSurveys');
+            handleCloseMobileSidebar();
+          }}>
+            <FaChartPie className="me-2" /> Show Surveys
+          </Nav.Link>
+        </Nav.Item>
+
+        <hr />
+
+        <Nav.Item>
+          <Nav.Link href={`/blog`} onClick={handleCloseMobileSidebar}>
+            <FaBlog className="me-2" /> Create Blog
+          </Nav.Link>
+          <Nav.Link href={`/user/${userId}/profile`} onClick={handleCloseMobileSidebar}>
+            <FaOm className="me-2" /> Create Post 
+          </Nav.Link>
+        </Nav.Item>
+      </Nav>
+    </>
+  );
+
   return (
+    // <Container fluid className="admin-panel">
+    //   <Row>
+    //     {/* Sidebar */}
+    //     <Col md={2} className="bg-light p-3 border-end" style={{ minHeight: 'calc(100vh - 115px)' }}>
+    //       <h4 className="text-center fw-bold mb-4">Admin Panel</h4>
+    //       <Nav className="flex-column" variant="pills">
+    //         <Nav.Item>
+    //           <Nav.Link active={activeSection === 'beneficiaries'} onClick={() => setActiveSection('beneficiaries')}>
+    //             <FaUserFriends className="me-2" /> Beneficiaries
+    //           </Nav.Link>
+    //         </Nav.Item>
+    //         <Nav.Item>
+    //           <Nav.Link active={activeSection === 'donors'} onClick={() => setActiveSection('donors')}>
+    //             <FaHandsHelping className="me-2" /> Donors
+    //           </Nav.Link>
+    //         </Nav.Item>
+    //         <Nav.Item>
+    //           <Nav.Link active={activeSection === 'volunteers'} onClick={() => setActiveSection('volunteers')}>
+    //             <FaUserFriends className="me-2" /> Volunteers
+    //           </Nav.Link>
+    //         </Nav.Item>
+    //         <Nav.Item>
+    //           <Nav.Link active={activeSection === 'contact'} onClick={() => setActiveSection('contact')}>
+    //             <FaEnvelopeOpenText className="me-2" /> Contact Requests
+    //           </Nav.Link>
+    //         </Nav.Item>
+    //         <Nav.Item>
+    //           <Nav.Link active={activeSection === 'campaigners'} onClick={() => setActiveSection('campaigners')}>
+    //             <FaUserFriends className="me-2" /> Campaigner List
+    //           </Nav.Link>
+    //         </Nav.Item>
+
+    //         <hr />
+
+    //         <Nav.Item>
+    //           <Nav.Link active={activeSection === 'conference'} onClick={() => setActiveSection('conference')}>
+    //             <FaClipboardList className="me-2" /> Conference Links
+    //           </Nav.Link>
+    //         </Nav.Item>
+    //         <Nav.Item>
+    //           <Nav.Link active={activeSection === 'notices'} onClick={() => setActiveSection('notices')}>
+    //             <FaBullhorn className="me-2" /> Notices
+    //           </Nav.Link>
+    //         </Nav.Item>
+
+    //         <hr />
+
+    //         <Nav.Item>
+    //           <Nav.Link active={activeSection === 'createSurvey'} onClick={() => setActiveSection('createSurvey')}>
+    //             <FaClipboardList className="me-2" /> Create Survey
+    //           </Nav.Link>
+    //         </Nav.Item>
+    //         <Nav.Item>
+    //           <Nav.Link active={activeSection === 'showSurveys'} onClick={() => setActiveSection('showSurveys')}>
+    //             <FaChartPie className="me-2" /> Show Surveys
+    //           </Nav.Link>
+    //         </Nav.Item>
+
+    //         <hr />
+
+    //         <Nav.Item>
+    //           <Nav.Link href={`/blog`}>
+    //             <FaBlog className="me-2" /> Create Blog
+    //           </Nav.Link>
+    //           <Nav.Link href={`/user/${userId}/profile`}>
+    //             <FaOm className="me-2" /> Create Post 
+    //           </Nav.Link>
+    //         </Nav.Item>
+    //       </Nav>
+    //     </Col>
+
+    //     {/* Content Area */}
+    //     <Col md={10} className="p-4">
+    //       {renderSection()}
+    //     </Col>
+    //   </Row>
+    // </Container>
     <Container fluid className="admin-panel">
       <Row>
-        {/* Sidebar */}
-        <Col md={2} className="bg-light p-3 border-end" style={{ minHeight: 'calc(100vh - 115px)' }}>
-          <h4 className="text-center fw-bold mb-4">Admin Panel</h4>
-          <Nav className="flex-column" variant="pills">
-            <Nav.Item>
-              <Nav.Link active={activeSection === 'beneficiaries'} onClick={() => setActiveSection('beneficiaries')}>
-                <FaUserFriends className="me-2" /> Beneficiaries
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link active={activeSection === 'donors'} onClick={() => setActiveSection('donors')}>
-                <FaHandsHelping className="me-2" /> Donors
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link active={activeSection === 'volunteers'} onClick={() => setActiveSection('volunteers')}>
-                <FaUserFriends className="me-2" /> Volunteers
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link active={activeSection === 'contact'} onClick={() => setActiveSection('contact')}>
-                <FaEnvelopeOpenText className="me-2" /> Contact Requests
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link active={activeSection === 'campaigners'} onClick={() => setActiveSection('campaigners')}>
-                <FaUserFriends className="me-2" /> Campaigner List
-              </Nav.Link>
-            </Nav.Item>
+        {/* Mobile Header with Menu Button */}
+        <div className="d-md-none d-flex p-3 bg-light border-bottom">
+          <Button variant="light" onClick={handleShowMobileSidebar} className="me-2">
+            <FaBars />
+          </Button>
+          <h4 className="mb-0">Admin Panel</h4>
+        </div>
 
-            <hr />
-
-            <Nav.Item>
-              <Nav.Link active={activeSection === 'conference'} onClick={() => setActiveSection('conference')}>
-                <FaClipboardList className="me-2" /> Conference Links
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link active={activeSection === 'notices'} onClick={() => setActiveSection('notices')}>
-                <FaBullhorn className="me-2" /> Notices
-              </Nav.Link>
-            </Nav.Item>
-
-            <hr />
-
-            <Nav.Item>
-              <Nav.Link active={activeSection === 'createSurvey'} onClick={() => setActiveSection('createSurvey')}>
-                <FaClipboardList className="me-2" /> Create Survey
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link active={activeSection === 'showSurveys'} onClick={() => setActiveSection('showSurveys')}>
-                <FaChartPie className="me-2" /> Show Surveys
-              </Nav.Link>
-            </Nav.Item>
-
-            <hr />
-
-            <Nav.Item>
-              <Nav.Link href={`/blog`}>
-                <FaBlog className="me-2" /> Create Blog
-              </Nav.Link>
-              <Nav.Link href={`/user/${userId}/profile`}>
-                <FaOm className="me-2" /> Create Post 
-              </Nav.Link>
-            </Nav.Item>
-          </Nav>
+        {/* Sidebar - Hidden on mobile, shown on desktop */}
+        <Col md={2} className="d-none d-md-block bg-light p-3 border-end" style={{ minHeight: 'calc(100vh - 115px)' }}>
+          {renderSidebar()}
         </Col>
+
+        {/* Mobile Offcanvas Sidebar */}
+        {isMobile && (
+  <Offcanvas show={showMobileSidebar} onHide={handleCloseMobileSidebar}>
+    <Offcanvas.Header closeButton>
+      <Offcanvas.Title>Admin Menu</Offcanvas.Title>
+    </Offcanvas.Header>
+    <Offcanvas.Body>
+      {renderSidebar()}
+    </Offcanvas.Body>
+  </Offcanvas>
+)}
 
         {/* Content Area */}
         <Col md={10} className="p-4">
@@ -350,6 +503,7 @@ const Admin = () => {
         </Col>
       </Row>
     </Container>
+
   );
 };
 

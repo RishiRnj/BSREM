@@ -146,7 +146,7 @@ const DonateTemplate = () => {
         },
         {
             header: "Donate as you can",
-            title: "To Support our Community",
+            title: "To Support Your Community",
             image: "/doco.webp",
             text: "Your generosity can cre...",
             onReadMore: () => openDonationModal(),
