@@ -670,7 +670,7 @@ const PayOpt = () => {
                         className="ms-2 me-2 doner"
                         type="switch"
                         id="custom-switch-doner2"
-                        label={<span className={activeSwitch === "NRI Donor" ? "text-dark" : "text-muted"}>NRI Contributor</span>}
+                        label={<span className={activeSwitch === "NRI Donor" ? "text-dark" : "text-muted"}>International Contributor</span>}
                         checked={activeSwitch === "NRI Donor"}
                         onChange={() => handleSwitchClick("NRI Donor")}
                     />
