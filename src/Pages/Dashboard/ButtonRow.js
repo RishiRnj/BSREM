@@ -97,7 +97,7 @@ const ButtonRow = () => {
                                 </Button>
                             </OverlayTrigger>
 
-                            <OverlayTrigger
+                            {/* <OverlayTrigger
                                 placement="top"
                                 delay={{ show: 250, hide: 400 }}
                                 overlay={props => renderTooltip(props, "Be a Hindu, buy and sell BSREM certified products. If you haven't applied for the certificate yet, do it soon.")}
@@ -105,7 +105,7 @@ const ButtonRow = () => {
                                 <Button className='fw-bold' variant="warning" style={{ textWrap: "nowrap" }} onClick={() => navigate('/get-certificate')}>
                                     Get Certificate
                                 </Button>
-                            </OverlayTrigger>
+                            </OverlayTrigger> */}
 
                             <OverlayTrigger
                                 placement="top"
